@@ -117,7 +117,7 @@ function Hardcore:PLAYER_ENTERING_WORLD()
 	end
 
 	if Hardcore_Settings.enabled == true then
-		Hardcore:Print("Hardcore mode enabled, monitoring for death")
+		Hardcore:Print("Hardcore mode enabled, monitoring for death. Mailbox and Auction House are disabled.")
 	else
 		Hardcore:Print("Hardcore mode disabled, not monitoring for death")
 		return
@@ -216,12 +216,14 @@ end
 function Hardcore:MAIL_SHOW()
 	if Hardcore_Settings.enabled == false then return end
 
+	Hardcore:Print("Hardcore mode is enabled, mailbox access is blocked.")
 	CloseMail()
 end
 
 function Hardcore:AUCTION_HOUSE_SHOW()
 	if Hardcore_Settings.enabled == false then return end
 
+	Hardcore:Print("Hardcore mode is enabled, auction house access is blocked.")
 	CloseAuctionHouse()
 end
 

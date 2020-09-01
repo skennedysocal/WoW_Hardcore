@@ -1,12 +1,12 @@
 ## Interface: 11305
-## Version: 0.2.0
+## Version: 0.2.3
 ## Title: Hardcore
 ## Notes: Notify the guild on players death or ressurection
 ## Author: Molikar (Sean Kennedy)
 ## X-License: All Rights Reserved
 ## X-Category: Leveling
 
-## SavedVariablesPerCharacter: Hardcore_Settings
+## SavedVariables: Hardcore_Settings
 
 ChatThrottleLib.lua
 Hardcore.xml

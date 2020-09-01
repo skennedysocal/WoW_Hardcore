@@ -19,7 +19,7 @@ along with the Hardcore AddOn. If not, see <http://www.gnu.org/licenses/>.
 
 --[[ Global variables ]]--
 Hardcore_Settings = {
-	version = "0.2.2",
+	version = "0.2.3",
 	enabled = true,
 	notify = true,
 	death_list = {}
@@ -52,9 +52,9 @@ local function SlashHandler(msg, editbox)
 	if cmd == "list" then
 		Hardcore:List()
 	elseif cmd == "enable" then
-		Hardcore:Enable(1)
+		Hardcore:Enable(true)
 	elseif cmd == "disable" then
-		Hardcore:Enable(0)
+		Hardcore:Enable(false)
 	elseif cmd == "show" then
 		Hardcore_Frame:Show()
 	elseif cmd == "hide" then
@@ -102,6 +102,8 @@ function Hardcore:PLAYER_ENTERING_WORLD()
 	self:RegisterEvent("CHAT_MSG_ADDON")
 	self:RegisterEvent("PLAYER_LEAVING_WORLD")
 	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+	self:RegisterEvent("MAIL_SHOW")
+	self:RegisterEvent("AUCTION_HOUSE_SHOW")
 
 	-- Disable addon if not in one of the offical hardcore realms
 	Hardcore_Settings.enabled = false
@@ -141,6 +143,8 @@ function Hardcore:PLAYER_LEAVING_WORLD()
 	self:UnregisterEvent("CHAT_MSG_ADDON")
 	self:UnregisterEvent("PLAYER_LEAVING_WORLD")
 	self:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+	self:UnregisterEvent("MAIL_SHOW")
+	self:UnregisterEvent("AUCTION_HOUSE_SHOW")
 
 	Hardcore:CleanData()
 end
@@ -207,6 +211,18 @@ function Hardcore:PLAYER_UNGHOST()
 	C_Timer.After(COMM_DELAY, function()
 		Hardcore_Notification_Frame:Hide()
 	end)
+end
+
+function Hardcore:MAIL_SHOW()
+	if Hardcore_Settings.enabled == false then return end
+
+	CloseMail()
+end
+
+function Hardcore:AUCTION_HOUSE_SHOW()
+	if Hardcore_Settings.enabled == false then return end
+
+	CloseAuctionHouse()
 end
 
 function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
@@ -488,6 +504,9 @@ function Hardcore:ValidateEntry(data)
 
 	if nil == level then
 		Hardcore:Debug("ERROR: 'level' field is nil")
+		return false
+	elseif 1 == tonumber(level) then
+		Hardcore:Debug("WARN: Ignoring level 1 death")
 		return false
 	end
 

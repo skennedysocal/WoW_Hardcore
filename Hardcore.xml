@@ -89,7 +89,7 @@
 			Hardcore_Frame_OnLoad()
 		  </OnShow>
 		</Scripts>
-  
+
 	  <Frames>
 		  <ScrollFrame name="MyModScrollBar" parent="Hardcore_Frame" inherits="FauxScrollFrameTemplate" hidden="true">
 		    <Size x="375" y="350" />
@@ -110,7 +110,7 @@
 				Hardcore_Level_Sort:SetAlpha(0.5)
 				Hardcore_Class_Sort:SetAlpha(0.5)
 				Hardcore_Name_Sort:SetAlpha(0.5)
-				Hardcore:Sort("tod")				
+				Hardcore:Sort("tod")
 				Hardcore_Deathlist_ScrollBar_Update()
 			  </OnShow>
 			</Scripts>
@@ -237,7 +237,7 @@
 						Hardcore_Deathlist_ScrollBar_Update()
 					</OnClick>
 				</Scripts>
-			</Button>	  
+			</Button>
 			<Button name="Hardcore_Class_Sort" inherits="OptionsButtonTemplate" text="Class">
 				<Size x="65" y="20" />
 				<Anchors>
@@ -254,7 +254,7 @@
 						Hardcore_Deathlist_ScrollBar_Update()
 					</OnClick>
 				</Scripts>
-			</Button>	  
+			</Button>
 			<Button name="Hardcore_Level_Sort" inherits="OptionsButtonTemplate" text="Level">
 				<Size x="65" y="20" />
 				<Anchors>
@@ -271,7 +271,7 @@
 						Hardcore_Deathlist_ScrollBar_Update()
 					</OnClick>
 				</Scripts>
-			</Button>	  
+			</Button>
 			<Button name="Hardcore_Zone_Sort" inherits="OptionsButtonTemplate" text="Zone">
 				<Size x="145" y="20" />
 				<Anchors>
@@ -288,8 +288,8 @@
 						Hardcore_Deathlist_ScrollBar_Update()
 					</OnClick>
 				</Scripts>
-			</Button>	  
-			<Button name="Hardcore_TOD_Sort" inherits="OptionsButtonTemplate" text="Time of Death">
+			</Button>
+			<Button name="Hardcore_TOD_Sort" inherits="OptionsButtonTemplate" text="Time">
 				<Size x="120" y="20" />
 				<Anchors>
 					<Anchor point="TOPLEFT" x="470" y="-80" />
@@ -305,7 +305,18 @@
 						Hardcore_Deathlist_ScrollBar_Update()
 					</OnClick>
 				</Scripts>
-			</Button>	  
+			</Button>
+			<Button name="Hardcore_Switch" inherits="UIPanelButtonTemplate" text="Levels">
+				<Size x="-75" y="37" />
+				<Anchors>
+					<Anchor point="TOPLEFT" x="313" y="-450" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Hardcore:SwitchDisplay()
+					</OnClick>
+				</Scripts>
+			</Button>
 			<Button name="Hardcore_Close" inherits="UIPanelButtonTemplate" text="Close">
 				<Size x="75" y="37" />
 				<Anchors>
@@ -316,7 +327,7 @@
 						Hardcore_Frame:Hide()
 					</OnClick>
 				</Scripts>
-			</Button>	  
+			</Button>
 	  </Frames>
   </Frame>
 </Ui>

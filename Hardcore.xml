@@ -307,9 +307,9 @@
 				</Scripts>
 			</Button>
 			<Button name="Hardcore_Switch" inherits="UIPanelButtonTemplate" text="Levels">
-				<Size x="-75" y="37" />
+				<Size x="75" y="37" />
 				<Anchors>
-					<Anchor point="TOPLEFT" x="313" y="-450" />
+					<Anchor point="TOPLEFT" x="270" y="-450" />
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -320,7 +320,7 @@
 			<Button name="Hardcore_Close" inherits="UIPanelButtonTemplate" text="Close">
 				<Size x="75" y="37" />
 				<Anchors>
-					<Anchor point="TOPLEFT" x="313" y="-450" />
+					<Anchor point="TOPLEFT" x="375" y="-450" />
 				</Anchors>
 				<Scripts>
 					<OnClick>

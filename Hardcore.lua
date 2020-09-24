@@ -751,7 +751,9 @@ end
 
 function Hardcore_Deathlist_ScrollBar_Update()
 	--max value
-	FauxScrollFrame_Update(MyModScrollBar, #displaylist, 20, 16)
+	if #displaylist > 0 then
+		FauxScrollFrame_Update(MyModScrollBar, #displaylist, 20, 16)
+	end
 
 	--loop through lines adding data
 	for line=1, 20 do

@@ -22,7 +22,8 @@ Hardcore_Settings = {
 	version = "0.2.3",
 	enabled = true,
 	notify = true,
-	death_list = {}
+	death_list = {},
+	level_list = {}
 }
 
 --[[ Local variables ]]--
@@ -43,14 +44,22 @@ local HARDCORE_REALMS = {"Bloodsail Buccaneers", "Hydraxian Waterlords"}
 local GENDER_GREETING = {"guildmate", "brother", "sister"}
 local Hardcore = CreateFrame("Frame", "Hardcore")
 local SendAddonSuccess = C_ChatInfo.RegisterAddonMessagePrefix(COMM_NAME)
+local recent_levelup = nil
+local display = "Deaths"
+local displaylist = Hardcore_Settings.death_list
+
 
 --[[ Command line handler ]]--
 
 local function SlashHandler(msg, editbox)
 	local _, _, cmd, args = string.find(msg, "%s?(%w+)%s?(.*)")
 
-	if cmd == "list" then
+	if cmd == "list" or cmd == "deaths" then
 		Hardcore:List()
+	elseif cmd == "levels" then
+		Hardcore:Levels()
+	elseif cmd == "alllevels" then
+		Hardcore:Levels(true)
 	elseif cmd == "enable" then
 		Hardcore:Enable(true)
 	elseif cmd == "disable" then
@@ -58,6 +67,7 @@ local function SlashHandler(msg, editbox)
 	elseif cmd == "show" then
 		Hardcore_Frame:Show()
 	elseif cmd == "hide" then
+		--they can click the hide button, dont really need a command for this
 		Hardcore_Frame:Hide()
 	elseif cmd == "debug" then
 		debug = not debug
@@ -76,7 +86,7 @@ local function SlashHandler(msg, editbox)
 	else
 		-- If not handled above, display some sort of help message
 		Hardcore:Print("|cff00ff00Syntax:|r/hardcore [command]")
-		Hardcore:Print("|cff00ff00Commands:|rlist enable disable show hide")
+		Hardcore:Print("|cff00ff00Commands:|rshow deaths levels enable disable")
 	end
 end
 
@@ -104,6 +114,8 @@ function Hardcore:PLAYER_ENTERING_WORLD()
 	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	self:RegisterEvent("MAIL_SHOW")
 	self:RegisterEvent("AUCTION_HOUSE_SHOW")
+	self:RegisterEvent("PLAYER_LEVEL_UP")
+	self:RegisterEvent("TIME_PLAYED_MSG")
 
 	-- Disable addon if not in one of the offical hardcore realms
 	Hardcore_Settings.enabled = false
@@ -145,6 +157,8 @@ function Hardcore:PLAYER_LEAVING_WORLD()
 	self:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	self:UnregisterEvent("MAIL_SHOW")
 	self:UnregisterEvent("AUCTION_HOUSE_SHOW")
+	self:UnregisterEvent("PLAYER_LEVEL_UP")
+	self:UnregisterEvent("TIME_PLAYED_MSG")
 
 	Hardcore:CleanData()
 end
@@ -155,6 +169,9 @@ end
 
 function Hardcore:PLAYER_DEAD()
 	if Hardcore_Settings.enabled == false then return end
+
+	--screenshot
+	C_Timer.After(.35, Screenshot)
 
 	-- Get information
 	local playerId = UnitGUID("player")
@@ -225,6 +242,80 @@ function Hardcore:AUCTION_HOUSE_SHOW()
 
 	Hardcore:Print("Hardcore mode is enabled, auction house access is blocked.")
 	CloseAuctionHouse()
+end
+
+function Hardcore:PLAYER_LEVEL_UP(...)
+	if Hardcore_Settings.enabled == false then return end
+
+	--store the recent level up to use in TIME_PLAYED_MSG
+	local level, healthDelta, powerDelta, numNewTalents, numNewPvpTalentSlots, strengthDelta, agilityDelta, staminaDelta, intellectDelta = ...
+	recent_levelup = level
+
+	--just in case... make sure recent level up gets reset after 3 secs
+	C_Timer.After(3, function()
+		recent_levelup = nil
+	end)
+
+	--get time played, see TIME_PLAYED_MSG
+	RequestTimePlayed()
+
+	--take screenshot (got this idea from DingPics addon)
+	-- wait a bit so the yellow animation appears
+	C_Timer.After(.35, Screenshot)
+end
+
+function Hardcore:TIME_PLAYED_MSG(...)
+	if Hardcore_Settings.enabled == false then return end
+
+	if recent_levelup ~= nil then
+		--cache this to make sure it doesn't disapeer
+		local recent = recent_levelup
+		--nil this to ensure it's not called twice
+		recent_levelup = nil
+
+		--make sure list is initialized
+		if Hardcore_Settings.level_list == nil then
+			Hardcore_Settings.level_list = {}
+		end
+
+		--info for level up record
+		local totalTimePlayed, timePlayedThisLevel = ...
+		local playerName, _ = UnitName("player")
+
+		--create the record
+		local mylevelup = {}
+		mylevelup["level"] = recent
+		mylevelup["playedtime"] = totalTimePlayed
+		mylevelup["realm"] = GetRealmName()
+		mylevelup["player"]  = playerName
+		mylevelup["localtime"] = date()
+
+		--clear existing records if someone deleted / remade character
+		--since this is level 2, this must be a brand new character
+		if recent == 2 then
+			for i,v in ipairs(Hardcore_Settings.level_list) do
+				--find previous records with same name / realm and rename them so we don't misidentify them
+				if v["realm"] == mylevelup["realm"] and v["player"] == mylevelup["player"] then
+					--copy the record and rename it
+					local renamed = v
+					renamed["player"] = renamed["player"] .. "-old"
+					Hardcore_Settings.level_list[i] = renamed
+				end
+			end
+		end
+
+		--if we found previous level, show the last level time
+		for i,v in ipairs(Hardcore_Settings.level_list) do
+			--find last level up
+			if v["realm"] == mylevelup["realm"] and v["player"] == mylevelup["player"] and v["level"] == recent - 1 then
+				--show message to user with calculated time between levels
+				Hardcore:Print("Level " .. (recent - 1) .. "-" .. recent .. " time played: " .. SecondsToTime(totalTimePlayed - v["playedtime"]))
+			end
+		end
+
+		--store level record
+		table.insert(Hardcore_Settings.level_list,mylevelup)
+	end
 end
 
 function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
@@ -340,48 +431,40 @@ function Hardcore:Add(data)
 end
 
 function Hardcore:Update(data)
-	function Hardcore:Update(data)
-		-- Check if we want this update
-		update_count = update_count + 1
-		if not (0 == update_count % COMM_UPDATE_BREAK) then
-			return
-		end
+	-- Check if we want this update
+	update_count = update_count + 1
+	if not (0 == update_count % COMM_UPDATE_BREAK) then
+		return
+	end
 
-		-- Parse out the death rows
-		local rows = {}
-		for entry in string.gmatch(data, "[^"..COMM_RECORD_DELIM.."]+") do
-			table.insert(rows, entry)
-		end
-		if 0 == #rows then
-			return
-		else
-			-- Hardcore:Debug("Update received "..tostring(#rows).." rows of data")
-		end
+	-- Parse out the death rows
+	local rows = {}
+	for entry in string.gmatch(data, "[^"..COMM_RECORD_DELIM.."]+") do
+		table.insert(rows, entry)
+	end
+	if 0 == #rows then
+		return
+	else
+		-- Hardcore:Debug("Update received "..tostring(#rows).." rows of data")
+	end
 
-		-- Update local table with missing data
-		for index = 1, #rows do
-			local rowNeeded = true
-			for i=1, #Hardcore_Settings.death_list do
-				if Hardcore_Settings.death_list[i] == rows[index] then 
-				   rowNeeded = false
-				   -- Hardcore:Debug("Row exists, not adding "..string.split(COMM_FIELD_DELIM, rows[index]))
-				end
-			 end
+	-- Update local table with missing data
+	for index = 1, #rows do
+		local rowNeeded = true
+		for i=1, #Hardcore_Settings.death_list do
+			if Hardcore_Settings.death_list[i] == rows[index] then
+				rowNeeded = false
+				-- Hardcore:Debug("Row exists, not adding "..string.split(COMM_FIELD_DELIM, rows[index]))
+			end
+			end
 
-			 if rowNeeded == true then
-				Hardcore:Debug("Adding new row for "..string.split(COMM_FIELD_DELIM, rows[index]))
-				-- Throttle inserts to help with lag
-				C_Timer.After(COMM_DELAY, function()
-					table.insert(Hardcore_Settings.death_list, rows[index]) 
-				end)
-			 end
-		end
-
-		-- Update the UI
-		if #Hardcore_Settings.death_list > 0 then
-			Hardcore_SubTitle:SetText("We honor the "..tostring(#Hardcore_Settings.death_list).." who have fallen")
-			Hardcore_Deathlist_ScrollBar_Update()
-		end
+			if rowNeeded == true then
+			Hardcore:Debug("Adding new row for "..string.split(COMM_FIELD_DELIM, rows[index]))
+			-- Throttle inserts to help with lag
+			C_Timer.After(COMM_DELAY, function()
+				table.insert(Hardcore_Settings.death_list, rows[index])
+			end)
+			end
 	end
 end
 
@@ -422,18 +505,69 @@ function Hardcore:List()
 	end
 end
 
+function Hardcore:Levels(all)
+	--default parameter value
+	if all == nil then
+		all = false
+	end
+
+	if Hardcore_Settings.level_list ~= nil and #Hardcore_Settings.level_list > 0 then
+		local playerName, _ = UnitName("player")
+		local playerRealm = GetRealmName()
+		local mylevels = {}
+
+		--find relevant records
+		for i,v in ipairs(Hardcore_Settings.level_list) do
+			--find records from current character
+			if v["realm"] == playerRealm and v["player"] == playerName then
+				table.insert(mylevels,v)
+			end
+
+			--find old records as well
+			if all and (v["player"] == (playerName .. "-old")) then
+				table.insert(mylevels,v)
+			end
+		end
+
+		if #mylevels > 0 then
+			--for some reason this string concat doesn't work unless stored in variable
+			--local headerstr = "==== " .. playerName .. " ==== " .. playerRealm .. " ===="
+			--Hardcore:Print(headerstr)
+			for i,v in ipairs(mylevels) do
+				--for all command show name to distinguish old and new records
+				--local nameheader = all and v["player"] .. " = " or ""
+				--print the level row
+				Hardcore:Print("Levels:")
+				Hardcore:Print(Hardcore:FormatRow(v))
+				--Hardcore:Print(nameheader .. v["level"] .. " = " .. SecondsToTime(v["playedtime"]) .. " = " .. v["localtime"])
+			end
+		else
+			Hardcore:Print("No levels for " .. playerName)
+		end
+	else
+		Hardcore:Print("No levels recorded")
+	end
+end
+
 function Hardcore:FormatRow(row, fullcolor)
 	local row_str = ""
 
-	if false == Hardcore:ValidateEntry(row) then return nil end
-
-	local _, name, classname, level, mapId, tod = string.split(COMM_FIELD_DELIM, row)
-	local mapName = C_Map.GetMapInfo(mapId).name
-	local color = Hardcore:GetClassColorText(classname)
-	if fullcolor then
-		row_str = string.format("%s%-17s%-10s%-10s%-25s%-s|r", color, name, classname, level, mapName, date("%Y-%m-%d %H:%M:%S", tod))
-	else
-		row_str = string.format("%-17s%s%-10s|r%-10s%-25s%-s", name, color, classname, level, mapName, date("%Y-%m-%d %H:%M:%S", tod))
+	if row ~= nil then
+		if type(row) == "table" then
+			row_str = string.format("%-17s%s%-10s|r%-10s%-25s%-s", row["player"], "", row["level"], SecondsToTime(row["playedtime"]), "", row["localtime"])
+		elseif type(row) == "string" then
+			--this is a death row
+			if Hardcore:ValidateEntry(row) then
+				local _, name, classname, level, mapId, tod = string.split(COMM_FIELD_DELIM, row)
+				local mapName = C_Map.GetMapInfo(mapId).name
+				local color = Hardcore:GetClassColorText(classname)
+				if fullcolor then
+					row_str = string.format("%s%-17s%-10s%-10s%-25s%-s|r", color, name, classname, level, mapName, date("%Y-%m-%d %H:%M:%S", tod))
+				else
+					row_str = string.format("%-17s%s%-10s|r%-10s%-25s%-s", name, color, classname, level, mapName, date("%Y-%m-%d %H:%M:%S", tod))
+				end
+			end
+		end
 	end
 
 	return row_str
@@ -575,24 +709,57 @@ end
 --[[ UI Methods ]]--
 
 function Hardcore_Frame_OnLoad()
-	Hardcore_Deathlist_ScrollBar_Update()
+	--when frame is first created as hidden and shown it doesn't call show...
+	--loop in the onshow here to make sure it gets loaded
+	Hardcore_Frame_OnShow()
+end
+
+--switch between displays
+function Hardcore:SwitchDisplay()
+	--button text
+	Hardcore_Switch:SetText(display)
+
+	--change display
+	if display == "Deaths" then
+		display = "Levels"
+	elseif display == "Levels" then
+		display = "Deaths"
+	end
+
+	--refresh the page
+	Hardcore_Frame_OnShow()
 end
 
 function Hardcore_Frame_OnShow()
-	if #Hardcore_Settings.death_list > 0 then
-		Hardcore_SubTitle:SetText("We honor the "..tostring(#Hardcore_Settings.death_list).." who have fallen")
+	--refresh data source
+	if display == "Deaths" then
+		displaylist = Hardcore_Settings.death_list
+	elseif display == "Levels" then
+		displaylist = Hardcore_Settings.level_list
 	end
+
+	--subtitle text
+	if display == "Deaths" and #displaylist > 0 then
+		Hardcore_SubTitle:SetText("We honor the "..tostring(#displaylist).." who have fallen")
+	else
+		Hardcore_SubTitle:SetText("")
+	end
+
+	--update rows
 	Hardcore_Deathlist_ScrollBar_Update()
 end
 
 function Hardcore_Deathlist_ScrollBar_Update()
-	local lineplusoffset
-	FauxScrollFrame_Update(MyModScrollBar, #Hardcore_Settings.death_list, 20, 16)
+	--max value
+	FauxScrollFrame_Update(MyModScrollBar, #displaylist, 20, 16)
+
+	--loop through lines adding data
 	for line=1, 20 do
-		lineplusoffset = line + FauxScrollFrame_GetOffset(MyModScrollBar)
+		local lineplusoffset = line + FauxScrollFrame_GetOffset(MyModScrollBar)
 		local button = getglobal("DeathListEntry"..line)
-		if lineplusoffset <= #Hardcore_Settings.death_list then
-			local row = Hardcore:FormatRow(Hardcore_Settings.death_list[lineplusoffset], true)
+		if lineplusoffset <= #displaylist then
+			--get data
+			local row = Hardcore:FormatRow(displaylist[lineplusoffset], true)
 			if row then
 				button:SetText(row)
 				button:Show()

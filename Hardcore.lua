@@ -751,7 +751,7 @@ end
 
 function Hardcore_Deathlist_ScrollBar_Update()
 	--max value
-	if #displaylist > 0 then
+	if not (displaylist == nil) then
 		FauxScrollFrame_Update(MyModScrollBar, #displaylist, 20, 16)
 	end
 

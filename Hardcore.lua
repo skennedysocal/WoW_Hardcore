@@ -28,11 +28,11 @@ Hardcore_Settings = {
 
 --[[ Local variables ]]--
 local debug = false
-local update_count = 0
-local Last_Attack_Source = nil
-local PLAYER_NAME, _ = UnitName("player")
+
+--addon communication
 local CTL = _G.ChatThrottleLib
 local COMM_NAME = "HardcoreAddon"
+local update_count = 0
 local COMM_UPDATE_BREAK = 4
 local COMM_DELAY = 5
 local COMM_BATCH_SIZE = 4
@@ -40,13 +40,20 @@ local COMM_COMMAND_DELIM = "$"
 local COMM_FIELD_DELIM = "|"
 local COMM_RECORD_DELIM = "^"
 local COMM_COMMANDS = {"SYNC", "ADD", "UPDATE"}
+
+--stuff
+local PLAYER_NAME, _ = nil
 local HARDCORE_REALMS = {"Bloodsail Buccaneers", "Hydraxian Waterlords"}
 local GENDER_GREETING = {"guildmate", "brother", "sister"}
-local Hardcore = CreateFrame("Frame", "Hardcore")
-local SendAddonSuccess = C_ChatInfo.RegisterAddonMessagePrefix(COMM_NAME)
 local recent_levelup = nil
+local Last_Attack_Source = nil
+
+--frame display
 local display = "Deaths"
 local displaylist = Hardcore_Settings.death_list
+
+--the big frame object for our addon
+local Hardcore = CreateFrame("Frame", "Hardcore")
 
 
 --[[ Command line handler ]]--
@@ -96,17 +103,19 @@ SlashCmdList["HARDCORE"] = SlashHandler
 --[[ Startup ]]--
 
 function Hardcore:Startup()
+	--the entry point of our addon
+	--called inside loading screen before player sees world, some api functions are not available yet.
+
+	--event handling helper
 	self:SetScript("OnEvent", function(self, event, ...) self[event](self, ...) end)
+
+	--actually start loading the addon once player ui is loading
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 end
 
 --[[ Events ]]--
 
-function Hardcore:PLAYER_ENTERING_WORLD()
-	self:UnregisterEvent("PLAYER_ENTERING_WORLD")
-
-	-- Register
-	self:RegisterEvent("ADDON_LOADED")
+function Hardcore:PLAYER_ENTERING_WORLD()	
 	self:RegisterEvent("PLAYER_UNGHOST")
 	self:RegisterEvent("PLAYER_DEAD")
 	self:RegisterEvent("CHAT_MSG_ADDON")
@@ -128,20 +137,17 @@ function Hardcore:PLAYER_ENTERING_WORLD()
 		end
 	end
 
-	if Hardcore_Settings.enabled == true then
-		Hardcore:Print("Hardcore mode enabled, monitoring for death. Mailbox and Auction House are disabled.")
-	else
-		Hardcore:Print("Hardcore mode disabled, not monitoring for death")
-		return
+	--cache player name
+	PLAYER_NAME, _ = UnitName("player")
+	
+	--initialize addon communication
+	if( not C_ChatInfo.IsAddonMessagePrefixRegistered(COMM_NAME) ) then
+		C_ChatInfo.RegisterAddonMessagePrefix(COMM_NAME)
 	end
 
-	PLAYER_NAME, _ = UnitName("player")
-
-	-- Send sync command to addon
-	if SendAddonSuccess then
-		if CTL then
-			CTL:SendAddonMessage("NORMAL", COMM_NAME, COMM_COMMANDS[1]..COMM_COMMAND_DELIM, "GUILD")
-		end
+	-- Send sync command to addon	
+	if CTL then
+		CTL:SendAddonMessage("NORMAL", COMM_NAME, COMM_COMMANDS[1]..COMM_COMMAND_DELIM, "GUILD")
 	end
 
 	-- Show recording reminder
@@ -149,7 +155,6 @@ function Hardcore:PLAYER_ENTERING_WORLD()
 end
 
 function Hardcore:PLAYER_LEAVING_WORLD()
-	self:UnregisterEvent("ADDON_LOADED")
 	self:UnregisterEvent("PLAYER_UNGHOST")
 	self:UnregisterEvent("PLAYER_DEAD")
 	self:UnregisterEvent("CHAT_MSG_ADDON")
@@ -161,10 +166,6 @@ function Hardcore:PLAYER_LEAVING_WORLD()
 	self:UnregisterEvent("TIME_PLAYED_MSG")
 
 	Hardcore:CleanData()
-end
-
-function Hardcore:ADDON_LOADED()
-	-- Hardcore:Sort("tod")
 end
 
 function Hardcore:PLAYER_DEAD()
@@ -192,24 +193,22 @@ function Hardcore:PLAYER_DEAD()
 	SendChatMessage(messageString, "GUILD", nil, nil)
 
 	-- Send add command to addon for this death
-	if true == SendAddonSuccess then
-		local deathData = string.format("%s%s%s%s%s%s%s%s%s%s%s",
-										playerId,
-										COMM_FIELD_DELIM,
-										playerName,
-										COMM_FIELD_DELIM,
-										localizedClass,
-										COMM_FIELD_DELIM,
-										playerLevel,
-										COMM_FIELD_DELIM,
-										mapId,
-										COMM_FIELD_DELIM,
-										time())
+	local deathData = string.format("%s%s%s%s%s%s%s%s%s%s%s",
+									playerId,
+									COMM_FIELD_DELIM,
+									playerName,
+									COMM_FIELD_DELIM,
+									localizedClass,
+									COMM_FIELD_DELIM,
+									playerLevel,
+									COMM_FIELD_DELIM,
+									mapId,
+									COMM_FIELD_DELIM,
+									time())
 
-		local commMessage = COMM_COMMANDS[2]..COMM_COMMAND_DELIM..deathData
-		if CTL then
-			CTL:SendAddonMessage("BULK", COMM_NAME, commMessage, "GUILD")
-		end
+	local commMessage = COMM_COMMANDS[2]..COMM_COMMAND_DELIM..deathData
+	if CTL then
+		CTL:SendAddonMessage("BULK", COMM_NAME, commMessage, "GUILD")
 	end
 end
 
@@ -363,41 +362,39 @@ function Hardcore:Debug(msg)
 end
 
 function Hardcore:Sync()
-	if SendAddonSuccess then
-		-- Don't send empty lists
-		if 0 == #Hardcore_Settings.death_list then
-			Hardcore:Debug("No records to sync")
-			return
-		end
+	-- Don't send empty lists
+	if 0 == #Hardcore_Settings.death_list then
+		Hardcore:Debug("No records to sync")
+		return
+	end
 
-		-- IMPORTANT NOTE: There is a max of 250 characters per message, so break into chunks.
-		Hardcore:Debug("Syncing "..tostring(#Hardcore_Settings.death_list).." records")
+	-- IMPORTANT NOTE: There is a max of 250 characters per message, so break into chunks.
+	Hardcore:Debug("Syncing "..tostring(#Hardcore_Settings.death_list).." records")
 
-		-- Build list of all deaths we have seen and broadcast chunks
-		local sent = 0
-		local data = ""
-		for index = 1, #Hardcore_Settings.death_list do
-			if 0 == index % COMM_BATCH_SIZE then
-				Hardcore:Debug("Sending batch of "..COMM_BATCH_SIZE.." records")
-				if CTL then
-					CTL:SendAddonMessage("BULK", COMM_NAME, COMM_COMMANDS[3]..COMM_COMMAND_DELIM..data, "GUILD")
-				end
-				data = ""
-				sent = sent + COMM_BATCH_SIZE
-			else
-				data = data..Hardcore_Settings.death_list[index]..COMM_RECORD_DELIM
+	-- Build list of all deaths we have seen and broadcast chunks
+	local sent = 0
+	local data = ""
+	for index = 1, #Hardcore_Settings.death_list do
+		if 0 == index % COMM_BATCH_SIZE then
+			Hardcore:Debug("Sending batch of "..COMM_BATCH_SIZE.." records")
+			if CTL then
+				CTL:SendAddonMessage("BULK", COMM_NAME, COMM_COMMANDS[3]..COMM_COMMAND_DELIM..data, "GUILD")
 			end
-		end
-
-		-- Broadcast the remaining records
-		data = ""
-		for index = sent + 1, #Hardcore_Settings.death_list do
+			data = ""
+			sent = sent + COMM_BATCH_SIZE
+		else
 			data = data..Hardcore_Settings.death_list[index]..COMM_RECORD_DELIM
 		end
-		Hardcore:Debug("Sending remaining "..tostring(#Hardcore_Settings.death_list - sent).." records")
-		if CTL then
-			CTL:SendAddonMessage("BULK", COMM_NAME, COMM_COMMANDS[3]..COMM_COMMAND_DELIM..data, "GUILD")
-		end
+	end
+
+	-- Broadcast the remaining records
+	data = ""
+	for index = sent + 1, #Hardcore_Settings.death_list do
+		data = data..Hardcore_Settings.death_list[index]..COMM_RECORD_DELIM
+	end
+	Hardcore:Debug("Sending remaining "..tostring(#Hardcore_Settings.death_list - sent).." records")
+	if CTL then
+		CTL:SendAddonMessage("BULK", COMM_NAME, COMM_COMMANDS[3]..COMM_COMMAND_DELIM..data, "GUILD")
 	end
 end
 
@@ -751,7 +748,9 @@ end
 
 function Hardcore_Deathlist_ScrollBar_Update()
 	--max value
-	FauxScrollFrame_Update(MyModScrollBar, #displaylist, 20, 16)
+	if not (displaylist == nil) then
+		FauxScrollFrame_Update(MyModScrollBar, #displaylist, 20, 16)
+	end
 
 	--loop through lines adding data
 	for line=1, 20 do
@@ -776,7 +775,7 @@ function Hardcore:RecordReminder()
 	if Hardcore_Settings.enabled == false then return end
 	if Hardcore_Settings.notify == false then return end
 
-	Hardcore_Notification_Text:SetText("Hardcore Reminder:\n START RECORDING")
+	Hardcore_Notification_Text:SetText("Hardcore Enabled:\n START RECORDING")
 	Hardcore_Notification_Frame:Show()
 	PlaySound(8959)
 	C_Timer.After(10, function()

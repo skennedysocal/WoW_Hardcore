@@ -51,6 +51,7 @@ local Last_Attack_Source = nil
 --frame display
 local display = "Deaths"
 local displaylist = Hardcore_Settings.death_list
+local icon = nil
 
 --the big frame object for our addon
 local Hardcore = CreateFrame("Frame", "Hardcore")
@@ -152,6 +153,9 @@ function Hardcore:PLAYER_ENTERING_WORLD()
 
 	-- Show recording reminder
 	Hardcore:RecordReminder()
+
+	--minimap button
+	Hardcore:initMinimapButton()
 end
 
 function Hardcore:PLAYER_LEAVING_WORLD()
@@ -707,12 +711,6 @@ end
 
 --[[ UI Methods ]]--
 
-function Hardcore_Frame_OnLoad()
-	--when frame is first created as hidden and shown it doesn't call show...
-	--loop in the onshow here to make sure it gets loaded
-	Hardcore_Frame_OnShow()
-end
-
 --switch between displays
 function Hardcore:SwitchDisplay(displayparam)
 
@@ -851,5 +849,103 @@ function Hardcore:RecordReminder()
 	end)
 end
 
+----------------------------------------------------------------------
+-- Minimap button (no reload required)
+----------------------------------------------------------------------
+
+function Hardcore:initMinimapButton()
+
+	-- Minimap button click function
+	local function MiniBtnClickFunc(arg1)
+
+		-- Prevent options panel from showing if Blizzard options panel is showing
+		if InterfaceOptionsFrame:IsShown() or VideoOptionsFrame:IsShown() or ChatConfigFrame:IsShown() then return end
+		-- Prevent options panel from showing if Blizzard Store is showing
+		if StoreFrame and StoreFrame:GetAttribute("isshown") then return end
+		-- Left button down
+		if arg1 == "LeftButton" then
+
+			-- Control key 
+			if IsControlKeyDown() and not IsShiftKeyDown() then
+				Hardcore:ToggleMinimapIcon()
+				return
+			end
+
+			-- Shift key 
+			if IsShiftKeyDown() and not IsControlKeyDown() then
+				return
+			end
+
+			-- Shift key and control key 
+			if IsShiftKeyDown() and IsControlKeyDown() then
+				return
+			end
+
+			-- No modifier key toggles the options panel
+			if Hardcore_Frame:IsShown() then
+				Hardcore_Frame:Hide()				
+			else
+				Hardcore_Frame:Show()
+			end			
+		end
+	end
+
+	-- Create minimap button using LibDBIcon
+	local miniButton = LibStub("LibDataBroker-1.1"):NewDataObject("Hardcore", {
+		type = "data source",
+		text = "Hardcore",
+		icon = "Interface\\AddOns\\Hardcore\\Media\\logo_emblem.blp",
+		OnClick = function(self, btn)
+			MiniBtnClickFunc(btn)
+		end,
+		OnTooltipShow = function(tooltip)
+			if not tooltip or not tooltip.AddLine then return end
+			tooltip:AddLine("Hardcore")
+		end,
+	})
+
+	icon = LibStub("LibDBIcon-1.0", true)
+	icon:Register("Hardcore", miniButton, Hardcore_Settings)
+
+	-- -- Function to toggle LibDBIcon
+	-- function SetLibDBIconFunc()
+	-- 	if Hardcore_Settings["hide"] == nil or Hardcore_Settings["hide"] == true then
+	-- 		Hardcore_Settings["hide"] = false
+	-- 		icon:Show("Hardcore")
+	-- 	else
+	-- 		Hardcore_Settings["hide"] = true
+	-- 		icon:Hide("Hardcore")
+	-- 	end
+	-- end
+
+	if(Hardcore_Settings["hide"] == false) then
+		icon:Show("Hardcore")
+	end
+
+	-- -- Set LibDBIcon when option is clicked and on startup
+	-- SetLibDBIconFunc()
+end
+
+function Hardcore:ToggleMinimapButton()
+	if icon then
+
+		if Hardcore_Settings["hide"] == nil or Hardcore_Settings["hide"] == true then
+			Hardcore_Settings["hide"] = false
+			icon:Show("Hardcore")
+		else
+			Hardcore_Settings["hide"] = true
+			icon:Hide("Hardcore")
+		end
+	end
+end
+
+
+
 --[[ Start Addon ]]--
 Hardcore:Startup()
+
+
+
+
+
+

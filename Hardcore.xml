@@ -82,11 +82,11 @@
 			</Layer>
 		</Layers>
 		<Scripts>
+		  <OnLoad>
+			tinsert(UISpecialFrames, self:GetName());
+		  </OnLoad>
 		  <OnShow>
 			Hardcore_Frame_OnShow()
-		  </OnShow>
-		  <OnShow>
-			Hardcore_Frame_OnLoad()
 		  </OnShow>
 		</Scripts>
 
@@ -306,21 +306,55 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="Hardcore_Switch" inherits="UIPanelButtonTemplate" text="Levels">
+			<Button name="Hardcore_DispLevels" inherits="UIPanelButtonTemplate" text="Levels">
 				<Size x="75" y="37" />
 				<Anchors>
-					<Anchor point="TOPLEFT" x="270" y="-450" />
+					<Anchor point="TOPLEFT" x="120" y="-450" />
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						Hardcore:SwitchDisplay()
+						Hardcore:SwitchDisplay("Levels")
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="Hardcore_Close" inherits="UIPanelButtonTemplate" text="Close">
+			<Button name="Hardcore_DispDeaths" inherits="UIPanelButtonTemplate" text="Deaths">
 				<Size x="75" y="37" />
 				<Anchors>
-					<Anchor point="TOPLEFT" x="375" y="-450" />
+					<Anchor point="TOPLEFT" x="220" y="-450" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Hardcore:SwitchDisplay("Deaths")
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="Hardcore_DispRules" inherits="UIPanelButtonTemplate" text="Rules">
+				<Size x="75" y="37" />
+				<Anchors>
+					<Anchor point="TOPLEFT" x="320" y="-450" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Hardcore:SwitchDisplay("Rules")
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="Hardcore_MiniIcon" inherits="UIPanelButtonTemplate" text="Minimap button">
+				<Size x="120" y="37" />
+				<Anchors>
+					<Anchor point="TOPLEFT" x="420" y="-450" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Hardcore:ToggleMinimapButton()
+					</OnClick>
+				</Scripts>
+			</Button>
+
+			<Button name="Hardcore_Close" inherits="UIPanelButtonTemplate" text="X">
+				<Size x="30" y="30" />
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-10" y="-10" />
 				</Anchors>
 				<Scripts>
 					<OnClick>

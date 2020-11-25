@@ -495,7 +495,7 @@ function Hardcore:List()
 	Hardcore:Print("\n")
 	Hardcore:Print("|cff00ff00Name            Class     Level Location            Time")
 	for index = 1, #Hardcore_Settings.death_list do
-		local row = Hardcore:FormatRow(Hardcore_Settings.death_list[index])
+		local row = Hardcore:FormatRow(Hardcore_Settings.death_list[index],nil,"Deaths")
 		if row then
 			Hardcore:Print(row)
 		end
@@ -535,7 +535,7 @@ function Hardcore:Levels(all)
 				--local nameheader = all and v["player"] .. " = " or ""
 				--print the level row
 				Hardcore:Print("Levels:")
-				Hardcore:Print(Hardcore:FormatRow(v))
+				Hardcore:Print(Hardcore:FormatRow(v),nil,"Levels")
 				--Hardcore:Print(nameheader .. v["level"] .. " = " .. SecondsToTime(v["playedtime"]) .. " = " .. v["localtime"])
 			end
 		else
@@ -546,13 +546,13 @@ function Hardcore:Levels(all)
 	end
 end
 
-function Hardcore:FormatRow(row, fullcolor)
+function Hardcore:FormatRow(row, fullcolor, formattype)
 	local row_str = ""
 
 	if row ~= nil then
-		if type(row) == "table" then
+		if formattype == "Levels" then
 			row_str = string.format("%-17s%s%-10s|r%-10s%-25s%-s", row["player"], "", row["level"], SecondsToTime(row["playedtime"]), "", row["localtime"])
-		elseif type(row) == "string" then
+		elseif formattype == "Deaths" then
 			--this is a death row
 			if Hardcore:ValidateEntry(row) then
 				local _, name, classname, level, mapId, tod = string.split(COMM_FIELD_DELIM, row)
@@ -564,6 +564,8 @@ function Hardcore:FormatRow(row, fullcolor)
 					row_str = string.format("%-17s%s%-10s|r%-10s%-25s%-s", name, color, classname, level, mapName, date("%Y-%m-%d %H:%M:%S", tod))
 				end
 			end
+		elseif formattype == "Rules" then
+			row_str = row
 		end
 	end
 
@@ -712,16 +714,11 @@ function Hardcore_Frame_OnLoad()
 end
 
 --switch between displays
-function Hardcore:SwitchDisplay()
-	--button text
-	Hardcore_Switch:SetText(display)
+function Hardcore:SwitchDisplay(displayparam)
 
-	--change display
-	if display == "Deaths" then
-		display = "Levels"
-	elseif display == "Levels" then
-		display = "Deaths"
-	end
+	if displayparam ~= nil then
+		display = displayparam
+	end	
 
 	--refresh the page
 	Hardcore_Frame_OnShow()
@@ -731,15 +728,86 @@ function Hardcore_Frame_OnShow()
 	--refresh data source
 	if display == "Deaths" then
 		displaylist = Hardcore_Settings.death_list
-	elseif display == "Levels" then
+		Hardcore_Name_Sort:Show()
+		Hardcore_Class_Sort:Show()
+		Hardcore_Level_Sort:Show()
+		Hardcore_Zone_Sort:Show()
+		Hardcore_TOD_Sort:Show()
+	elseif display == "Levels" then		
 		displaylist = Hardcore_Settings.level_list
+		Hardcore_Name_Sort:Show()
+		Hardcore_Class_Sort:Show()
+		Hardcore_Level_Sort:Show()
+		Hardcore_Zone_Sort:Show()
+		Hardcore_TOD_Sort:Show()
+	elseif display == "Rules" then
+		--hide buttons 
+		Hardcore_Name_Sort:Hide()
+		Hardcore_Class_Sort:Hide()
+		Hardcore_Level_Sort:Hide()
+		Hardcore_Zone_Sort:Hide()
+		Hardcore_TOD_Sort:Hide()
+
+		-- hard coded rules table lol
+		local f = {}
+		table.insert(f,"Official website with info, rules, news, hall of legends, challenges \n")
+		table.insert(f,"https://classichc.net")
+		table.insert(f,"Help is avaiable on discord (link on website)")
+		table.insert(f,"")
+		table.insert(f,"11/24/2020 from https://classichc.net/rules/")
+		table.insert(f,"")
+		table.insert(f,"All professions allowed")
+		table.insert(f,"No restriction on talents")
+		table.insert(f,"")
+		table.insert(f,"You can use gear that you pickup or craft")
+		table.insert(f,"No Auction house, No mailbox, No trading")
+		table.insert(f,"")
+		table.insert(f,"No grouping in open world")
+		table.insert(f,"")
+		table.insert(f,"Buffs from others are allowed, don't ask for others for buffs")
+		table.insert(f,"")
+		table.insert(f,"Full Hardcore Dungeon Groups are authorized but only ONE run of each Dungeon per character")
+		table.insert(f,"You are supposed to meet and group up at the Meeting Stone of the very dungeon you want to run")
+		table.insert(f,"")
+		table.insert(f,"You are allowed to exceed the maximum level of the dungeon, if you level")
+		table.insert(f,"Your character level must be within the Meeting Stone requirements of the dungeon")
+		table.insert(f,"If you level up inside of the dungeon and exceed the meeting stone requirement you can stay")
+		table.insert(f,"If you have a Warlock in your party, you are allowed to summon players to the meeting stone")
+		table.insert(f,"")
+		table.insert(f,"Warlocks can’t resurrect via SS")
+		table.insert(f,"Shamans can’t resurrect via Ankh")
+		table.insert(f,"Paladins can’t Bubble Hearth")
+		table.insert(f,"No Light of Elune + Hearthstone")
+		table.insert(f,"")
+		table.insert(f,"You need a record your journey to be verified")
+		table.insert(f,"Stream or record and upload to youtube or twitch")
+		table.insert(f,"then submit the playlist of your run on the verification page")
+		table.insert(f,"")
+		table.insert(f,"At 60 you earn your IMMORTALITY and become a full fledged character with insane bragging rights ")
+		table.insert(f,"")
+		table.insert(f,"")
+		table.insert(f,"=============== DUOS ===============")
+		table.insert(f,"")
+		table.insert(f,"You must not leave the same zone as each other")
+		table.insert(f,"*unless you are a Druid going to Moonglade to complete essential class quests")
+		table.insert(f,"You must choose a combo that spawns in the same starting location.")
+		table.insert(f,"")
+		table.insert(f,"If one of you dies, the other must fall on the sword and the run is over.")
+		table.insert(f,"")
+		table.insert(f,"You can trade your duo partner found or crafted items, including gold")
+		table.insert(f,"")
+		table.insert(f,"Multiboxing goes against the spirit of the Hardcore Challenge and is not allowed")
+		table.insert(f,"")
+		displaylist = f
 	end
 
 	--subtitle text
 	if display == "Deaths" and #displaylist > 0 then
 		Hardcore_SubTitle:SetText("We honor the "..tostring(#displaylist).." who have fallen")
+	elseif display == "Levels" and #displaylist > 0 then
+		Hardcore_SubTitle:SetText("You've leveled up "..tostring(#displaylist).." times!")
 	else
-		Hardcore_SubTitle:SetText("")
+		Hardcore_SubTitle:SetText("classichc.net")
 	end
 
 	--update rows
@@ -750,23 +818,23 @@ function Hardcore_Deathlist_ScrollBar_Update()
 	--max value
 	if not (displaylist == nil) then
 		FauxScrollFrame_Update(MyModScrollBar, #displaylist, 20, 16)
-	end
 
-	--loop through lines adding data
-	for line=1, 20 do
-		local lineplusoffset = line + FauxScrollFrame_GetOffset(MyModScrollBar)
-		local button = getglobal("DeathListEntry"..line)
-		if lineplusoffset <= #displaylist then
-			--get data
-			local row = Hardcore:FormatRow(displaylist[lineplusoffset], true)
-			if row then
-				button:SetText(row)
-				button:Show()
+		--loop through lines adding data
+		for line=1, 20 do
+			local lineplusoffset = line + FauxScrollFrame_GetOffset(MyModScrollBar)
+			local button = getglobal("DeathListEntry"..line)
+			if lineplusoffset <= #displaylist then
+				--get data
+				local row = Hardcore:FormatRow(displaylist[lineplusoffset], true, display)
+				if row then
+					button:SetText(row)
+					button:Show()
+				else
+					button:Hide()
+				end
 			else
 				button:Hide()
 			end
-		else
-			button:Hide()
 		end
 	end
 end

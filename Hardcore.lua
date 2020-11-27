@@ -346,7 +346,7 @@ function Hardcore:COMBAT_LOG_EVENT_UNFILTERED(...)
 
 	if not (source_name == PLAYER_NAME) then
 		if not (source_name == nil) then
-			if string.find("DAMAGE") ~= nil then
+			if string.find(ev, "DAMAGE") ~= nil then
 				Last_Attack_Source = source_name				
 			end			
 		end

@@ -112,11 +112,13 @@ function Hardcore:Startup()
 
 	--actually start loading the addon once player ui is loading
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
+	self:RegisterEvent("PLAYER_LOGIN")
 end
 
 --[[ Events ]]--
 
-function Hardcore:PLAYER_ENTERING_WORLD()	
+function Hardcore:PLAYER_LOGIN()
+	--fires on first loading
 	self:RegisterEvent("PLAYER_UNGHOST")
 	self:RegisterEvent("PLAYER_DEAD")
 	self:RegisterEvent("CHAT_MSG_ADDON")
@@ -140,7 +142,18 @@ function Hardcore:PLAYER_ENTERING_WORLD()
 
 	--cache player name
 	PLAYER_NAME, _ = UnitName("player")
-	
+
+	-- Show recording reminder
+	Hardcore:RecordReminder()
+
+	--minimap button
+	Hardcore:initMinimapButton()
+end
+
+function Hardcore:PLAYER_ENTERING_WORLD()
+	--cache player name
+	PLAYER_NAME, _ = UnitName("player")
+
 	--initialize addon communication
 	if( not C_ChatInfo.IsAddonMessagePrefixRegistered(COMM_NAME) ) then
 		C_ChatInfo.RegisterAddonMessagePrefix(COMM_NAME)
@@ -150,25 +163,9 @@ function Hardcore:PLAYER_ENTERING_WORLD()
 	if CTL then
 		CTL:SendAddonMessage("NORMAL", COMM_NAME, COMM_COMMANDS[1]..COMM_COMMAND_DELIM, "GUILD")
 	end
-
-	-- Show recording reminder
-	Hardcore:RecordReminder()
-
-	--minimap button
-	Hardcore:initMinimapButton()
 end
 
 function Hardcore:PLAYER_LEAVING_WORLD()
-	self:UnregisterEvent("PLAYER_UNGHOST")
-	self:UnregisterEvent("PLAYER_DEAD")
-	self:UnregisterEvent("CHAT_MSG_ADDON")
-	self:UnregisterEvent("PLAYER_LEAVING_WORLD")
-	self:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-	self:UnregisterEvent("MAIL_SHOW")
-	self:UnregisterEvent("AUCTION_HOUSE_SHOW")
-	self:UnregisterEvent("PLAYER_LEVEL_UP")
-	self:UnregisterEvent("TIME_PLAYED_MSG")
-
 	Hardcore:CleanData()
 end
 
@@ -477,14 +474,16 @@ function Hardcore:Enable(setting)
 		else
 			Hardcore:Print("Already enabled")
 		end
-
 		return
 	end
 
 	Hardcore_Settings.enabled = setting
 	if setting == false then
+		Hardcore_EnableToggle:SetText("Enable")
 		Hardcore:Print("Disabled")
 	else
+		Hardcore:RecordReminder()
+		Hardcore_EnableToggle:SetText("Disable")
 		Hardcore:Print("Enabled")
 	end
 end
@@ -841,7 +840,7 @@ function Hardcore:RecordReminder()
 	if Hardcore_Settings.enabled == false then return end
 	if Hardcore_Settings.notify == false then return end
 
-	Hardcore_Notification_Text:SetText("Hardcore Enabled:\n START RECORDING")
+	Hardcore_Notification_Text:SetText("Hardcore Enabled\n START RECORDING")
 	Hardcore_Notification_Frame:Show()
 	PlaySound(8959)
 	C_Timer.After(10, function()

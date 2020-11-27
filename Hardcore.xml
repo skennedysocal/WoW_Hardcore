@@ -339,18 +339,29 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="Hardcore_MiniIcon" inherits="UIPanelButtonTemplate" text="Minimap button">
-				<Size x="120" y="37" />
+			<Button name="Hardcore_EnableToggle" inherits="UIPanelButtonTemplate" text="Enable">
+				<Size x="75" y="37" />
 				<Anchors>
 					<Anchor point="TOPLEFT" x="420" y="-450" />
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						Hardcore:ToggleMinimapButton()
+						Hardcore:Enable(not Hardcore_Settings.enabled)
 					</OnClick>
 				</Scripts>
 			</Button>
-
+			<Button name="Hardcore_MinimapToggle" inherits="UIPanelButtonTemplate" text="Minimap button">
+				<Size x="120" y="37" />
+				<Anchors>
+					<Anchor point="TOPLEFT" x="520" y="-450" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Hardcore:ToggleMinimapIcon()
+					</OnClick>
+				</Scripts>
+			</Button>
+			
 			<Button name="Hardcore_Close" inherits="UIPanelButtonTemplate" text="X">
 				<Size x="30" y="30" />
 				<Anchors>

@@ -212,7 +212,7 @@ function Hardcore:PLAYER_DEAD()
 
 	local commMessage = COMM_COMMANDS[2]..COMM_COMMAND_DELIM..deathData
 	if CTL then
-		CTL:SendAddonMessage("BULK", COMM_NAME, commMessage, "GUILD")
+		CTL:SendAddonMessage("ALERT", COMM_NAME, commMessage, "GUILD")
 	end
 end
 

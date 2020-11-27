@@ -47,6 +47,7 @@ local HARDCORE_REALMS = {"Bloodsail Buccaneers", "Hydraxian Waterlords"}
 local GENDER_GREETING = {"guildmate", "brother", "sister"}
 local recent_levelup = nil
 local Last_Attack_Source = nil
+local PICTURE_DELAY = .65
 
 --frame display
 local display = "Deaths"
@@ -173,7 +174,7 @@ function Hardcore:PLAYER_DEAD()
 	if Hardcore_Settings.enabled == false then return end
 
 	--screenshot
-	C_Timer.After(.35, Screenshot)
+	C_Timer.After(PICTURE_DELAY, Screenshot)
 
 	-- Get information
 	local playerId = UnitGUID("player")
@@ -261,7 +262,7 @@ function Hardcore:PLAYER_LEVEL_UP(...)
 
 	--take screenshot (got this idea from DingPics addon)
 	-- wait a bit so the yellow animation appears
-	C_Timer.After(.35, Screenshot)
+	C_Timer.After(PICTURE_DELAY, Screenshot)
 end
 
 function Hardcore:TIME_PLAYED_MSG(...)

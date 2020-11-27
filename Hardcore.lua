@@ -873,6 +873,7 @@ function Hardcore:initMinimapButton()
 
 			-- Shift key 
 			if IsShiftKeyDown() and not IsControlKeyDown() then
+				Hardcore:Enable(not Hardcore_Settings.enabled)
 				return
 			end
 
@@ -901,6 +902,9 @@ function Hardcore:initMinimapButton()
 		OnTooltipShow = function(tooltip)
 			if not tooltip or not tooltip.AddLine then return end
 			tooltip:AddLine("Hardcore")
+			tooltip:AddLine("|cFFCFCFCFclick|r show window")
+			tooltip:AddLine("|cFFCFCFCFshift click|r toggle enable")
+			tooltip:AddLine("|cFFCFCFCFctrl click|r toggle minimap button")
 		end,
 	})
 
@@ -926,7 +930,7 @@ function Hardcore:initMinimapButton()
 	-- SetLibDBIconFunc()
 end
 
-function Hardcore:ToggleMinimapButton()
+function Hardcore:ToggleMinimapIcon()
 	if icon then
 
 		if Hardcore_Settings["hide"] == nil or Hardcore_Settings["hide"] == true then

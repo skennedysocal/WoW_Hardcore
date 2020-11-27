@@ -342,11 +342,13 @@ end
 
 function Hardcore:COMBAT_LOG_EVENT_UNFILTERED(...)
 	-- local time, token, hidding, source_serial, source_name, caster_flags, caster_flags2, target_serial, target_name, target_flags, target_flags2, ability_id, ability_name, ability_type, extraSpellID, extraSpellName, extraSchool = CombatLogGetCurrentEventInfo()
-	local _, _, _, _, source_name, _, _, _, _, _, _, _, _, _, _, _, _ = CombatLogGetCurrentEventInfo()
+	local _, ev, _, _, source_name, _, _, _, _, _, _, _, _, _, _, _, _ = CombatLogGetCurrentEventInfo()
 
 	if not (source_name == PLAYER_NAME) then
 		if not (source_name == nil) then
-			Last_Attack_Source = source_name
+			if string.find("DAMAGE") ~= nil then
+				Last_Attack_Source = source_name				
+			end			
 		end
 	end
 end

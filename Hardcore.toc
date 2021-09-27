@@ -1,5 +1,5 @@
 ## Interface: 11306
-## Version: 0.3.0
+## Version: 0.3.0-fix
 ## Title: Hardcore
 ## Notes: Notify the guild on players death or ressurection
 ## Author: Molikar (Sean Kennedy)

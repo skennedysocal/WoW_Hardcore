@@ -161,9 +161,9 @@ function Hardcore:PLAYER_ENTERING_WORLD()
 	end
 
 	-- Send sync command to addon	
-	if CTL then
-		CTL:SendAddonMessage("NORMAL", COMM_NAME, COMM_COMMANDS[1]..COMM_COMMAND_DELIM, "GUILD")
-	end
+	-- if CTL then
+	-- 	CTL:SendAddonMessage("NORMAL", COMM_NAME, COMM_COMMANDS[1]..COMM_COMMAND_DELIM, "GUILD")
+	-- end
 end
 
 function Hardcore:PLAYER_LEAVING_WORLD()
@@ -329,11 +329,11 @@ function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
 
 		-- Determine what command was sent
 		if command == COMM_COMMANDS[1] then
-			Hardcore:Sync()
+			--Hardcore:Sync()
 		elseif command == COMM_COMMANDS[2] then
 			Hardcore:Add(data)
 		elseif command == COMM_COMMANDS[3] then
-			Hardcore:Update(data)
+			--Hardcore:Update(data)
 		else
 			Hardcore:Debug("Unknown command :"..command)
 		end

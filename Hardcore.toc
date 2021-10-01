@@ -1,4 +1,4 @@
-## Interface: 11306
+## Interface: 11400
 ## Version: 0.3.0-fix
 ## Title: Hardcore
 ## Notes: Notify the guild on players death or ressurection

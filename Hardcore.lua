@@ -55,7 +55,7 @@ local displaylist = Hardcore_Settings.death_list
 local icon = nil
 
 --the big frame object for our addon
-local Hardcore = CreateFrame("Frame", "Hardcore")
+local Hardcore = CreateFrame("Frame", "Hardcore", nil, "BackdropTemplate")
 
 Hardcore_Frame:ApplyBackdrop()
 

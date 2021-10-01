@@ -19,7 +19,7 @@ The only thing you will miss out on, is deaths that happened while you were not 
 
 ## TL;DR
 
-If you just want a fixed version of the add-on, you can download it from https://github.com/spenceclark/WoW_Hardcore/archive/refs/tags/0.3.0-fix.zip 
+If you just want a fixed version of the add-on, you can download it from https://github.com/spenceclark/WoW_Hardcore/archive/refs/tags/0.3.0-fix-b.zip
 
 Extract the files and copy them into your `<wherever wow is installed>\_classic_era_\Interface\AddOns\Hardcore\` folder, overwriting the existing files.
 

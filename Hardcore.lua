@@ -57,6 +57,7 @@ local icon = nil
 --the big frame object for our addon
 local Hardcore = CreateFrame("Frame", "Hardcore")
 
+Hardcore_Frame:ApplyBackdrop()
 
 --[[ Command line handler ]]--
 

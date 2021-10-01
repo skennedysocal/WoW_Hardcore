@@ -37,20 +37,14 @@
 		</Layers>
   </Frame>
 
-  <Frame name="Hardcore_Frame" parent="UIParent" hidden="true" toplevel="true" movable="true" enableMouse="true">
+  <Frame name="Hardcore_Frame" parent="UIParent" hidden="true" toplevel="true" movable="true" enableMouse="true" inherits="BackdropTemplate">>
 		<Size x="700" y="500" />
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="UIParent" relativePoint="TOPLEFT" x="336" y="-35" />
 		</Anchors>
-		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border">
-			<BackgroundInsets>
-				<AbsInset left="11" right="12" top="12" bottom="11" />
-			</BackgroundInsets>
-			<TileSize val="32" />
-			<EdgeSize val="32" />
-			<Color r="0.627" g="0.627" b="0.627" />
-			<BorderColor r="0.627" g="0.627" b="0.627" />
-		</Backdrop>
+		<KeyValues>
+			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
+		</KeyValues>
 		<Layers>
 			<Layer>
 				<Texture name="Hardcore_Logo1" file="Interface\AddOns\Hardcore\Media\logo_emblem.blp">

@@ -118,9 +118,8 @@ function Hardcore:Startup()
 
 	--event handling helper
 	self:SetScript("OnEvent", function(self, event, ...) self[event](self, ...) end)
-	self:SetScript("OnUpdate", function(self, sinceLastUpdate) self:OnUpdate(self, sinceLastUpdate) end);
 
-	--actually start loading the addon once player ui is loading	
+	--actually start loading the addon once player ui is loading
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("PLAYER_LOGIN")
 end
@@ -138,7 +137,6 @@ function Hardcore:PLAYER_LOGIN()
 	self:RegisterEvent("AUCTION_HOUSE_SHOW")
 	self:RegisterEvent("PLAYER_LEVEL_UP")
 	self:RegisterEvent("TIME_PLAYED_MSG")
-	self.RegisterEvent("PLAYER_LOGOUT")
 
 	-- Disable addon if not in one of the offical hardcore realms
 	Hardcore_Settings.enabled = false
@@ -154,9 +152,6 @@ function Hardcore:PLAYER_LOGIN()
 	if ( Hardcore_Character.time_tracked == nil ) then
 		Hardcore_Character.time_tracked = 0
 	end
-
-	--update time_tracked
-	Hardcore:RequestTimePlayed()
 
 	--cache player name
 	PLAYER_NAME, _ = UnitName("player")
@@ -229,11 +224,6 @@ function Hardcore:PLAYER_DEAD()
 	if CTL then
 		CTL:SendAddonMessage("ALERT", COMM_NAME, commMessage, "GUILD")
 	end
-end
-
-function Hardcore:PLAYER_LOGOUT()
-	--update time_tracked
-	Hardcore:RequestTimePlayed()
 end
 
 function Hardcore:PLAYER_UNGHOST()
@@ -973,14 +963,13 @@ end
 
 --[[ Timers ]]--
 
-function Hardcore:OnUpdate(self, sinceLastUpdate)
-	self.sinceLastUpdate = (self.sinceLastUpdate or 0) + sinceLastUpdate;
-if ( self.sinceLastUpdate >= 1 ) then
-	Hardcore_Character.time_tracked = Hardcore_Character.time_tracked + self.sinceLastUpdate
-	self.sinceLastUpdate = 0;
+local PLAY_TIME_UPDATE_INTERVAL = 1
+C_Timer.NewTicker(PLAY_TIME_UPDATE_INTERVAL, function()
+	Hardcore_Character.time_tracked = Hardcore_Character.time_tracked + PLAY_TIME_UPDATE_INTERVAL
 	Hardcore:RequestTimePlayed()
-end
-end
+	print("tracked: ", Hardcore_Character.time_tracked)
+	print("played: ", Hardcore_Character.time_played)
+end)
 
 local Cached_ChatFrame_DisplayTimePlayed = ChatFrame_DisplayTimePlayed
 ChatFrame_DisplayTimePlayed = function(...)

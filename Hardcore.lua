@@ -334,6 +334,20 @@ function Hardcore:TIME_PLAYED_MSG(...)
 	end
 end
 
+local Cached_ChatFrame_DisplayTimePlayed = ChatFrame_DisplayTimePlayed
+ChatFrame_DisplayTimePlayed = function(...)
+if HIDE_RTP_CHAT_MSG then
+	HIDE_RTP_CHAT_MSG = false
+	return
+end
+return Cached_ChatFrame_DisplayTimePlayed(...)
+end
+
+function Hardcore:RequestTimePlayed()
+HIDE_RTP_CHAT_MSG = true
+RequestTimePlayed()
+end
+
 function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
 	if Hardcore_Settings.enabled == false then return end
 
@@ -967,23 +981,7 @@ local PLAY_TIME_UPDATE_INTERVAL = 1
 C_Timer.NewTicker(PLAY_TIME_UPDATE_INTERVAL, function()
 	Hardcore_Character.time_tracked = Hardcore_Character.time_tracked + PLAY_TIME_UPDATE_INTERVAL
 	Hardcore:RequestTimePlayed()
-	print("tracked: ", Hardcore_Character.time_tracked)
-	print("played: ", Hardcore_Character.time_played)
 end)
-
-local Cached_ChatFrame_DisplayTimePlayed = ChatFrame_DisplayTimePlayed
-ChatFrame_DisplayTimePlayed = function(...)
-if HIDE_RTP_CHAT_MSG then
-	HIDE_RTP_CHAT_MSG = false
-	return
-end
-return Cached_ChatFrame_DisplayTimePlayed(...)
-end
-
-function Hardcore:RequestTimePlayed()
-HIDE_RTP_CHAT_MSG = true
-RequestTimePlayed()
-end
 
 --[[ Start Addon ]]--
 Hardcore:Startup()

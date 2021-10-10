@@ -19,10 +19,10 @@ along with the Hardcore AddOn. If not, see <http://www.gnu.org/licenses/>.
 
 --[[ Global saved variables ]]--
 Hardcore_Settings = {
-	version = "0.2.3",
 	enabled = true,
 	notify = true,
-	level_list = {}
+	level_list = {},
+	guild_highest_version = '0.0.0',
 }
 
 --[[ Character saved variables ]]--
@@ -35,6 +35,12 @@ Hardcore_Character = {
 
 --[[ Local variables ]]--
 local debug = false
+local pulses = {}
+local online_pulsing = {}
+local guild_versions = {}
+local guild_versions_status = {}
+local guild_online = {}
+local guild_roster_loading = false
 
 local bubble_hearth_vars = 
 {
@@ -47,14 +53,15 @@ local bubble_hearth_vars =
 --addon communication
 local CTL = _G.ChatThrottleLib
 local COMM_NAME = "HardcoreAddon"
-local update_count = 0
+local COMM_PULSE_FREQUENCY = 10
+local COMM_PULSE_CHECK_FREQUENCY = COMM_PULSE_FREQUENCY * 2
 local COMM_UPDATE_BREAK = 4
 local COMM_DELAY = 5
 local COMM_BATCH_SIZE = 4
 local COMM_COMMAND_DELIM = "$"
 local COMM_FIELD_DELIM = "|"
 local COMM_RECORD_DELIM = "^"
-local COMM_COMMANDS = {nil, "ADD", nil}
+local COMM_COMMANDS = {"PULSE", "ADD", nil}
 
 --stuff
 local PLAYER_NAME, _ = nil
@@ -65,6 +72,9 @@ local Last_Attack_Source = nil
 local PICTURE_DELAY = .65
 local HIDE_RTP_CHAT_MSG = false
 local STARTED_BUBBLE_HEARTH_INFO = nil
+local COLOR_RED = "|c00ff0000"
+local COLOR_GREEN = "|c0000ff00"
+local COLOR_YELLOW = "|c00ffff00"
 
 --frame display
 local display = "Rules"
@@ -142,6 +152,7 @@ function Hardcore:PLAYER_LOGIN()
 	self:RegisterEvent("CHAT_MSG_ADDON")
 	self:RegisterEvent("PLAYER_LEAVING_WORLD")
 	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+	self:RegisterEvent("GUILD_ROSTER_UPDATE")
 	self:RegisterEvent("MAIL_SHOW")
 	self:RegisterEvent("AUCTION_HOUSE_SHOW")
 	self:RegisterEvent("PLAYER_LEVEL_UP")
@@ -166,8 +177,18 @@ function Hardcore:PLAYER_LOGIN()
 	-- Show recording reminder
 	Hardcore:RecordReminder()
 
-	--minimap button
+	-- minimap button
 	Hardcore:initMinimapButton()
+
+	-- initiate pulse heartbeat
+	Hardcore:InitiatePulse()
+
+	-- initiate pulse heartbeat check
+	Hardcore:InitiatePulseCheck()
+
+	-- check players version against highest version
+	local FULL_PLAYER_NAME = Hardcore_GetPlayerPlusRealmName()
+	Hardcore:CheckVersionsAndUpdate(FULL_PLAYER_NAME, GetAddOnMetadata('Hardcore', 'Version'))
 end
 
 function Hardcore:UNIT_SPELLCAST_START(...)
@@ -428,6 +449,8 @@ function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
 		-- Determine what command was sent
 		if command == COMM_COMMANDS[2] then
 			Hardcore:Add(data)
+		elseif command == COMM_COMMANDS[1] then
+			Hardcore:ReceivePulse(data, sender)
 		else
 			-- Hardcore:Debug("Unknown command :"..command)
 		end
@@ -445,6 +468,28 @@ function Hardcore:COMBAT_LOG_EVENT_UNFILTERED(...)
 			end			
 		end
 	end
+end
+
+function Hardcore:GUILD_ROSTER_UPDATE(...)
+	guild_roster_loading = false
+
+	-- Create a new dictionary of just online people every time roster is updated
+	guild_online = {}
+
+	-- Hardcore:Debug('guild roster update')
+	local numTotal, numOnline, numOnlineAndMobile = GetNumGuildMembers();
+	for i = 1, numOnline, 1 do
+		local name, rankName, rankIndex, level, classDisplayName, zone, publicNote, officerNote, isOnline, status, class, achievementPoints, achievementRank, isMobile, canSoR, repStanding, GUID = GetGuildRosterInfo(i)
+		
+		guild_online[name] = {
+			name = name,
+			level = level,
+			classDisplayName = classDisplayName
+		}
+	end
+
+	Hardcore:UpdateGuildRosterRows()
+	Hardcore_SubTitle:SetText("Guild Addon Status")
 end
 
 --[[ Utility Methods ]]--
@@ -565,6 +610,40 @@ function Hardcore:FormatRow(row, fullcolor, formattype)
 					row_str = string.format("%-17s%s%-10s|r%-10s%-25s%-s", name, color, classname, level, mapName, date("%Y-%m-%d %H:%M:%S", tod))
 				end
 			end
+		elseif formattype == "AddonStatus" then
+			if row.name == nil then
+				row_str = row
+			else
+				local FULL_PLAYER_NAME = Hardcore_GetPlayerPlusRealmName()
+				local statusText
+				local color
+	
+				-- Player has sent an addon pulse and is online... or its you
+				if (online_pulsing[row.name] and guild_online[row.name]) or row.name == FULL_PLAYER_NAME then
+					
+					local version
+	
+					if row.name == FULL_PLAYER_NAME then
+						version = GetAddOnMetadata('Hardcore', 'Version')
+					else
+						version = guild_versions[row.name]
+					end
+	
+					if guild_versions_status[row.name] == 'updated' then
+						color = COLOR_GREEN
+					else
+						color = COLOR_YELLOW
+					end
+					
+					statusText = 'HC Addon: Detected ('..version..')'
+				else
+					statusText = 'HC Addon: Not Detected'
+					color = COLOR_RED
+				end
+				
+				row_str = string.format("%sLv: %s %s (%s)", color, row.level, row.name, statusText)
+			end
+			
 		elseif formattype == "Rules" then
 			row_str = row
 		elseif formattype == "GetVerified" then
@@ -674,7 +753,12 @@ function Hardcore:SwitchDisplay(displayparam)
 	Hardcore_Frame_OnShow()
 end
 
+function Hardcore_SortByLevel(pipe1, pipe2) 
+	return pipe1.level < pipe2.level
+end
+
 function Hardcore_Frame_OnShow()
+	Hardcore:Debug('display: '..display)
 	--refresh data source
 	if display == "Levels" then		
 		displaylist = Hardcore_Settings.level_list
@@ -699,6 +783,12 @@ function Hardcore_Frame_OnShow()
 		table.insert(f, "")
 		table.insert(f, verificationstring)
 		displaylist = f
+	elseif display == "AddonStatus" then
+
+		-- handles loading and loading state
+		Hardcore:FetchGuildRoster()
+		Hardcore:UpdateGuildRosterRows()
+
 	elseif display == "Rules" then
 		--hide buttons 
 		Hardcore_Name_Sort:Hide()
@@ -765,12 +855,14 @@ function Hardcore_Frame_OnShow()
 	--subtitle text
 	if display == "Levels" and #displaylist > 0 then
 		Hardcore_SubTitle:SetText("You've leveled up "..tostring(#displaylist).." times!")
+	elseif display == "AddonStatus" and guild_roster_loading then
+		Hardcore_SubTitle:SetText("Loading Updated Guild Addon Status...")
 	else
 		Hardcore_SubTitle:SetText("classichc.net")
 	end
 
-	--update rows
 	Hardcore_Deathlist_ScrollBar_Update()
+	
 end
 
 function Hardcore_Deathlist_ScrollBar_Update()
@@ -935,7 +1027,138 @@ function Hardcore:GenerateVerificationString()
 end
 
 --[[ Timers ]]--
+function Hardcore:InitiatePulse()
+	-- Set send pulses ticker
+	C_Timer.NewTicker(COMM_PULSE_FREQUENCY, function()
+		if CTL then
+			-- Send along the version we're using
+			local version = GetAddOnMetadata("Hardcore", "Version")
+			local commMessage = COMM_COMMANDS[1]..COMM_COMMAND_DELIM..version
+			CTL:SendAddonMessage("BULK", COMM_NAME, commMessage, "GUILD")
+		end
+	end)
+end
 
+function Hardcore:InitiatePulseCheck()
+	C_Timer.NewTicker(COMM_PULSE_CHECK_FREQUENCY, function()
+		if Hardcore_Frame:IsShown() and display == "AddonStatus" then
+			Hardcore:FetchGuildRoster()
+		end
+
+		-- Hardcore:Debug('Checking pulses now')
+		online_pulsing = {}
+
+		for player, status in pairs(guild_online) do
+			local pulsetime = pulses[player]
+
+			if not pulsetime or ((time() - pulsetime) > COMM_PULSE_CHECK_FREQUENCY) then
+				online_pulsing[player] = false
+			else
+				online_pulsing[player] = true
+			end
+		end
+	end)
+end
+
+function Hardcore:ReceivePulse(data, sender)
+	local FULL_PLAYER_NAME = Hardcore_GetPlayerPlusRealmName()
+
+	if sender == FULL_PLAYER_NAME then
+		return
+	end
+
+	-- Hardcore:Debug('Received pulse from: '..sender..'. data: '..data)
+
+	Hardcore:CheckVersionsAndUpdate(sender, data)
+
+	-- Set my versions
+	local version = GetAddOnMetadata("Hardcore", "Version")
+	if version ~= Hardcore_Settings.guild_highest_version then
+		guild_versions_status[FULL_PLAYER_NAME] = 'outdated'
+	end
+
+	pulses[sender] = time()
+end
+
+function Hardcore:CheckVersionsAndUpdate(playername, versionstring)
+
+	if Hardcore_Settings.guild_highest_version == nil then 
+		Hardcore_Settings.guild_highest_version = GetAddOnMetadata('Hardcore', 'Version')
+	end
+
+	-- Hardcore:Debug('Comparing: data: '..versionstring.. ' to guild_highest_version: '..Hardcore_Settings.guild_highest_version)
+	if versionstring ~= Hardcore_Settings.guild_highest_version then
+		
+		
+		local greaterVersion = Hardcore_GetGreaterVersion(versionstring, Hardcore_Settings.guild_highest_version)
+		-- Hardcore:Debug('higest is: '..greaterVersion)
+
+		-- if received pulse is newer version, update the local, highest version
+		if Hardcore_Settings.guild_highest_version ~= greaterVersion then
+			-- Hardcore:Debug('setting higestversion to: '..greaterVersion)
+
+			Hardcore_Settings.guild_highest_version = greaterVersion
+			-- invalidate status table
+			guild_versions_status = {}
+			guild_versions_status[playername] = 'updated'
+
+		else -- if received pulse is older version, set sender to outdated
+			-- Hardcore:Debug('setting sender to: outdated')
+			guild_versions_status[playername] = 'outdated'
+		end
+	else -- if received pulse has same version, set to updated
+		guild_versions_status[playername] = 'updated'
+	end
+
+	guild_versions[playername] = versionstring
+end
+
+function Hardcore:UpdateGuildRosterRows()
+	if display == "AddonStatus" then
+		local f = {}
+		for name, playerData in pairs(guild_online) do
+			table.insert(f, playerData)
+		end
+		table.sort(f, Hardcore_SortByLevel)
+		displaylist = f
+
+		Hardcore_Deathlist_ScrollBar_Update()
+	end
+end
+
+function Hardcore:FetchGuildRoster()
+	guild_roster_loading = true
+	local num_ellipsis = 4
+
+	-- Request a new roster update when we show the addonstatus list
+	GuildRoster()
+	requestGuildRoster = C_Timer.NewTicker(2, function()
+		local postfix = ""
+		
+
+		if guild_roster_loading then
+			-- generate animated ellipsis to show loading
+			if num_ellipsis == 4 then
+				num_ellipsis = 1
+			end
+			for i=1, num_ellipsis do
+				postfix = postfix..'.'
+			end
+			-- end animated elllipsis
+
+			Hardcore_SubTitle:SetText("Loading Updated Guild Addon Status"..postfix)
+			GuildRoster()
+		else
+			requestGuildRoster:Cancel()
+			
+		end
+
+		num_ellipsis = num_ellipsis + 1
+	end)
+end
+
+
+--[[ Timers ]]--
 local PLAY_TIME_UPDATE_INTERVAL = 1
 C_Timer.NewTicker(PLAY_TIME_UPDATE_INTERVAL, function()
 	Hardcore_Character.time_tracked = Hardcore_Character.time_tracked + PLAY_TIME_UPDATE_INTERVAL

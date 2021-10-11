@@ -17,12 +17,18 @@ You should have received a copy of the GNU General Public License
 along with the Hardcore AddOn. If not, see <http://www.gnu.org/licenses/>.
 --]]
 
---[[ Global variables ]]--
+--[[ Global saved variables ]]--
 Hardcore_Settings = {
 	version = "0.2.3",
 	enabled = true,
 	notify = true,
 	level_list = {}
+}
+
+--[[ Character saved variables ]]--
+Hardcore_Character = {
+	time_tracked = 0,
+	time_played = 0,
 }
 
 --[[ Local variables ]]--
@@ -47,6 +53,7 @@ local GENDER_GREETING = {"guildmate", "brother", "sister"}
 local recent_levelup = nil
 local Last_Attack_Source = nil
 local PICTURE_DELAY = .65
+local HIDE_RTP_CHAT_MSG = false
 
 --frame display
 local display = "Rules"
@@ -133,6 +140,10 @@ function Hardcore:PLAYER_LOGIN()
 			Hardcore_Settings.enabled = true
 			break
 		end
+	end
+
+	if ( Hardcore_Character.time_tracked == nil ) then
+		Hardcore_Character.time_tracked = 0
 	end
 
 	--cache player name
@@ -257,6 +268,9 @@ end
 function Hardcore:TIME_PLAYED_MSG(...)
 	if Hardcore_Settings.enabled == false then return end
 
+	local totalTimePlayed, _ = ...
+	Hardcore_Character.time_played = totalTimePlayed
+
 	if recent_levelup ~= nil then
 		--cache this to make sure it doesn't disapeer
 		local recent = recent_levelup
@@ -306,6 +320,20 @@ function Hardcore:TIME_PLAYED_MSG(...)
 		--store level record
 		table.insert(Hardcore_Settings.level_list,mylevelup)
 	end
+end
+
+local Cached_ChatFrame_DisplayTimePlayed = ChatFrame_DisplayTimePlayed
+ChatFrame_DisplayTimePlayed = function(...)
+if HIDE_RTP_CHAT_MSG then
+	HIDE_RTP_CHAT_MSG = false
+	return
+end
+return Cached_ChatFrame_DisplayTimePlayed(...)
+end
+
+function Hardcore:RequestTimePlayed()
+HIDE_RTP_CHAT_MSG = true
+RequestTimePlayed()
 end
 
 function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
@@ -776,7 +804,13 @@ function Hardcore:ToggleMinimapIcon()
 	end
 end
 
+--[[ Timers ]]--
 
+local PLAY_TIME_UPDATE_INTERVAL = 1
+C_Timer.NewTicker(PLAY_TIME_UPDATE_INTERVAL, function()
+	Hardcore_Character.time_tracked = Hardcore_Character.time_tracked + PLAY_TIME_UPDATE_INTERVAL
+	Hardcore:RequestTimePlayed()
+end)
 
 --[[ Start Addon ]]--
 Hardcore:Startup()

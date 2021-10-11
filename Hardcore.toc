@@ -7,6 +7,7 @@
 ## X-Category: Leveling
 
 ## SavedVariables: Hardcore_Settings
+## SavedVariablesPerCharacter: Hardcore_Character
 
 ChatThrottleLib.lua
 Hardcore.xml

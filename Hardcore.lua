@@ -22,7 +22,6 @@ Hardcore_Settings = {
 	version = "0.2.3",
 	enabled = true,
 	notify = true,
-	death_list = {},
 	level_list = {}
 }
 
@@ -39,7 +38,7 @@ local COMM_BATCH_SIZE = 4
 local COMM_COMMAND_DELIM = "$"
 local COMM_FIELD_DELIM = "|"
 local COMM_RECORD_DELIM = "^"
-local COMM_COMMANDS = {"SYNC", "ADD", "UPDATE"}
+local COMM_COMMANDS = {nil, "ADD", nil}
 
 --stuff
 local PLAYER_NAME, _ = nil
@@ -50,8 +49,8 @@ local Last_Attack_Source = nil
 local PICTURE_DELAY = .65
 
 --frame display
-local display = "Deaths"
-local displaylist = Hardcore_Settings.death_list
+local display = "Rules"
+local displaylist = Hardcore_Settings.level_list
 local icon = nil
 
 --the big frame object for our addon
@@ -64,9 +63,7 @@ Hardcore_Frame:ApplyBackdrop()
 local function SlashHandler(msg, editbox)
 	local _, _, cmd, args = string.find(msg, "%s?(%w+)%s?(.*)")
 
-	if cmd == "list" or cmd == "deaths" then
-		Hardcore:List()
-	elseif cmd == "levels" then
+	if cmd == "levels" then
 		Hardcore:Levels()
 	elseif cmd == "alllevels" then
 		Hardcore:Levels(true)
@@ -88,10 +85,6 @@ local function SlashHandler(msg, editbox)
 			Hardcore:Print("Notification enabled")
 		else
 			Hardcore:Print("Notification disabled")
-		end
-	elseif cmd == "sync" then
-		if CTL then
-			CTL:SendAddonMessage("NORMAL", COMM_NAME, COMM_COMMANDS[1]..COMM_COMMAND_DELIM, "GUILD")
 		end
 	else
 		-- If not handled above, display some sort of help message
@@ -160,11 +153,6 @@ function Hardcore:PLAYER_ENTERING_WORLD()
 	if( not C_ChatInfo.IsAddonMessagePrefixRegistered(COMM_NAME) ) then
 		C_ChatInfo.RegisterAddonMessagePrefix(COMM_NAME)
 	end
-
-	-- Send sync command to addon	
-	-- if CTL then
-	-- 	CTL:SendAddonMessage("NORMAL", COMM_NAME, COMM_COMMANDS[1]..COMM_COMMAND_DELIM, "GUILD")
-	-- end
 end
 
 function Hardcore:PLAYER_LEAVING_WORLD()
@@ -329,14 +317,10 @@ function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
 		local command, data = string.split(COMM_COMMAND_DELIM, datastr)
 
 		-- Determine what command was sent
-		if command == COMM_COMMANDS[1] then
-			--Hardcore:Sync()
-		elseif command == COMM_COMMANDS[2] then
+		if command == COMM_COMMANDS[2] then
 			Hardcore:Add(data)
-		elseif command == COMM_COMMANDS[3] then
-			--Hardcore:Update(data)
 		else
-			Hardcore:Debug("Unknown command :"..command)
+			-- Hardcore:Debug("Unknown command :"..command)
 		end
 	end
 end
@@ -366,55 +350,10 @@ function Hardcore:Debug(msg)
 	end
 end
 
-function Hardcore:Sync()
-	-- Don't send empty lists
-	if 0 == #Hardcore_Settings.death_list then
-		Hardcore:Debug("No records to sync")
-		return
-	end
-
-	-- IMPORTANT NOTE: There is a max of 250 characters per message, so break into chunks.
-	Hardcore:Debug("Syncing "..tostring(#Hardcore_Settings.death_list).." records")
-
-	-- Build list of all deaths we have seen and broadcast chunks
-	local sent = 0
-	local data = ""
-	for index = 1, #Hardcore_Settings.death_list do
-		if 0 == index % COMM_BATCH_SIZE then
-			Hardcore:Debug("Sending batch of "..COMM_BATCH_SIZE.." records")
-			if CTL then
-				CTL:SendAddonMessage("BULK", COMM_NAME, COMM_COMMANDS[3]..COMM_COMMAND_DELIM..data, "GUILD")
-			end
-			data = ""
-			sent = sent + COMM_BATCH_SIZE
-		else
-			data = data..Hardcore_Settings.death_list[index]..COMM_RECORD_DELIM
-		end
-	end
-
-	-- Broadcast the remaining records
-	data = ""
-	for index = sent + 1, #Hardcore_Settings.death_list do
-		data = data..Hardcore_Settings.death_list[index]..COMM_RECORD_DELIM
-	end
-	Hardcore:Debug("Sending remaining "..tostring(#Hardcore_Settings.death_list - sent).." records")
-	if CTL then
-		CTL:SendAddonMessage("BULK", COMM_NAME, COMM_COMMANDS[3]..COMM_COMMAND_DELIM..data, "GUILD")
-	end
-end
-
 function Hardcore:Add(data)
-	for i=1, #Hardcore_Settings.death_list do
-		if Hardcore_Settings.death_list[i] == data then
-			Hardcore:Debug("Not adding duplicate record "..data)
-			return
-		end
-	 end
-
 	 -- Add the record if needed
 	 if true == Hardcore:ValidateEntry(data) then
 		Hardcore:Debug("Adding new record "..data)
-		table.insert(Hardcore_Settings.death_list, data)
 
 		-- Display the death locally
 		local _, name, class_name, level, map_id, _ = string.split(COMM_FIELD_DELIM, data)
@@ -432,44 +371,7 @@ function Hardcore:Add(data)
 	end
 end
 
-function Hardcore:Update(data)
-	-- Check if we want this update
-	update_count = update_count + 1
-	if not (0 == update_count % COMM_UPDATE_BREAK) then
-		return
-	end
-
-	-- Parse out the death rows
-	local rows = {}
-	for entry in string.gmatch(data, "[^"..COMM_RECORD_DELIM.."]+") do
-		table.insert(rows, entry)
-	end
-	if 0 == #rows then
-		return
-	else
-		-- Hardcore:Debug("Update received "..tostring(#rows).." rows of data")
-	end
-
-	-- Update local table with missing data
-	for index = 1, #rows do
-		local rowNeeded = true
-		for i=1, #Hardcore_Settings.death_list do
-			if Hardcore_Settings.death_list[i] == rows[index] then
-				rowNeeded = false
-				-- Hardcore:Debug("Row exists, not adding "..string.split(COMM_FIELD_DELIM, rows[index]))
-			end
-			end
-
-			if rowNeeded == true then
-			Hardcore:Debug("Adding new row for "..string.split(COMM_FIELD_DELIM, rows[index]))
-			-- Throttle inserts to help with lag
-			C_Timer.After(COMM_DELAY, function()
-				table.insert(Hardcore_Settings.death_list, rows[index])
-			end)
-			end
-	end
-end
-
+-- Should we remove this functionality?
 function Hardcore:Enable(setting)
 	-- Check if we are attempting to set the existing state
 	if Hardcore_Settings.enabled == setting then
@@ -489,23 +391,6 @@ function Hardcore:Enable(setting)
 		Hardcore:RecordReminder()
 		Hardcore_EnableToggle:SetText("Disable")
 		Hardcore:Print("Enabled")
-	end
-end
-
-function Hardcore:List()
-	if 0 == #Hardcore_Settings.death_list then
-		Hardcore:Print("No deaths recorded")
-		return
-	end
-
-	Hardcore:Print("List of deaths:")
-	Hardcore:Print("\n")
-	Hardcore:Print("|cff00ff00Name            Class     Level Location            Time")
-	for index = 1, #Hardcore_Settings.death_list do
-		local row = Hardcore:FormatRow(Hardcore_Settings.death_list[index],nil,"Deaths")
-		if row then
-			Hardcore:Print(row)
-		end
 	end
 end
 
@@ -665,53 +550,6 @@ function Hardcore:ValidateEntry(data)
 	return true
 end
 
-function Hardcore:CleanData()
-	local new_list = {}
-
-	for index = 1, #Hardcore_Settings.death_list do
-		local valid = Hardcore:ValidateEntry(Hardcore_Settings.death_list[index])
-		if true == valid then table.insert(new_list, Hardcore_Settings.death_list[index]) end
-	end
-
-	Hardcore_Settings.death_list = new_list
-end
-
-function Hardcore:DeDupe()
-	local list, dup, c, NaN = {}, {}, 1, {}
-	for i=1, #Hardcore_Settings.death_list do
-	  local e = Hardcore_Settings.death_list[i]
-	  local k = e~=e and NaN or e
-	  if k~=nil and not dup[k] then
-		c, list[c], dup[k]= c+1, e, true
-	  end
-	end
-
-	Hardcore_Settings.death_list = list
-end
-
-function Hardcore:Sort(column)
-	Hardcore:CleanData()
-	Hardcore:DeDupe()
-	table.sort(Hardcore_Settings.death_list, function(a, b)
-		local first = Hardcore:GetValue(a, column)
-		local second = Hardcore:GetValue(b, column)
-
-		if "playerid" == column then
-			return string.lower(first) < string.lower(second)
-		elseif "name" == column then
-			return string.lower(first) < string.lower(second)
-		elseif "class" == column then
-			return string.lower(first) < string.lower(second)
-		elseif "level" == column then
-			return tonumber(first) < tonumber(second)
-		elseif "zone" == column then
-			return tonumber(first) < tonumber(second)
-		elseif "tod" == column then
-			return tonumber(first) < tonumber(second)
-		end
-	end)
-end
-
 --[[ UI Methods ]]--
 
 --switch between displays
@@ -727,14 +565,7 @@ end
 
 function Hardcore_Frame_OnShow()
 	--refresh data source
-	if display == "Deaths" then
-		displaylist = Hardcore_Settings.death_list
-		Hardcore_Name_Sort:Show()
-		Hardcore_Class_Sort:Show()
-		Hardcore_Level_Sort:Show()
-		Hardcore_Zone_Sort:Show()
-		Hardcore_TOD_Sort:Show()
-	elseif display == "Levels" then		
+	if display == "Levels" then		
 		displaylist = Hardcore_Settings.level_list
 		Hardcore_Name_Sort:Show()
 		Hardcore_Class_Sort:Show()
@@ -804,9 +635,7 @@ function Hardcore_Frame_OnShow()
 	end
 
 	--subtitle text
-	if display == "Deaths" and #displaylist > 0 then
-		Hardcore_SubTitle:SetText("We honor the "..tostring(#displaylist).." who have fallen")
-	elseif display == "Levels" and #displaylist > 0 then
+	if display == "Levels" and #displaylist > 0 then
 		Hardcore_SubTitle:SetText("You've leveled up "..tostring(#displaylist).." times!")
 	else
 		Hardcore_SubTitle:SetText("classichc.net")

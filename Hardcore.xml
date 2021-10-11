@@ -104,7 +104,6 @@
 				Hardcore_Level_Sort:SetAlpha(0.5)
 				Hardcore_Class_Sort:SetAlpha(0.5)
 				Hardcore_Name_Sort:SetAlpha(0.5)
-				Hardcore:Sort("tod")
 				Hardcore_Deathlist_ScrollBar_Update()
 			  </OnShow>
 			</Scripts>
@@ -227,7 +226,6 @@
 						Hardcore_Level_Sort:SetAlpha(0.5)
 						Hardcore_Class_Sort:SetAlpha(0.5)
 						Hardcore_Name_Sort:SetAlpha(1)
-						Hardcore:Sort("name")
 						Hardcore_Deathlist_ScrollBar_Update()
 					</OnClick>
 				</Scripts>
@@ -244,7 +242,6 @@
 						Hardcore_Level_Sort:SetAlpha(0.5)
 						Hardcore_Class_Sort:SetAlpha(1)
 						Hardcore_Name_Sort:SetAlpha(0.5)
-						Hardcore:Sort("class")
 						Hardcore_Deathlist_ScrollBar_Update()
 					</OnClick>
 				</Scripts>
@@ -261,7 +258,6 @@
 						Hardcore_Level_Sort:SetAlpha(1)
 						Hardcore_Class_Sort:SetAlpha(0.5)
 						Hardcore_Name_Sort:SetAlpha(0.5)
-						Hardcore:Sort("level")
 						Hardcore_Deathlist_ScrollBar_Update()
 					</OnClick>
 				</Scripts>
@@ -278,7 +274,6 @@
 						Hardcore_Level_Sort:SetAlpha(0.5)
 						Hardcore_Class_Sort:SetAlpha(0.5)
 						Hardcore_Name_Sort:SetAlpha(0.5)
-						Hardcore:Sort("zone")
 						Hardcore_Deathlist_ScrollBar_Update()
 					</OnClick>
 				</Scripts>
@@ -295,7 +290,6 @@
 						Hardcore_Level_Sort:SetAlpha(0.5)
 						Hardcore_Class_Sort:SetAlpha(0.5)
 						Hardcore_Name_Sort:SetAlpha(0.5)
-						Hardcore:Sort("tod")
 						Hardcore_Deathlist_ScrollBar_Update()
 					</OnClick>
 				</Scripts>
@@ -308,17 +302,6 @@
 				<Scripts>
 					<OnClick>
 						Hardcore:SwitchDisplay("Levels")
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="Hardcore_DispDeaths" inherits="UIPanelButtonTemplate" text="Deaths">
-				<Size x="75" y="37" />
-				<Anchors>
-					<Anchor point="TOPLEFT" x="220" y="-450" />
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						Hardcore:SwitchDisplay("Deaths")
 					</OnClick>
 				</Scripts>
 			</Button>

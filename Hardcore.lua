@@ -48,9 +48,12 @@ local COMM_COMMANDS = {nil, "ADD", nil}
 
 --stuff
 local PLAYER_NAME, _ = nil
+local PLAYERGUID = nil
 local HARDCORE_REALMS = {"Bloodsail Buccaneers", "Hydraxian Waterlords"}
 local GENDER_GREETING = {"guildmate", "brother", "sister"}
+local GENDER_POSSESSIVE_PRONOUN = {"Their", "His", "Her"}
 local recent_levelup = nil
+local recent_msg = {}
 local Last_Attack_Source = nil
 local PICTURE_DELAY = .65
 local HIDE_RTP_CHAT_MSG = false
@@ -130,6 +133,9 @@ function Hardcore:PLAYER_LOGIN()
 	self:RegisterEvent("AUCTION_HOUSE_SHOW")
 	self:RegisterEvent("PLAYER_LEVEL_UP")
 	self:RegisterEvent("TIME_PLAYED_MSG")
+	self:RegisterEvent("CHAT_MSG_PARTY")
+	self:RegisterEvent("CHAT_MSG_SAY")
+	self:RegisterEvent("CHAT_MSG_GUILD")
 
 	-- Disable addon if not in one of the offical hardcore realms
 	Hardcore_Settings.enabled = false
@@ -148,6 +154,7 @@ function Hardcore:PLAYER_LOGIN()
 
 	--cache player name
 	PLAYER_NAME, _ = UnitName("player")
+  PLAYERGUID = UnitGUID("player")
 
 	-- Show recording reminder
 	Hardcore:RecordReminder()
@@ -192,7 +199,12 @@ function Hardcore:PLAYER_DEAD()
 		messageString = string.format("%s to a %s", messageString, Last_Attack_Source)
 		Last_Attack_Source = nil
 	end
-	SendChatMessage(messageString, "GUILD", nil, nil)
+
+  if not (recent_msg["text"] == nil) then
+    local playerPronoun = GENDER_POSSESSIVE_PRONOUN[UnitSex("player")]
+		messageString = string.format("%s. %s last words were \"%s\"", messageString, playerPronoun, recent_msg["text"])
+  end
+  SendChatMessage(messageString, "GUILD", nil, nil)
 
 	-- Send add command to addon for this death
 	local deathData = string.format("%s%s%s%s%s%s%s%s%s%s%s",
@@ -364,6 +376,37 @@ function Hardcore:COMBAT_LOG_EVENT_UNFILTERED(...)
 			end			
 		end
 	end
+end
+
+function Hardcore:CHAT_MSG_SAY(...)
+  if self:SetRecentMsg(...) then
+    recent_msg["type"] = 0
+  end
+end
+
+function Hardcore:CHAT_MSG_GUILD(...)
+  if self:SetRecentMsg(...) then
+    recent_msg["type"] = 2
+  end
+end
+
+function Hardcore:CHAT_MSG_PARTY(...)
+  if self:SetRecentMsg(...) then
+    recent_msg["type"] = 1
+  end
+end
+
+function Hardcore:SetRecentMsg(...)
+  local text, sn, LN, CN, p2, sF, zcI, cI, cB, unu, lI, senderGUID = ...
+  if PLAYERGUID == nil then
+    PLAYERGUID = UnitGUID("player")
+  end
+
+  if senderGUID == PLAYERGUID then
+    recent_msg["text"] = text
+    return true
+  end
+  return false
 end
 
 --[[ Utility Methods ]]--
@@ -814,9 +857,3 @@ end)
 
 --[[ Start Addon ]]--
 Hardcore:Startup()
-
-
-
-
-
-

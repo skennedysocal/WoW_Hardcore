@@ -48,7 +48,7 @@ local COMM_COMMANDS = {nil, "ADD", nil}
 
 --stuff
 local PLAYER_NAME, _ = nil
-local HARDCORE_REALMS = {"Bloodsail Buccaneers", "Hydraxian Waterlords"}
+local HARDCORE_REALMS = {"Bloodsail Buccaneers", "Hydraxian Waterlords", "Remulos"}
 local GENDER_GREETING = {"guildmate", "brother", "sister"}
 local recent_levelup = nil
 local Last_Attack_Source = nil

@@ -38,8 +38,8 @@ local debug = false
 local bubble_hearth_vars = 
 {
 	spell_id = 8690,
-	class_name = "PALADIN",
-	aura_name = "Divine Shield",
+	bubble_name = "Divine Shield",
+	light_of_elune_name = "Light of Elune",
 }
 
 
@@ -57,6 +57,7 @@ local COMM_COMMANDS = {nil, "ADD", nil}
 
 --stuff
 local PLAYER_NAME, _ = nil
+local PLAYER_GUID = nil
 local HARDCORE_REALMS = {"Bloodsail Buccaneers", "Hydraxian Waterlords"}
 local GENDER_GREETING = {"guildmate", "brother", "sister"}
 local recent_levelup = nil
@@ -133,6 +134,7 @@ function Hardcore:PLAYER_LOGIN()
 	--cache player data
 	_, class, _ = UnitClass("player")
 	PLAYER_NAME, _ = UnitName("player")
+	PLAYER_GUID = UnitGUID("player")
 
 	--fires on first loading
 	self:RegisterEvent("PLAYER_UNGHOST")
@@ -146,11 +148,9 @@ function Hardcore:PLAYER_LOGIN()
 	self:RegisterEvent("TIME_PLAYED_MSG")
 
 	-- Register spell cast events for paladin for checking bubble hearth
-	if class == bubble_hearth_vars.class_name then
-		self:RegisterEvent("UNIT_SPELLCAST_START")
-		self:RegisterEvent("UNIT_SPELLCAST_STOP")
-		self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-	end
+	self:RegisterEvent("UNIT_SPELLCAST_START")
+	self:RegisterEvent("UNIT_SPELLCAST_STOP")
+	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 
 	-- Disable addon if not in one of the offical hardcore realms
 	Hardcore_Settings.enabled = false
@@ -182,9 +182,10 @@ function Hardcore:UNIT_SPELLCAST_START(...)
 			if name == nil then
 				STARTED_BUBBLE_HEARTH_INFO = nil
 				return
-			elseif name == bubble_hearth_vars.aura_name then
+			elseif name == bubble_hearth_vars.bubble_name or name == bubble_hearth_vars.light_of_elune_name then
 				STARTED_BUBBLE_HEARTH_INFO = {}
 				STARTED_BUBBLE_HEARTH_INFO.start_cast = date("%m/%d/%y %H:%M:%S")
+				STARTED_BUBBLE_HEARTH_INFO.aura_type = name 
 				Hardcore:Print("WARNING: Initiated bubble cast. Cancel or run will be invalidated.")
 
 				Hardcore_Warning_Text:SetText("Started bubble hearthing \n Cancel or run will be invalidated.")
@@ -219,6 +220,8 @@ function Hardcore:UNIT_SPELLCAST_SUCCEEDED(...)
 			local bubble_hearth_info = {}
 			bubble_hearth_info.start_cast = STARTED_BUBBLE_HEARTH_INFO.start_cast
 			bubble_hearth_info.finish_cast = date("%m/%d/%y %H:%M:%S")
+			bubble_hearth_info.guid = PLAYER_GUID
+			bubble_hearth_info.aura_type = STARTED_BUBBLE_HEARTH_INFO.aura_type
 			if Hardcore_Character.bubble_hearth_incidents == nil then
 				Hardcore_Character.bubble_hearth_incidents = {}
 				Hardcore_Character.bubble_hearth_incidents[1] = bubble_hearth_info
@@ -886,8 +889,10 @@ end
 function Hardcore:PrintBubbleHearthInfractions()
 	if Hardcore_Character.bubble_hearth_incidents ~= nil then
 		for i,v in ipairs(Hardcore_Character.bubble_hearth_incidents) do
-			message = "\124cffFF0000Player has a bubble hearth infraction at date " .. v.start_cast
-			Hardcore:Print(message)
+			if v.guid == PLAYER_GUID then
+				message = "\124cffFF0000Player has a " .. v.aura_type .. " hearth infraction at date " .. v.start_cast
+				Hardcore:Print(message)
+			end
 		end
 	end
 end

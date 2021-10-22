@@ -22,7 +22,6 @@ Hardcore_Settings = {
 	version = "0.2.3",
 	enabled = true,
 	notify = true,
-	bubble_hearth_incidents = {},
 	level_list = {}
 }
 
@@ -30,6 +29,7 @@ Hardcore_Settings = {
 Hardcore_Character = {
 	time_tracked = 0,
 	time_played = 0,
+	bubble_hearth_incidents = {},
 }
 
 --[[ Local variables ]]--
@@ -57,7 +57,6 @@ local COMM_COMMANDS = {nil, "ADD", nil}
 
 --stuff
 local PLAYER_NAME, _ = nil
-local PLAYER_GUID = nil
 local HARDCORE_REALMS = {"Bloodsail Buccaneers", "Hydraxian Waterlords"}
 local GENDER_GREETING = {"guildmate", "brother", "sister"}
 local recent_levelup = nil
@@ -133,7 +132,6 @@ end
 function Hardcore:PLAYER_LOGIN()
 	--cache player data
 	_, class, _ = UnitClass("player")
-	PLAYER_GUID = UnitGUID("player")
 	PLAYER_NAME, _ = UnitName("player")
 
 	--fires on first loading
@@ -221,13 +219,11 @@ function Hardcore:UNIT_SPELLCAST_SUCCEEDED(...)
 			local bubble_hearth_info = {}
 			bubble_hearth_info.start_cast = STARTED_BUBBLE_HEARTH_INFO.start_cast
 			bubble_hearth_info.finish_cast = date("%m/%d/%y %H:%M:%S")
-			bubble_hearth_info.player_name = PLAYER_NAME
-			bubble_hearth_info.guid = PLAYER_GUID
-			if Hardcore_Settings.bubble_hearth_incidents == nil then
-				Hardcore_Settings.bubble_hearth_incidents = {}
-				Hardcore_Settings.bubble_hearth_incidents[1] = bubble_hearth_info
+			if Hardcore_Character.bubble_hearth_incidents == nil then
+				Hardcore_Character.bubble_hearth_incidents = {}
+				Hardcore_Character.bubble_hearth_incidents[1] = bubble_hearth_info
 			else
-				table.insert(Hardcore_Settings.bubble_hearth_incidents, bubble_hearth_info)
+				table.insert(Hardcore_Character.bubble_hearth_incidents, bubble_hearth_info)
 			end
 
 			Hardcore:PrintBubbleHearthInfractions()
@@ -888,12 +884,10 @@ function Hardcore:ToggleMinimapIcon()
 end
 
 function Hardcore:PrintBubbleHearthInfractions()
-	if Hardcore_Settings.bubble_hearth_incidents ~= nil then
-		for i,v in ipairs(Hardcore_Settings.bubble_hearth_incidents) do
-			if v.player_name == PLAYER_NAME and v.guid == PLAYER_GUID then
-				message = "\124cffFF0000Player " .. v.player_name .. " has a bubble hearth infraction at date " .. v.start_cast
-				Hardcore:Print(message)
-			end
+	if Hardcore_Character.bubble_hearth_incidents ~= nil then
+		for i,v in ipairs(Hardcore_Character.bubble_hearth_incidents) do
+			message = "\124cffFF0000Player has a bubble hearth infraction at date " .. v.start_cast
+			Hardcore:Print(message)
 		end
 	end
 end

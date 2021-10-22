@@ -229,7 +229,7 @@ function Hardcore:UNIT_SPELLCAST_SUCCEEDED(...)
 				table.insert(Hardcore_Settings.bubble_hearth_incidents, bubble_hearth_info)
 			end
 
-			Hardcore:PrintBubbleHearthInvalidations()
+			Hardcore:PrintBubbleHearthInfractions()
 			local message = PLAYER_NAME .. " just received a bubble hearth infraction at " .. bubble_hearth_info.start_cast
 			SendChatMessage(message, "GUILD", nil, nil)
 			STARTED_BUBBLE_HEARTH_INFO = nil
@@ -240,7 +240,7 @@ end
 function Hardcore:PLAYER_ENTERING_WORLD()
 	--cache player name
 	PLAYER_NAME, _ = UnitName("player")
-	Hardcore:PrintBubbleHearthInvalidations()
+	Hardcore:PrintBubbleHearthInfractions()
 
 	--initialize addon communication
 	if( not C_ChatInfo.IsAddonMessagePrefixRegistered(COMM_NAME) ) then
@@ -886,7 +886,7 @@ function Hardcore:ToggleMinimapIcon()
 	end
 end
 
-function Hardcore:PrintBubbleHearthInvalidations()
+function Hardcore:PrintBubbleHearthInfractions()
 	if Hardcore_Settings.bubble_hearth_incidents ~= nil then
 		for i,v in ipairs(Hardcore_Settings.bubble_hearth_incidents) do
 			if v.player_name == PLAYER_NAME and v.guid == PLAYER_GUID then

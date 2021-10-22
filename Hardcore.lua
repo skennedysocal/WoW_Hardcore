@@ -224,6 +224,7 @@ function Hardcore:UNIT_SPELLCAST_SUCCEEDED(...)
 			bubble_hearth_info.player_name = PLAYER_NAME
 			bubble_hearth_info.guid = PLAYER_GUID
 			if Hardcore_Settings.bubble_hearth_incidents == nil then
+				Hardcore_Settings.bubble_hearth_incidents = {}
 				Hardcore_Settings.bubble_hearth_incidents[1] = bubble_hearth_info
 			else
 				table.insert(Hardcore_Settings.bubble_hearth_incidents, bubble_hearth_info)

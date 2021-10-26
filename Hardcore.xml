@@ -37,6 +37,31 @@
 		</Layers>
   </Frame>
 
+  <Frame name="Hardcore_Warning_Frame" parent="UIParent" hidden="true" toplevel="true">
+		<Size x="600" y="110" />
+		<Anchors>
+			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER" y="300" />
+		</Anchors>
+		<Layers>
+			<Layer>
+				<Texture name="Hardcore_Warning_Logo" file="Interface\AddOns\Hardcore\Media\logo_emblem.blp">
+					<Size x="50" y="50" />
+					<Anchors>
+						<Anchor point="CENTER" y="45" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="Hardcore_Warning_Text" inherits="GameFontNormalHuge2">
+					<Size x="600" y="80" />
+					<Anchors>
+						<Anchor point="TOPLEFT" x="10" y="-20" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+  </Frame>
+
   <Frame name="Hardcore_Frame" parent="UIParent" hidden="true" toplevel="true" movable="true" enableMouse="true" inherits="BackdropTemplate">>
 		<Size x="700" y="500" />
 		<Anchors>

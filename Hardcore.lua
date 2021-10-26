@@ -29,6 +29,7 @@ Hardcore_Settings = {
 Hardcore_Character = {
 	time_tracked = 0,
 	time_played = 0,
+	deaths = 0,
 	bubble_hearth_incidents = {},
 }
 
@@ -167,6 +168,13 @@ function Hardcore:PLAYER_LOGIN()
 		Hardcore_Character.time_tracked = 0
 	end
 
+	if Hardcore_Character.deaths == nil then
+		Hardcore_Character.deaths = 0
+	end
+
+	--cache player name
+	PLAYER_NAME, _ = UnitName("player")
+
 	-- Show recording reminder
 	Hardcore:RecordReminder()
 
@@ -257,6 +265,9 @@ function Hardcore:PLAYER_DEAD()
 
 	--screenshot
 	C_Timer.After(PICTURE_DELAY, Screenshot)
+
+	-- Update death count
+	Hardcore_Character.deaths = Hardcore_Character.deaths + 1
 
 	-- Get information
 	local playerId = UnitGUID("player")
@@ -568,6 +579,8 @@ function Hardcore:FormatRow(row, fullcolor, formattype)
 			end
 		elseif formattype == "Rules" then
 			row_str = row
+		elseif formattype == "GetVerified" then
+			row_str = row
 		end
 	end
 
@@ -682,6 +695,22 @@ function Hardcore_Frame_OnShow()
 		Hardcore_Level_Sort:Show()
 		Hardcore_Zone_Sort:Show()
 		Hardcore_TOD_Sort:Show()
+		Hardcore_VerificationString:Hide()
+	elseif display == "GetVerified" then
+		--hide buttons 
+		Hardcore_Name_Sort:Hide()
+		Hardcore_Class_Sort:Hide()
+		Hardcore_Level_Sort:Hide()
+		Hardcore_Zone_Sort:Hide()
+		Hardcore_TOD_Sort:Hide()
+		DeathListEntry3:Hide()
+
+		local verificationstring = Hardcore:GenerateVerificationString()
+		local f = {}
+		table.insert(f,"To get verified, copy the string below and visit https://classichc.net/get-verified")
+		table.insert(f, "")
+		table.insert(f, verificationstring)
+		displaylist = f
 	elseif display == "Rules" then
 		--hide buttons 
 		Hardcore_Name_Sort:Hide()
@@ -689,6 +718,7 @@ function Hardcore_Frame_OnShow()
 		Hardcore_Level_Sort:Hide()
 		Hardcore_Zone_Sort:Hide()
 		Hardcore_TOD_Sort:Hide()
+		Hardcore_VerificationString:Hide()
 
 		-- hard coded rules table lol
 		local f = {}
@@ -768,8 +798,16 @@ function Hardcore_Deathlist_ScrollBar_Update()
 				--get data
 				local row = Hardcore:FormatRow(displaylist[lineplusoffset], true, display)
 				if row then
-					button:SetText(row)
-					button:Show()
+					-- Hacky way to display the verification string in a EditBox
+					-- Currently the UI is a table that gets rendered to a list of buttons
+					-- Requires a big refactor to fix
+					if display == "GetVerified" and line == 3 then
+						Hardcore_VerificationString:SetText(row)
+						Hardcore_VerificationString:Show()
+					else
+						button:SetText(row)
+						button:Show()
+					end
 				else
 					button:Hide()
 				end
@@ -895,6 +933,17 @@ function Hardcore:PrintBubbleHearthInfractions()
 			end
 		end
 	end
+end
+
+local ATTRIBUTE_SEPARATOR = "-"
+function Hardcore:GenerateVerificationString()
+	_, class, _, race, _, name = GetPlayerInfoByGUID(UnitGUID("player"))
+	realm = GetRealmName()
+	level = UnitLevel("player")
+
+	local verificationData = {realm, race, class, name, tostring(level), tostring(Hardcore_Character.time_played), tostring(Hardcore_Character.time_tracked), tostring(Hardcore_Character.deaths)}
+	local verificationString = Hardcore_join(Hardcore_map(verificationData, Hardcore_stringToUnicode), ATTRIBUTE_SEPARATOR)
+	return verificationString
 end
 
 --[[ Timers ]]--

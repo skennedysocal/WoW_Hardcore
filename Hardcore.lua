@@ -27,10 +27,12 @@ Hardcore_Settings = {
 
 --[[ Character saved variables ]]--
 Hardcore_Character = {
-	time_tracked = 0,
-	time_played = 0,
+	time_tracked = 0, 		-- seconds
+	time_played = 0, 		-- seconds
+	accumulated_time_diff = 0, 	-- seconds
 	deaths = 0,
 	bubble_hearth_incidents = {},
+	played_time_gap_violations = {},
 }
 
 --[[ Local variables ]]--
@@ -65,6 +67,8 @@ local Last_Attack_Source = nil
 local PICTURE_DELAY = .65
 local HIDE_RTP_CHAT_MSG = false
 local STARTED_BUBBLE_HEARTH_INFO = nil
+local RECV_FIRST_PLAYED_TIME = false
+local PLAYED_TIME_GAP_THRESH = 30 -- seconds
 
 --frame display
 local display = "Rules"
@@ -351,6 +355,30 @@ function Hardcore:TIME_PLAYED_MSG(...)
 
 	local totalTimePlayed, _ = ...
 	Hardcore_Character.time_played = totalTimePlayed
+
+	-- Check to see if the gap since the last recording is too long.  When receiving played time for the first time.
+	if RECV_FIRST_PLAYED_TIME == false and Hardcore_Character.accumulated_time_diff ~= nil then
+		local duration_since_last_recording = Hardcore_Character.time_played - Hardcore_Character.time_tracked - Hardcore_Character.accumulated_time_diff
+		message = "Playtime gap duration: " .. duration_since_last_recording .. " seconds."
+		Hardcore:Debug(message)
+
+		if duration_since_last_recording > PLAYED_TIME_GAP_THRESH then
+			local played_time_gap_info = {}
+			played_time_gap_info.duration_since_last_recording = duration_since_last_recording
+			played_time_gap_info.date = date("%m/%d/%y %H:%M:%S")
+			played_time_gap_info.guid = PLAYER_GUID
+			if Hardcore_Character.played_time_gap_violations == nil then
+				Hardcore_Character.played_time_gap_violations = {}
+				Hardcore_Character.played_time_gap_violations[1] = played_time_gap_info
+			else
+				table.insert(Hardcore_Character.played_time_gap_violations, played_time_gap_info)
+			end
+			message = "\124cffFF0000Addon/Playtime gap violation detected at date" .. Hardcore_Character.played_time_gap_violations[#Hardcore_Character.played_time_gap_violations].date .. " with a duration: " .. Hardcore_Character.played_time_gap_violations[#Hardcore_Character.played_time_gap_violations].duration_since_last_recording .. " seconds."
+			Hardcore:Print(message)
+		end
+	end
+
+	RECV_FIRST_PLAYED_TIME = true
 
 	if recent_levelup ~= nil then
 		--cache this to make sure it doesn't disapeer
@@ -940,6 +968,9 @@ local PLAY_TIME_UPDATE_INTERVAL = 1
 C_Timer.NewTicker(PLAY_TIME_UPDATE_INTERVAL, function()
 	Hardcore_Character.time_tracked = Hardcore_Character.time_tracked + PLAY_TIME_UPDATE_INTERVAL
 	Hardcore:RequestTimePlayed()
+	if RECV_FIRST_PLAYED_TIME == true then
+		Hardcore_Character.accumulated_time_diff =  Hardcore_Character.time_played - Hardcore_Character.time_tracked
+	end
 end)
 
 --[[ Start Addon ]]--

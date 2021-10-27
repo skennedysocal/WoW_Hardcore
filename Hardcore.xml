@@ -62,6 +62,32 @@
 		</Layers>
   </Frame>
 
+  <?comment msg="This provides dynamic style templating, via ALERT_STYLES" ?>
+  <Frame name="Hardcore_Alert_Frame" parent="UIParent" hidden="true" toplevel="true">
+		<Size x="300" y="110" />
+		<Anchors>
+			<Anchor point="TOP" relativeTo="UIParent" y="-180" />
+		</Anchors>
+		<Layers>
+			<Layer>
+				<Texture name="Hardcore_Alert_Icon" file="Interface\AddOns\Hardcore\Media\legacy-emblem.blp">
+					<Size x="400" y="200" />
+					<Anchors>
+						<Anchor point="CENTER" y="45" />
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="Hardcore_Alert_Text" inherits="GameFontNormalHuge2">
+					<Size x="700" y="350" />
+					<Anchors>
+						<Anchor point="TOP" y="100" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+  </Frame>
+
   <Frame name="Hardcore_Frame" parent="UIParent" hidden="true" toplevel="true" movable="true" enableMouse="true" inherits="BackdropTemplate">>
 		<Size x="700" y="500" />
 		<Anchors>

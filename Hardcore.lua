@@ -59,7 +59,6 @@ local COMM_COMMANDS = {nil, "ADD", nil}
 --stuff
 local PLAYER_NAME, _ = nil
 local PLAYER_GUID = nil
-local HARDCORE_REALMS = {"Bloodsail Buccaneers", "Hydraxian Waterlords"}
 local GENDER_GREETING = {"guildmate", "brother", "sister"}
 local recent_levelup = nil
 local Last_Attack_Source = nil
@@ -152,17 +151,6 @@ function Hardcore:PLAYER_LOGIN()
 	self:RegisterEvent("UNIT_SPELLCAST_START")
 	self:RegisterEvent("UNIT_SPELLCAST_STOP")
 	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-
-	-- Disable addon if not in one of the offical hardcore realms
-	Hardcore_Settings.enabled = false
-	local realmName = GetRealmName()
-	for k, v in pairs(HARDCORE_REALMS) do
-		if v == realmName then
-			Hardcore:Debug("Player realm, "..v..", is a hardcore server, enabling addon")
-			Hardcore_Settings.enabled = true
-			break
-		end
-	end
 
 	if ( Hardcore_Character.time_tracked == nil ) then
 		Hardcore_Character.time_tracked = 0

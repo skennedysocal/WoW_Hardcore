@@ -982,7 +982,7 @@ function Hardcore:initMinimapButton()
 	local miniButton = LibStub("LibDataBroker-1.1"):NewDataObject("Hardcore", {
 		type = "data source",
 		text = "Hardcore",
-		icon = "Interface\\AddOns\\Hardcore\\Media\\logo_emblem.blp",
+		icon = "Interface\\AddOns\\Hardcore\\Media\\logo-emblem.blp",
 		OnClick = function(self, btn)
 			MiniBtnClickFunc(btn)
 		end,

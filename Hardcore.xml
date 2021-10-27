@@ -19,7 +19,7 @@
 		</Anchors>
 		<Layers>
 			<Layer>
-				<Texture name="Hardcore_Notification_Logo" file="Interface\AddOns\Hardcore\Media\logo_emblem.blp">
+				<Texture name="Hardcore_Notification_Logo" file="Interface\AddOns\Hardcore\Media\logo-emblem.blp">
 					<Size x="50" y="50" />
 					<Anchors>
 						<Anchor point="CENTER" y="45" />
@@ -44,7 +44,7 @@
 		</Anchors>
 		<Layers>
 			<Layer>
-				<Texture name="Hardcore_Warning_Logo" file="Interface\AddOns\Hardcore\Media\logo_emblem.blp">
+				<Texture name="Hardcore_Warning_Logo" file="Interface\AddOns\Hardcore\Media\logo-emblem.blp">
 					<Size x="50" y="50" />
 					<Anchors>
 						<Anchor point="CENTER" y="45" />
@@ -70,7 +70,7 @@
 		</Anchors>
 		<Layers>
 			<Layer>
-				<Texture name="Hardcore_Alert_Icon" file="Interface\AddOns\Hardcore\Media\legacy-emblem.blp">
+				<Texture name="Hardcore_Alert_Icon" file="Interface\AddOns\Hardcore\Media\logo-emblem.blp">
 					<Size x="400" y="200" />
 					<Anchors>
 						<Anchor point="CENTER" y="45" />
@@ -98,13 +98,13 @@
 		</KeyValues>
 		<Layers>
 			<Layer>
-				<Texture name="Hardcore_Logo1" file="Interface\AddOns\Hardcore\Media\logo_emblem.blp">
+				<Texture name="Hardcore_Logo1" file="Interface\AddOns\Hardcore\Media\logo-emblem.blp">
 					<Size x="70" y="70" />
 					<Anchors>
 						<Anchor point="TOPLEFT" x="67" y="-15" />
 					</Anchors>
 				</Texture>
-				<Texture name="Hardcore_Logo2" file="Interface\AddOns\Hardcore\Media\logo_emblem.blp">
+				<Texture name="Hardcore_Logo2" file="Interface\AddOns\Hardcore\Media\logo-emblem.blp">
 					<Size x="70" y="70" />
 					<Anchors>
 						<Anchor point="TOPLEFT" x="572" y="-15" />

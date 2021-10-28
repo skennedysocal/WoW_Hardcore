@@ -74,49 +74,43 @@ local icon = nil
 
 -- available alert frame/icon styles
 local MEDIA_DIR = "Interface\\AddOns\\Hardcore\\Media\\"
-local ALERT_STYLES = { -- TODO: There's better ways to embed this data
-	{
-		name = "logo", -- name
+local ALERT_STYLES = {
+	logo = {
 		frame = Hardcore_Alert_Frame, -- frame object
 		text = Hardcore_Alert_Text, -- text layer
 		icon = Hardcore_Alert_Icon, -- icon layer
 		file = "logo-emblem.blp", -- string
 		delay = COMM_DELAY, -- int seconds
 	},
-	{
-		name = "death",
+	death = {
 		frame = Hardcore_Alert_Frame,
 		text = Hardcore_Alert_Text,
 		icon = Hardcore_Alert_Icon,
 		file = "alert-death.blp",
-		delay = COMM_DELAY
+		delay = COMM_DELAY,
 	},
-	{
-		name = "hc-green",
+	hc_green = {
 		frame = Hardcore_Alert_Frame,
 		text = Hardcore_Alert_Text,
 		icon = Hardcore_Alert_Icon,
 		file  = "alert-hc-green.blp",
-		delay = COMM_DELAY
+		delay = COMM_DELAY,
 	},
-	{
-		name = "hc-red",
+	hc_red = {
 		frame = Hardcore_Alert_Frame,
 		text = Hardcore_Alert_Text,
 		icon = Hardcore_Alert_Icon,
 		file  = "alert-hc-red.blp",
-		delay = COMM_DELAY
+		delay = COMM_DELAY,
 	},
-	{
-		name = "spirithealer",
+	spirithealer = {
 		frame = Hardcore_Alert_Frame,
 		text = Hardcore_Alert_Text,
 		icon = Hardcore_Alert_Icon,
 		file  = "alert-spirithealer.blp",
-		delay = COMM_DELAY
+		delay = COMM_DELAY,
 	},
-	{
-		name = "bubble",
+	bubble = {
 		frame = Hardcore_Alert_Frame,
 		text = Hardcore_Alert_Text,
 		icon = Hardcore_Alert_Icon,
@@ -127,8 +121,11 @@ local ALERT_STYLES = { -- TODO: There's better ways to embed this data
 
 --the big frame object for our addon
 local Hardcore = CreateFrame("Frame", "Hardcore", nil, "BackdropTemplate")
+Hardcore.ALERT_STYLES = ALERT_STYLES
 
 Hardcore_Frame:ApplyBackdrop()
+
+
 
 --[[ Command line handler ]]--
 
@@ -159,19 +156,16 @@ local function SlashHandler(msg, editbox)
 			Hardcore:Print("Notification disabled")
 		end
 
-	-- Zdeyn's debug code
+	-- Alert debug code
 	elseif cmd == "alert" then
 		local head, tail = "", {}
 		for substring in args:gmatch("%S+") do
 			if head == "" then
-				Hardcore:Print("Setting Head: " .. tostring(substring))
 				head = substring
 			else
 				table.insert(tail, substring)
 			end
 		end
-		
-		Hardcore:Print("Alert: " .. tostring(head) .. ' | ' .. tostring(tail))
 
 		local style, message = head, table.concat(tail, " ")
 		Hardcore:ShowAlertFrame(style, message)
@@ -543,33 +537,29 @@ function Hardcore:Debug(msg)
 	end
 end
 
--- Zdeyn's UI Stuff
+-- Alert UI
 function Hardcore:ShowAlertFrame(style, message)
 	-- style is a string-based key within ALERT_STYLES
 	-- message is any text accepted by FontString:SetText(message)
+
 	message = message or ""
-	Hardcore:Debug("Alert Request Received: " .. style .. " | " .. message)
-
-	local name, frame, text, icon, file, filename, delay = nil, nil, nil, nil, nil, nil
-
-	for index, data in ipairs(ALERT_STYLES) do
-		if data.name == style then
-			-- Hardcore:Print("MATCH FOUND: " .. data.name)
-			name, frame, text, icon, file, delay = data.name, data.frame, data.text, data.icon, data.file, data.delay
-			break
-		end
-
+	
+	local frame, text, icon, file, filename, delay = nil, nil, nil, nil, nil, nil
+		if ALERT_STYLES[style] == nil then
+		Hardcore:Debug("Alert Style not found: " .. style .. ". Using fallback.")
 	end
+	local data = ALERT_STYLES[style] or ALERT_STYLES["hc_red"]
+	frame, text, icon, file, delay = data.frame, data.text, data.icon, data.file, data.delay
 
 	filename = MEDIA_DIR .. file
 	icon:SetTexture(filename)
 	text:SetText(message)
 	frame:Show()
 
-	-- TODO: Allow custom sounds per-frame, or allow passing it in to the function
+	-- TODO: Allow custom sounds per-frame, or allow passing a sound to the function
 	PlaySound(8959)
 
-	-- TODO: Allow custom delays per-frame, or allow passing it in to the function
+	-- HACK:
 	-- There's a bug here where a sequence of overlapping notifications share one 'hide' timer
 	-- There should be a step here that unbinds all-but-the-last notification's Hide() callback
 	C_Timer.After(delay, function()

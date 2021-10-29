@@ -545,7 +545,7 @@ function Hardcore:ShowAlertFrame(style, message)
 	message = message or ""
 	
 	local frame, text, icon, file, filename, delay = nil, nil, nil, nil, nil, nil
-		if ALERT_STYLES[style] == nil then
+	if ALERT_STYLES[style] == nil then
 		Hardcore:Debug("Alert Style not found: " .. style .. ". Using fallback.")
 	end
 	local data = ALERT_STYLES[style] or ALERT_STYLES["hc_red"]

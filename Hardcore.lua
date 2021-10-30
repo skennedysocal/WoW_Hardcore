@@ -30,7 +30,7 @@ Hardcore_Character = {
 	time_tracked = 0, 		-- seconds
 	time_played = 0, 		-- seconds
 	accumulated_time_diff = 0, 	-- seconds
-	tracked_played_perc = nil,
+	tracked_played_percentage = nil,
 	deaths = 0,
 	bubble_hearth_incidents = {},
 	played_time_gap_warnings = {},
@@ -68,7 +68,7 @@ local Last_Attack_Source = nil
 local PICTURE_DELAY = .65
 local HIDE_RTP_CHAT_MSG = false
 local STARTED_BUBBLE_HEARTH_INFO = nil
-local RECV_FIRST_PLAYED_TIME = false
+local RECEIVED_FIRST_PLAYED_TIME_MSG = false
 local PLAYED_TIME_GAP_THRESH = 600 -- seconds
 local PLAYED_TIME_PERC_THRESH = 90 -- [0, 100]
 local PLAYED_TIME_MIN_PLAYED_THRESH = 6000 -- seconds
@@ -360,20 +360,20 @@ function Hardcore:TIME_PLAYED_MSG(...)
 	Hardcore_Character.time_played = totalTimePlayed
 
 	-- Check to see if the gap since the last recording is too long.  When receiving played time for the first time.
-	if RECV_FIRST_PLAYED_TIME == false and Hardcore_Character.accumulated_time_diff ~= nil then
+	if RECEIVED_FIRST_PLAYED_TIME_MSG == false and Hardcore_Character.accumulated_time_diff ~= nil then
 
 		-- Check playtime gap percentage
 		if Hardcore_Character.time_played ~= 0 then
-			Hardcore_Character.tracked_played_perc = Hardcore_Character.time_tracked / Hardcore_Character.time_played * 100.0
+			Hardcore_Character.tracked_played_percentage = Hardcore_Character.time_tracked / Hardcore_Character.time_played * 100.0
 		else
-			Hardcore_Character.tracked_played_perc = 100.0
+			Hardcore_Character.tracked_played_percentage = 100.0
 		end
 
-		local debug_message = "Playtime gap percentage: " .. Hardcore_Character.tracked_played_perc .. "%."
+		local debug_message = "Playtime gap percentage: " .. Hardcore_Character.tracked_played_percentage .. "%."
 		Hardcore:Debug(debug_message)
 
 		-- Only warn user about playtime percentage if percentage is low enough and enough playtime is logged.
-		if Hardcore_Character.tracked_played_perc < PLAYED_TIME_PERC_THRESH and Hardcore_Character.time_played > PLAYED_TIME_MIN_PLAYED_THRESH then
+		if Hardcore_Character.tracked_played_percentage < PLAYED_TIME_PERC_THRESH and Hardcore_Character.time_played > PLAYED_TIME_MIN_PLAYED_THRESH then
 			local message = "\124cffFF0000Detected that the player's addon active time is much lower than played time. Please record the rest of your run."
 			Hardcore:Print(message)
 		end
@@ -398,7 +398,7 @@ function Hardcore:TIME_PLAYED_MSG(...)
 		end
 	end
 
-	RECV_FIRST_PLAYED_TIME = true
+	RECEIVED_FIRST_PLAYED_TIME_MSG = true
 
 	if recent_levelup ~= nil then
 		--cache this to make sure it doesn't disapeer
@@ -988,7 +988,7 @@ local PLAY_TIME_UPDATE_INTERVAL = 1
 C_Timer.NewTicker(PLAY_TIME_UPDATE_INTERVAL, function()
 	Hardcore_Character.time_tracked = Hardcore_Character.time_tracked + PLAY_TIME_UPDATE_INTERVAL
 	Hardcore:RequestTimePlayed()
-	if RECV_FIRST_PLAYED_TIME == true then
+	if RECEIVED_FIRST_PLAYED_TIME_MSG == true then
 		Hardcore_Character.accumulated_time_diff =  Hardcore_Character.time_played - Hardcore_Character.time_tracked
 	end
 end)

@@ -323,7 +323,7 @@ function Hardcore:PLAYER_ENTERING_WORLD()
 end
 
 function Hardcore:PLAYER_LEAVING_WORLD()
-	Hardcore:CleanData()
+	-- Hardcore:CleanData()
 end
 
 function Hardcore:PLAYER_DEAD()
@@ -554,6 +554,7 @@ function Hardcore:ShowAlertFrame(style, message)
 	filename = MEDIA_DIR .. file
 	icon:SetTexture(filename)
 	text:SetText(message)
+
 	frame:Show()
 
 	-- TODO: Allow custom sounds per-frame, or allow passing a sound to the function

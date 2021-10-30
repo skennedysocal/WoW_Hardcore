@@ -22,7 +22,6 @@ Hardcore_Settings = {
 	enabled = true,
 	notify = true,
 	level_list = {},
-	guild_highest_version = '0.0.0',
 }
 
 --[[ Character saved variables ]]--
@@ -40,6 +39,7 @@ local online_pulsing = {}
 local guild_versions = {}
 local guild_versions_status = {}
 local guild_online = {}
+local guild_highest_version = '0.0.0'
 local guild_roster_loading = false
 
 local bubble_hearth_vars = 
@@ -1073,7 +1073,7 @@ function Hardcore:ReceivePulse(data, sender)
 
 	-- Set my versions
 	local version = GetAddOnMetadata("Hardcore", "Version")
-	if version ~= Hardcore_Settings.guild_highest_version then
+	if version ~= guild_highest_version then
 		guild_versions_status[FULL_PLAYER_NAME] = 'outdated'
 	end
 
@@ -1082,22 +1082,22 @@ end
 
 function Hardcore:CheckVersionsAndUpdate(playername, versionstring)
 
-	if Hardcore_Settings.guild_highest_version == nil then 
-		Hardcore_Settings.guild_highest_version = GetAddOnMetadata('Hardcore', 'Version')
+	if guild_highest_version == nil then 
+		guild_highest_version = GetAddOnMetadata('Hardcore', 'Version')
 	end
 
-	-- Hardcore:Debug('Comparing: data: '..versionstring.. ' to guild_highest_version: '..Hardcore_Settings.guild_highest_version)
-	if versionstring ~= Hardcore_Settings.guild_highest_version then
+	-- Hardcore:Debug('Comparing: data: '..versionstring.. ' to guild_highest_version: '..guild_highest_version)
+	if versionstring ~= guild_highest_version then
 		
 		
-		local greaterVersion = Hardcore_GetGreaterVersion(versionstring, Hardcore_Settings.guild_highest_version)
+		local greaterVersion = Hardcore_GetGreaterVersion(versionstring, guild_highest_version)
 		-- Hardcore:Debug('higest is: '..greaterVersion)
 
 		-- if received pulse is newer version, update the local, highest version
-		if Hardcore_Settings.guild_highest_version ~= greaterVersion then
+		if guild_highest_version ~= greaterVersion then
 			-- Hardcore:Debug('setting higestversion to: '..greaterVersion)
 
-			Hardcore_Settings.guild_highest_version = greaterVersion
+			guild_highest_version = greaterVersion
 			-- invalidate status table
 			guild_versions_status = {}
 			guild_versions_status[playername] = 'updated'
@@ -1131,7 +1131,7 @@ function Hardcore:FetchGuildRoster()
 	local num_ellipsis = 4
 
 	-- Request a new roster update when we show the addonstatus list
-	GuildRoster()
+	SetGuildRosterShowOffline(false)
 	requestGuildRoster = C_Timer.NewTicker(2, function()
 		local postfix = ""
 		

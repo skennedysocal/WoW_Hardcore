@@ -140,7 +140,6 @@ function Hardcore:PLAYER_LOGIN()
 	self:RegisterEvent("PLAYER_UNGHOST")
 	self:RegisterEvent("PLAYER_DEAD")
 	self:RegisterEvent("CHAT_MSG_ADDON")
-	self:RegisterEvent("PLAYER_LEAVING_WORLD")
 	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	self:RegisterEvent("MAIL_SHOW")
 	self:RegisterEvent("AUCTION_HOUSE_SHOW")
@@ -242,10 +241,6 @@ function Hardcore:PLAYER_ENTERING_WORLD()
 	if( not C_ChatInfo.IsAddonMessagePrefixRegistered(COMM_NAME) ) then
 		C_ChatInfo.RegisterAddonMessagePrefix(COMM_NAME)
 	end
-end
-
-function Hardcore:PLAYER_LEAVING_WORLD()
-	Hardcore:CleanData()
 end
 
 function Hardcore:PLAYER_DEAD()

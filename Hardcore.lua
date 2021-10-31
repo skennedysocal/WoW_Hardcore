@@ -30,7 +30,7 @@ Hardcore_Character = {
 	time_tracked = 0, -- seconds
 	time_played = 0, -- seconds
 	accumulated_time_diff = 0, -- seconds
-	tracked_played_percentage = nil,
+	tracked_played_percentage = 0,
 	deaths = 0,
 	bubble_hearth_incidents = {},
 	played_time_gap_warnings = {},
@@ -248,8 +248,11 @@ function Hardcore:PLAYER_LOGIN()
 			guid = PLAYER_GUID,
 			time_tracked = 0,
 			time_played = 0,
+			accumulated_time_diff = 0,
+			tracked_played_percentage = 0,
 			deaths = 0,
-			bubble_hearth_incidents = {}
+			bubble_hearth_incidents = {},
+			played_time_gap_warnings ={}
 		}
 	end
 
@@ -456,7 +459,7 @@ function Hardcore:TIME_PLAYED_MSG(...)
 		-- Check playtime gap percentage
 		if Hardcore_Character.time_played ~= 0 then
 			Hardcore_Character.tracked_played_percentage = Hardcore_Character.time_tracked /
-															   Hardcore_Character.time_played * 100.0
+																 Hardcore_Character.time_played * 100.0
 		else
 			Hardcore_Character.tracked_played_percentage = 100.0
 		end
@@ -474,7 +477,7 @@ function Hardcore:TIME_PLAYED_MSG(...)
 
 		-- Check playtime gap since last session
 		local duration_since_last_recording = Hardcore_Character.time_played - Hardcore_Character.time_tracked -
-												  Hardcore_Character.accumulated_time_diff
+													Hardcore_Character.accumulated_time_diff
 		debug_message = "Playtime gap duration: " .. duration_since_last_recording .. " seconds."
 		Hardcore:Debug(debug_message)
 
@@ -542,7 +545,7 @@ function Hardcore:TIME_PLAYED_MSG(...)
 			if v["realm"] == mylevelup["realm"] and v["player"] == mylevelup["player"] and v["level"] == recent - 1 then
 				-- show message to user with calculated time between levels
 				Hardcore:Print("Level " .. (recent - 1) .. "-" .. recent .. " time played: " ..
-								   SecondsToTime(totalTimePlayed - v["playedtime"]))
+									 SecondsToTime(totalTimePlayed - v["playedtime"]))
 			end
 		end
 
@@ -1190,15 +1193,15 @@ function Hardcore:GenerateVerificationString()
 	local level = UnitLevel("player")
 
 	local baseVerificationData = {Hardcore_Character.guid, realm, race, class, name, level,
-								  Hardcore_Character.time_played, Hardcore_Character.time_tracked,
-								  Hardcore_Character.deaths}
+									Hardcore_Character.time_played, Hardcore_Character.time_tracked,
+									Hardcore_Character.deaths}
 	local baseVerificationString = Hardcore_join(Hardcore_map(baseVerificationData, Hardcore_stringOrNumberToUnicode),
 		ATTRIBUTE_SEPARATOR)
 	local bubbleHearthIncidentsVerificationString = Hardcore_tableToUnicode(Hardcore_Character.bubble_hearth_incidents)
 	local playedtimeGapsVerificationString = Hardcore_tableToUnicode(Hardcore_Character.played_time_gap_warnings)
 
 	return Hardcore_join({baseVerificationString, bubbleHearthIncidentsVerificationString,
-						  playedtimeGapsVerificationString}, ATTRIBUTE_SEPARATOR)
+							playedtimeGapsVerificationString}, ATTRIBUTE_SEPARATOR)
 end
 
 --[[ Timers ]]--

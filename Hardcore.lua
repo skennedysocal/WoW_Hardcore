@@ -133,7 +133,14 @@ local ALERT_STYLES = {
 		icon = Hardcore_Alert_Icon,
 		file = "alert-hc-red.blp",
 		delay = 8,
-	}
+	},
+	hc_red_delayed_10 = {
+		frame = Hardcore_Alert_Frame,
+		text = Hardcore_Alert_Text,
+		icon = Hardcore_Alert_Icon,
+		file  = "alert-hc-red.blp",
+		delay = 10,
+	},
 }
 
 --the big frame object for our addon
@@ -1051,12 +1058,7 @@ function Hardcore:RecordReminder()
 	if Hardcore_Settings.enabled == false then return end
 	if Hardcore_Settings.notify == false then return end
 
-	Hardcore_Notification_Text:SetText("Hardcore Enabled\n START RECORDING")
-	Hardcore_Notification_Frame:Show()
-	PlaySound(8959)
-	C_Timer.After(10, function()
-		Hardcore_Notification_Frame:Hide()
-	end)
+	Hardcore:ShowAlertFrame('hc_red_delayed_10', "Hardcore Enabled")
 end
 
 ----------------------------------------------------------------------
@@ -1183,7 +1185,8 @@ end
 function Hardcore:InitiatePulse()
 	-- Set send pulses ticker
 	C_Timer.NewTicker(COMM_PULSE_FREQUENCY, function()
-		if CTL then
+		local isInGuild = GetGuildInfo("player")
+		if CTL and isInGuild then
 			-- Send along the version we're using
 			local version = GetAddOnMetadata("Hardcore", "Version")
 			local commMessage = COMM_COMMANDS[1]..COMM_COMMAND_DELIM..version

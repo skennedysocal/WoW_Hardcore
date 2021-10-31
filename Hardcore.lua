@@ -282,12 +282,6 @@ function Hardcore:UNIT_SPELLCAST_START(...)
 
 				Hardcore:ShowAlertFrame(ALERT_STYLES.hc_red, "Bubble-hearth Detected\nCancel or risk invalidation")
 
-				-- Hardcore_Warning_Text:SetText("Started bubble hearthing \n Cancel or run will be invalidated.")
-				-- Hardcore_Warning_Frame:Show()
-				-- PlaySound(8959)
-				-- C_Timer.After(8, function()
-				--	 Hardcore_Warning_Frame:Hide()
-				-- end)
 				return
 			end
 		end

@@ -1,5 +1,5 @@
 ## Interface: 11400
-## Version: 0.3.0-fix
+## Version: 0.4.0
 ## Title: Hardcore
 ## Notes: Notify the guild on players death or ressurection
 ## Author: Molikar (Sean Kennedy)
@@ -9,7 +9,8 @@
 ## SavedVariables: Hardcore_Settings
 ## SavedVariablesPerCharacter: Hardcore_Character
 
-ChatThrottleLib.lua
+embeds.xml
+
 utils.lua
 Hardcore.xml
 Hardcore.lua

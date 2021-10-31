@@ -407,11 +407,21 @@ function Hardcore:PLAYER_ENTERING_WORLD()
 
   -- Hook TargetFrame classification and warn if PvP enabled and enemy faction 
   hooksecurefunc("TargetFrame_CheckClassification",function(self, lock)
-    if (Hardcore_Settings.grief_warning_conditions == PVP and UnitIsPvP("target")) or
-       (Hardcore_Settings.grief_warning_conditions == PVP_AND_ENEMY_FACTION and
-         UnitIsPvP("target") and PLAYER_FACTION ~= UnitFactionGroup("target")[1]) then 
-      local target_name, _ = UnitName("target")
-      ShowAlert("hc_red", "Target " .. target_name .. " is PvP enabled!")
+    if Hardcore_Settings.grief_warning_conditions == PVP then
+      if UnitIsPVP("target") and UnitGUID("target") ~= PLAYER_GUID then
+        local target_name, _ = UnitName("target")
+        Hardcore:ShowAlertFrame("hc_red", "Target " .. target_name .. " is PvP enabled!")
+      end
+    elseif Hardcore_Settings.grief_warning_conditions == PVP_AND_ENEMY_FACTION then
+      if UnitGUID("target") ~= PLAYER_GUID and UnitIsPVP("target")  then 
+        local faction, _ = UnitFactionGroup("target")
+        if faction ~= nil then
+          if (faction == "Horde" and PLAYER_FACTION == "Alliance") or (faction == "Alliance" and PLAYER_FACTION == "Horde") then
+            local target_name, _ = UnitName("target")
+            Hardcore:ShowAlertFrame("hc_red", "Target " .. target_name .. " is PvP enabled!")
+          end
+        end
+      end
     end
   end);
 end

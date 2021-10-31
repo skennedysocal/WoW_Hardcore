@@ -15,7 +15,9 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with the Hardcore AddOn. If not, see <http://www.gnu.org/licenses/>.
---]] --[[ Global saved variables ]] --
+--]]
+
+--[[ Global saved variables ]] --
 Hardcore_Settings = {
 	enabled = true,
 	notify = true,

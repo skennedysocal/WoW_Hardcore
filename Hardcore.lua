@@ -17,6 +17,11 @@ You should have received a copy of the GNU General Public License
 along with the Hardcore AddOn. If not, see <http://www.gnu.org/licenses/>.
 --]]
 
+--[[ Const variables ]]--
+local OFF = 0
+local PVP = 1
+local PVP_AND_ENEMY_FACTION = 2
+
 --[[ Global saved variables ]]--
 Hardcore_Settings = {
 	notify = true,
@@ -34,6 +39,7 @@ Hardcore_Character = {
 	bubble_hearth_incidents = {},
 	played_time_gap_warnings = {},
 	trade_partners = {},
+	grief_warning_conditions = OFF,
 }
 
 --[[ Local variables ]]--
@@ -68,6 +74,7 @@ local COMM_COMMANDS = {"PULSE", "ADD", nil}
 -- stuff
 local PLAYER_NAME, _ = nil
 local PLAYER_GUID = nil
+local PLAYER_FACTION = nil
 local GENDER_GREETING = {"guildmate", "brother", "sister"}
 local recent_levelup = nil
 local Last_Attack_Source = nil
@@ -278,6 +285,7 @@ function Hardcore:PLAYER_LOGIN()
 	_, class, _ = UnitClass("player")
 	PLAYER_NAME, _ = UnitName("player")
 	PLAYER_GUID = UnitGUID("player")
+  PLAYER_FACTION, _ = UnitFactionGroup("player")
 	local PLAYER_LEVEL = UnitLevel("player")
 
 	-- fires on first loading
@@ -396,6 +404,16 @@ function Hardcore:PLAYER_ENTERING_WORLD()
 	if (not C_ChatInfo.IsAddonMessagePrefixRegistered(COMM_NAME)) then
 		C_ChatInfo.RegisterAddonMessagePrefix(COMM_NAME)
 	end
+
+  -- Hook TargetFrame classification and warn if PvP enabled and enemy faction 
+  hooksecurefunc("TargetFrame_CheckClassification",function(self, lock)
+    if (Hardcore_Settings.grief_warning_conditions == PVP and UnitIsPvP("target")) or
+       (Hardcore_Settings.grief_warning_conditions == PVP_AND_ENEMY_FACTION and
+         UnitIsPvP("target") and PLAYER_FACTION ~= UnitFactionGroup("target")[1]) then 
+      local target_name, _ = UnitName("target")
+      ShowAlert("hc_red", "Target " .. target_name .. " is PvP enabled!")
+    end
+  end);
 end
 
 function Hardcore:PLAYER_ALIVE()

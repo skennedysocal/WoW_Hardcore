@@ -27,9 +27,9 @@ Hardcore_Settings = {
 --[[ Character saved variables ]]--
 Hardcore_Character = {
 	guid = "",
-	time_tracked = 0, 		          -- seconds
-	time_played = 0, 		            -- seconds
-	accumulated_time_diff = 0, 	    -- seconds
+	time_tracked = 0, -- seconds
+	time_played = 0, -- seconds
+	accumulated_time_diff = 0, -- seconds
 	tracked_played_percentage = nil,
 	deaths = 0,
 	bubble_hearth_incidents = {},
@@ -46,15 +46,13 @@ local guild_online = {}
 local guild_highest_version = '0.0.0'
 local guild_roster_loading = false
 
-local bubble_hearth_vars = 
-{
+local bubble_hearth_vars = {
 	spell_id = 8690,
 	bubble_name = "Divine Shield",
 	light_of_elune_name = "Light of Elune",
 }
 
-
---addon communication
+-- addon communication
 local CTL = _G.ChatThrottleLib
 local COMM_NAME = "HardcoreAddon"
 local COMM_PULSE_FREQUENCY = 10
@@ -67,7 +65,7 @@ local COMM_FIELD_DELIM = "|"
 local COMM_RECORD_DELIM = "^"
 local COMM_COMMANDS = {"PULSE", "ADD", nil}
 
---stuff
+-- stuff
 local PLAYER_NAME, _ = nil
 local PLAYER_GUID = nil
 local GENDER_GREETING = {"guildmate", "brother", "sister"}
@@ -84,7 +82,7 @@ local COLOR_RED = "|c00ff0000"
 local COLOR_GREEN = "|c0000ff00"
 local COLOR_YELLOW = "|c00ffff00"
 
---frame display
+-- frame display
 local display = "Rules"
 local displaylist = Hardcore_Settings.level_list
 local icon = nil
@@ -110,21 +108,21 @@ local ALERT_STYLES = {
 		frame = Hardcore_Alert_Frame,
 		text = Hardcore_Alert_Text,
 		icon = Hardcore_Alert_Icon,
-		file  = "alert-hc-green.blp",
+		file = "alert-hc-green.blp",
 		delay = COMM_DELAY,
 	},
 	hc_red = {
 		frame = Hardcore_Alert_Frame,
 		text = Hardcore_Alert_Text,
 		icon = Hardcore_Alert_Icon,
-		file  = "alert-hc-red.blp",
+		file = "alert-hc-red.blp",
 		delay = COMM_DELAY,
 	},
 	spirithealer = {
 		frame = Hardcore_Alert_Frame,
 		text = Hardcore_Alert_Text,
 		icon = Hardcore_Alert_Icon,
-		file  = "alert-spirithealer.blp",
+		file = "alert-spirithealer.blp",
 		delay = COMM_DELAY,
 	},
 	bubble = {
@@ -143,13 +141,11 @@ local ALERT_STYLES = {
 	},
 }
 
---the big frame object for our addon
+-- the big frame object for our addon
 local Hardcore = CreateFrame("Frame", "Hardcore", nil, "BackdropTemplate")
 Hardcore.ALERT_STYLES = ALERT_STYLES
 
 Hardcore_Frame:ApplyBackdrop()
-
-
 
 --[[ Command line handler ]]--
 
@@ -167,11 +163,11 @@ local function SlashHandler(msg, editbox)
 	elseif cmd == "show" then
 		Hardcore_Frame:Show()
 	elseif cmd == "hide" then
-		--they can click the hide button, dont really need a command for this
+		-- they can click the hide button, dont really need a command for this
 		Hardcore_Frame:Hide()
 	elseif cmd == "debug" then
 		debug = not debug
-		Hardcore:Print("Debugging set to "..tostring(debug))
+		Hardcore:Print("Debugging set to " .. tostring(debug))
 	elseif cmd == "notify" then
 		Hardcore_Settings.notify = not Hardcore_Settings.notify
 		if true == Hardcore_Settings.notify then
@@ -193,7 +189,7 @@ local function SlashHandler(msg, editbox)
 
 		local style, message = head, table.concat(tail, " ")
 		Hardcore:ShowAlertFrame(style, message)
--- End Zdeyn's debug code
+	-- End Alert debug code
 
 	else
 		-- If not handled above, display some sort of help message
@@ -208,13 +204,15 @@ SlashCmdList["HARDCORE"] = SlashHandler
 --[[ Startup ]]--
 
 function Hardcore:Startup()
-	--the entry point of our addon
-	--called inside loading screen before player sees world, some api functions are not available yet.
+	-- the entry point of our addon
+	-- called inside loading screen before player sees world, some api functions are not available yet.
 
-	--event handling helper
-	self:SetScript("OnEvent", function(self, event, ...) self[event](self, ...) end)
+	-- event handling helper
+	self:SetScript("OnEvent", function(self, event, ...)
+		self[event](self, ...)
+	end)
 
-	--actually start loading the addon once player ui is loading
+	-- actually start loading the addon once player ui is loading
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("PLAYER_LOGIN")
 end
@@ -222,13 +220,13 @@ end
 --[[ Events ]]--
 
 function Hardcore:PLAYER_LOGIN()
-	--cache player data
+	-- cache player data
 	_, class, _ = UnitClass("player")
 	PLAYER_NAME, _ = UnitName("player")
 	PLAYER_GUID = UnitGUID("player")
 	local PLAYER_LEVEL = UnitLevel("player")
 
-	--fires on first loading
+	-- fires on first loading
 	self:RegisterEvent("PLAYER_UNGHOST")
 	self:RegisterEvent("PLAYER_DEAD")
 	self:RegisterEvent("CHAT_MSG_ADDON")
@@ -251,11 +249,11 @@ function Hardcore:PLAYER_LOGIN()
 			time_tracked = 0,
 			time_played = 0,
 			deaths = 0,
-			bubble_hearth_incidents = {},
+			bubble_hearth_incidents = {}
 		}
 	end
 
-	--cache player name
+	-- cache player name
 	PLAYER_NAME, _ = UnitName("player")
 
 	-- Show recording reminder
@@ -286,18 +284,14 @@ function Hardcore:UNIT_SPELLCAST_START(...)
 			elseif name == bubble_hearth_vars.bubble_name or name == bubble_hearth_vars.light_of_elune_name then
 				STARTED_BUBBLE_HEARTH_INFO = {}
 				STARTED_BUBBLE_HEARTH_INFO.start_cast = date("%m/%d/%y %H:%M:%S")
-				STARTED_BUBBLE_HEARTH_INFO.aura_type = name 
-				Hardcore:Print("WARNING: Initiated bubble cast. Cancel or run will be invalidated.")
+				STARTED_BUBBLE_HEARTH_INFO.aura_type = name
+				Hardcore:Print("WARNING: Bubble-hearth Detected\nCancel or risk invalidation")
 
-				Hardcore_Warning_Text:SetText("Started bubble hearthing \n Cancel or run will be invalidated.")
-				Hardcore_Warning_Frame:Show()
-				PlaySound(8959)
-				C_Timer.After(8, function()
-					Hardcore_Warning_Frame:Hide()
-				end)
+				Hardcore:ShowAlertFrame(ALERT_STYLES.hc_red, "Bubble-hearth Detected\nCancel or risk invalidation")
+
 				return
 			end
-		end;
+		end
 	end
 end
 
@@ -306,7 +300,8 @@ function Hardcore:UNIT_SPELLCAST_STOP(...)
 	-- 8690 is hearth spellid
 	if STARTED_BUBBLE_HEARTH_INFO ~= nil then
 		if unit == "player" and spell_id == bubble_hearth_vars.spell_id then
-			Hardcore:Print("Cancelled bubble hearth.")
+			Hardcore:Print("NOTE: Bubble-hearth Cancelled")
+			Hardcore:ShowAlertFrame(ALERT_STYLES.hc_green, "Bubble-hearth Cancelled")
 			STARTED_BUBBLE_HEARTH_INFO = nil
 		end
 	end
@@ -317,7 +312,7 @@ function Hardcore:UNIT_SPELLCAST_SUCCEEDED(...)
 	-- 8690 is hearth spellid
 	if STARTED_BUBBLE_HEARTH_INFO ~= nil then
 		if unit == "player" and spell_id == bubble_hearth_vars.spell_id then
-			Hardcore:Print("Completed bubble cast.")
+			Hardcore:Print("Completed Bubble-hearth")
 			local bubble_hearth_info = {}
 			bubble_hearth_info.start_cast = STARTED_BUBBLE_HEARTH_INFO.start_cast
 			bubble_hearth_info.finish_cast = date("%m/%d/%y %H:%M:%S")
@@ -331,28 +326,33 @@ function Hardcore:UNIT_SPELLCAST_SUCCEEDED(...)
 			end
 
 			Hardcore:PrintBubbleHearthInfractions()
-			local message = PLAYER_NAME .. " just received a bubble hearth infraction at " .. bubble_hearth_info.start_cast
+			local message = PLAYER_NAME .. " just received a Bubble-hearth infraction at " ..
+								bubble_hearth_info.start_cast
 			SendChatMessage(message, "GUILD", nil, nil)
+			Hardcore:ShowAlertFrame(ALERT_STYLES.hc_red, "Bubble-hearth Infraction\nContact a Mod immediately.")
+
 			STARTED_BUBBLE_HEARTH_INFO = nil
 		end
 	end
 end
 
 function Hardcore:PLAYER_ENTERING_WORLD()
-	--cache player name
+	-- cache player name
 	PLAYER_NAME, _ = UnitName("player")
 	Hardcore:PrintBubbleHearthInfractions()
 
-	--initialize addon communication
-	if( not C_ChatInfo.IsAddonMessagePrefixRegistered(COMM_NAME) ) then
+	-- initialize addon communication
+	if (not C_ChatInfo.IsAddonMessagePrefixRegistered(COMM_NAME)) then
 		C_ChatInfo.RegisterAddonMessagePrefix(COMM_NAME)
 	end
 end
 
 function Hardcore:PLAYER_DEAD()
-	if Hardcore_Settings.enabled == false then return end
+	if Hardcore_Settings.enabled == false then
+		return
+	end
 
-	--screenshot
+	-- screenshot
 	C_Timer.After(PICTURE_DELAY, Screenshot)
 
 	-- Update death count
@@ -377,78 +377,75 @@ function Hardcore:PLAYER_DEAD()
 	SendChatMessage(messageString, "GUILD", nil, nil)
 
 	-- Send add command to addon for this death
-	local deathData = string.format("%s%s%s%s%s%s%s%s%s%s%s",
-									playerId,
-									COMM_FIELD_DELIM,
-									playerName,
-									COMM_FIELD_DELIM,
-									localizedClass,
-									COMM_FIELD_DELIM,
-									playerLevel,
-									COMM_FIELD_DELIM,
-									mapId,
-									COMM_FIELD_DELIM,
-									time())
+	local deathData = string.format("%s%s%s%s%s%s%s%s%s%s%s", playerId, COMM_FIELD_DELIM, playerName, COMM_FIELD_DELIM,
+		localizedClass, COMM_FIELD_DELIM, playerLevel, COMM_FIELD_DELIM, mapId, COMM_FIELD_DELIM, time())
 
-	local commMessage = COMM_COMMANDS[2]..COMM_COMMAND_DELIM..deathData
+	local commMessage = COMM_COMMANDS[2] .. COMM_COMMAND_DELIM .. deathData
 	if CTL then
 		CTL:SendAddonMessage("ALERT", COMM_NAME, commMessage, "GUILD")
 	end
 end
 
 function Hardcore:PLAYER_UNGHOST()
-	if Hardcore_Settings.enabled == false then return end
-	if UnitIsDeadOrGhost("player") == 1 then return end -- prevent message on ghost login or zone
+	if Hardcore_Settings.enabled == false then
+		return
+	end
+	if UnitIsDeadOrGhost("player") == 1 then
+		return
+	end -- prevent message on ghost login or zone
 
 	local playerName, _ = UnitName("player")
-	local message = playerName.." has resurrected!"
+	local message = playerName .. " has resurrected!"
 	SendChatMessage(message, "GUILD", nil, nil)
 
-	-- Screen notification
-	Hardcore_Notification_Text:SetText(message)
-	Hardcore_Notification_Frame:Show()
-	PlaySound(8959)
-	C_Timer.After(COMM_DELAY, function()
-		Hardcore_Notification_Frame:Hide()
-	end)
+	Hardcore:ShowAlertFrame(ALERT_STYLES.spirithealer, message)
 end
 
 function Hardcore:MAIL_SHOW()
-	if Hardcore_Settings.enabled == false then return end
+	if Hardcore_Settings.enabled == false then
+		return
+	end
 
 	Hardcore:Print("Hardcore mode is enabled, mailbox access is blocked.")
 	CloseMail()
 end
 
 function Hardcore:AUCTION_HOUSE_SHOW()
-	if Hardcore_Settings.enabled == false then return end
+	if Hardcore_Settings.enabled == false then
+		return
+	end
 
 	Hardcore:Print("Hardcore mode is enabled, auction house access is blocked.")
 	CloseAuctionHouse()
 end
 
 function Hardcore:PLAYER_LEVEL_UP(...)
-	if Hardcore_Settings.enabled == false then return end
+	if Hardcore_Settings.enabled == false then
+		return
+	end
 
-	--store the recent level up to use in TIME_PLAYED_MSG
-	local level, healthDelta, powerDelta, numNewTalents, numNewPvpTalentSlots, strengthDelta, agilityDelta, staminaDelta, intellectDelta = ...
+	-- store the recent level up to use in TIME_PLAYED_MSG
+	local level, healthDelta, powerDelta, numNewTalents, numNewPvpTalentSlots, strengthDelta, agilityDelta,
+		staminaDelta, intellectDelta = ...
 	recent_levelup = level
 
-	--just in case... make sure recent level up gets reset after 3 secs
+	-- just in case... make sure recent level up gets reset after 3 secs
 	C_Timer.After(3, function()
 		recent_levelup = nil
 	end)
 
-	--get time played, see TIME_PLAYED_MSG
+	-- get time played, see TIME_PLAYED_MSG
 	RequestTimePlayed()
 
-	--take screenshot (got this idea from DingPics addon)
+	-- take screenshot (got this idea from DingPics addon)
 	-- wait a bit so the yellow animation appears
 	C_Timer.After(PICTURE_DELAY, Screenshot)
 end
 
 function Hardcore:TIME_PLAYED_MSG(...)
-	if Hardcore_Settings.enabled == false then return end
+	if Hardcore_Settings.enabled == false then
+		return
+	end
 
 	local totalTimePlayed, _ = ...
 	Hardcore_Character.time_played = totalTimePlayed
@@ -458,7 +455,8 @@ function Hardcore:TIME_PLAYED_MSG(...)
 
 		-- Check playtime gap percentage
 		if Hardcore_Character.time_played ~= 0 then
-			Hardcore_Character.tracked_played_percentage = Hardcore_Character.time_tracked / Hardcore_Character.time_played * 100.0
+			Hardcore_Character.tracked_played_percentage = Hardcore_Character.time_tracked /
+															   Hardcore_Character.time_played * 100.0
 		else
 			Hardcore_Character.tracked_played_percentage = 100.0
 		end
@@ -467,13 +465,16 @@ function Hardcore:TIME_PLAYED_MSG(...)
 		Hardcore:Debug(debug_message)
 
 		-- Only warn user about playtime percentage if percentage is low enough and enough playtime is logged.
-		if Hardcore_Character.tracked_played_percentage < PLAYED_TIME_PERC_THRESH and Hardcore_Character.time_played > PLAYED_TIME_MIN_PLAYED_THRESH then
-			local message = "\124cffFF0000Detected that the player's addon active time is much lower than played time. Please record the rest of your run."
+		if Hardcore_Character.tracked_played_percentage < PLAYED_TIME_PERC_THRESH and Hardcore_Character.time_played >
+			PLAYED_TIME_MIN_PLAYED_THRESH then
+			local message =
+				"\124cffFF0000Detected that the player's addon active time is much lower than played time. Please record the rest of your run."
 			Hardcore:Print(message)
 		end
 
 		-- Check playtime gap since last session
-		local duration_since_last_recording = Hardcore_Character.time_played - Hardcore_Character.time_tracked - Hardcore_Character.accumulated_time_diff
+		local duration_since_last_recording = Hardcore_Character.time_played - Hardcore_Character.time_tracked -
+												  Hardcore_Character.accumulated_time_diff
 		debug_message = "Playtime gap duration: " .. duration_since_last_recording .. " seconds."
 		Hardcore:Debug(debug_message)
 
@@ -487,7 +488,11 @@ function Hardcore:TIME_PLAYED_MSG(...)
 			else
 				table.insert(Hardcore_Character.played_time_gap_warnings, played_time_gap_info)
 			end
-			local message = "\124cffFF0000Addon/Playtime gap detected at date" .. Hardcore_Character.played_time_gap_warnings[#Hardcore_Character.played_time_gap_warnings].date .. " with a duration: " .. Hardcore_Character.played_time_gap_warnings[#Hardcore_Character.played_time_gap_warnings].duration_since_last_recording .. " seconds."
+			local message = "\124cffFF0000Addon/Playtime gap detected at date" ..
+								Hardcore_Character.played_time_gap_warnings[#Hardcore_Character.played_time_gap_warnings]
+									.date .. " with a duration: " ..
+								Hardcore_Character.played_time_gap_warnings[#Hardcore_Character.played_time_gap_warnings]
+									.duration_since_last_recording .. " seconds."
 			Hardcore:Print(message)
 		end
 	end
@@ -495,35 +500,35 @@ function Hardcore:TIME_PLAYED_MSG(...)
 	RECEIVED_FIRST_PLAYED_TIME_MSG = true
 
 	if recent_levelup ~= nil then
-		--cache this to make sure it doesn't disapeer
+		-- cache this to make sure it doesn't disapeer
 		local recent = recent_levelup
-		--nil this to ensure it's not called twice
+		-- nil this to ensure it's not called twice
 		recent_levelup = nil
 
-		--make sure list is initialized
+		-- make sure list is initialized
 		if Hardcore_Settings.level_list == nil then
 			Hardcore_Settings.level_list = {}
 		end
 
-		--info for level up record
+		-- info for level up record
 		local totalTimePlayed, timePlayedThisLevel = ...
 		local playerName, _ = UnitName("player")
 
-		--create the record
+		-- create the record
 		local mylevelup = {}
 		mylevelup["level"] = recent
 		mylevelup["playedtime"] = totalTimePlayed
 		mylevelup["realm"] = GetRealmName()
-		mylevelup["player"]  = playerName
+		mylevelup["player"] = playerName
 		mylevelup["localtime"] = date()
 
-		--clear existing records if someone deleted / remade character
-		--since this is level 2, this must be a brand new character
+		-- clear existing records if someone deleted / remade character
+		-- since this is level 2, this must be a brand new character
 		if recent == 2 then
-			for i,v in ipairs(Hardcore_Settings.level_list) do
-				--find previous records with same name / realm and rename them so we don't misidentify them
+			for i, v in ipairs(Hardcore_Settings.level_list) do
+				-- find previous records with same name / realm and rename them so we don't misidentify them
 				if v["realm"] == mylevelup["realm"] and v["player"] == mylevelup["player"] then
-					--copy the record and rename it
+					-- copy the record and rename it
 					local renamed = v
 					renamed["player"] = renamed["player"] .. "-old"
 					Hardcore_Settings.level_list[i] = renamed
@@ -531,36 +536,39 @@ function Hardcore:TIME_PLAYED_MSG(...)
 			end
 		end
 
-		--if we found previous level, show the last level time
-		for i,v in ipairs(Hardcore_Settings.level_list) do
-			--find last level up
+		-- if we found previous level, show the last level time
+		for i, v in ipairs(Hardcore_Settings.level_list) do
+			-- find last level up
 			if v["realm"] == mylevelup["realm"] and v["player"] == mylevelup["player"] and v["level"] == recent - 1 then
-				--show message to user with calculated time between levels
-				Hardcore:Print("Level " .. (recent - 1) .. "-" .. recent .. " time played: " .. SecondsToTime(totalTimePlayed - v["playedtime"]))
+				-- show message to user with calculated time between levels
+				Hardcore:Print("Level " .. (recent - 1) .. "-" .. recent .. " time played: " ..
+								   SecondsToTime(totalTimePlayed - v["playedtime"]))
 			end
 		end
 
-		--store level record
-		table.insert(Hardcore_Settings.level_list,mylevelup)
+		-- store level record
+		table.insert(Hardcore_Settings.level_list, mylevelup)
 	end
 end
 
 local Cached_ChatFrame_DisplayTimePlayed = ChatFrame_DisplayTimePlayed
 ChatFrame_DisplayTimePlayed = function(...)
-if HIDE_RTP_CHAT_MSG then
-	HIDE_RTP_CHAT_MSG = false
-	return
-end
-return Cached_ChatFrame_DisplayTimePlayed(...)
+	if HIDE_RTP_CHAT_MSG then
+		HIDE_RTP_CHAT_MSG = false
+		return
+	end
+	return Cached_ChatFrame_DisplayTimePlayed(...)
 end
 
 function Hardcore:RequestTimePlayed()
-HIDE_RTP_CHAT_MSG = true
-RequestTimePlayed()
+	HIDE_RTP_CHAT_MSG = true
+	RequestTimePlayed()
 end
 
 function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
-	if Hardcore_Settings.enabled == false then return end
+	if Hardcore_Settings.enabled == false then
+		return
+	end
 
 	-- Ignore messages that are not ours
 	if COMM_NAME == prefix then
@@ -585,8 +593,8 @@ function Hardcore:COMBAT_LOG_EVENT_UNFILTERED(...)
 	if not (source_name == PLAYER_NAME) then
 		if not (source_name == nil) then
 			if string.find(ev, "DAMAGE") ~= nil then
-				Last_Attack_Source = source_name				
-			end			
+				Last_Attack_Source = source_name
+			end
 		end
 	end
 end
@@ -600,8 +608,9 @@ function Hardcore:GUILD_ROSTER_UPDATE(...)
 	-- Hardcore:Debug('guild roster update')
 	local numTotal, numOnline, numOnlineAndMobile = GetNumGuildMembers();
 	for i = 1, numOnline, 1 do
-		local name, rankName, rankIndex, level, classDisplayName, zone, publicNote, officerNote, isOnline, status, class, achievementPoints, achievementRank, isMobile, canSoR, repStanding, GUID = GetGuildRosterInfo(i)
-		
+		local name, rankName, rankIndex, level, classDisplayName, zone, publicNote, officerNote, isOnline, status,
+			class, achievementPoints, achievementRank, isMobile, canSoR, repStanding, GUID = GetGuildRosterInfo(i)
+
 		guild_online[name] = {
 			name = name,
 			level = level,
@@ -618,26 +627,23 @@ end
 --[[ Utility Methods ]]--
 
 function Hardcore:Print(msg)
-	print("|cffed9121Hardcore|r: "..(msg or ""))
+	print("|cffed9121Hardcore|r: " .. (msg or ""))
 end
 
 function Hardcore:Debug(msg)
 	if true == debug then
-		print("|cfffd9122HCDebug|r: "..(msg or ""))
+		print("|cfffd9122HCDebug|r: " .. (msg or ""))
 	end
 end
 
 -- Alert UI
 function Hardcore:ShowAlertFrame(style, message)
-	-- style is a string-based key within ALERT_STYLES
+	-- style is a key-based property of ALERT_STYLES
 	-- message is any text accepted by FontString:SetText(message)
 
 	message = message or ""
-	
+
 	local frame, text, icon, file, filename, delay = nil, nil, nil, nil, nil, nil
-	if ALERT_STYLES[style] == nil then
-		Hardcore:Debug("Alert Style not found: " .. style .. ". Using fallback.")
-	end
 	local data = ALERT_STYLES[style] or ALERT_STYLES["hc_red"]
 	frame, text, icon, file, delay = data.frame, data.text, data.icon, data.file, data.delay
 
@@ -659,9 +665,9 @@ function Hardcore:ShowAlertFrame(style, message)
 end
 
 function Hardcore:Add(data)
-	 -- Add the record if needed
-	 if true == Hardcore:ValidateEntry(data) then
-		Hardcore:Debug("Adding new record "..data)
+	-- Add the record if needed
+	if true == Hardcore:ValidateEntry(data) then
+		Hardcore:Debug("Adding new record " .. data)
 
 		-- Display the death locally
 		local _, name, class_name, level, map_id, _ = string.split(COMM_FIELD_DELIM, data)
@@ -670,12 +676,7 @@ function Hardcore:Add(data)
 		local messageFormat = "%s the %s%s|r has died at level %d in %s"
 		local messageString = string.format(messageFormat, name, class_color, class_name, level, map_name)
 
-		Hardcore_Notification_Text:SetText(messageString)
-		Hardcore_Notification_Frame:Show()
-		PlaySound(8959)
-		C_Timer.After(COMM_DELAY, function()
-			Hardcore_Notification_Frame:Hide()
-		end)
+		Hardcore:ShowAlertFrame(ALERT_STYLES.death, messageString)
 	end
 end
 
@@ -703,7 +704,7 @@ function Hardcore:Enable(setting)
 end
 
 function Hardcore:Levels(all)
-	--default parameter value
+	-- default parameter value
 	if all == nil then
 		all = false
 	end
@@ -713,30 +714,31 @@ function Hardcore:Levels(all)
 		local playerRealm = GetRealmName()
 		local mylevels = {}
 
-		--find relevant records
-		for i,v in ipairs(Hardcore_Settings.level_list) do
-			--find records from current character
+		-- find relevant records
+		for i, v in ipairs(Hardcore_Settings.level_list) do
+			-- find records from current character
 			if v["realm"] == playerRealm and v["player"] == playerName then
-				table.insert(mylevels,v)
+				table.insert(mylevels, v)
 			end
 
-			--find old records as well
+			-- find old records as well
 			if all and (v["player"] == (playerName .. "-old")) then
-				table.insert(mylevels,v)
+
+				table.insert(mylevels, v)
 			end
 		end
 
 		if #mylevels > 0 then
-			--for some reason this string concat doesn't work unless stored in variable
-			--local headerstr = "==== " .. playerName .. " ==== " .. playerRealm .. " ===="
-			--Hardcore:Print(headerstr)
-			for i,v in ipairs(mylevels) do
-				--for all command show name to distinguish old and new records
-				--local nameheader = all and v["player"] .. " = " or ""
-				--print the level row
+			-- for some reason this string concat doesn't work unless stored in variable
+			-- local headerstr = "==== " .. playerName .. " ==== " .. playerRealm .. " ===="
+			-- Hardcore:Print(headerstr)
+			for i, v in ipairs(mylevels) do
+				-- for all command show name to distinguish old and new records
+				-- local nameheader = all and v["player"] .. " = " or ""
+				-- print the level row
 				Hardcore:Print("Levels:")
-				Hardcore:Print(Hardcore:FormatRow(v),nil,"Levels")
-				--Hardcore:Print(nameheader .. v["level"] .. " = " .. SecondsToTime(v["playedtime"]) .. " = " .. v["localtime"])
+				Hardcore:Print(Hardcore:FormatRow(v), nil, "Levels")
+				-- Hardcore:Print(nameheader .. v["level"] .. " = " .. SecondsToTime(v["playedtime"]) .. " = " .. v["localtime"])
 			end
 		else
 			Hardcore:Print("No levels for " .. playerName)
@@ -751,17 +753,20 @@ function Hardcore:FormatRow(row, fullcolor, formattype)
 
 	if row ~= nil then
 		if formattype == "Levels" then
-			row_str = string.format("%-17s%s%-10s|r%-10s%-25s%-s", row["player"], "", row["level"], SecondsToTime(row["playedtime"]), "", row["localtime"])
+			row_str = string.format("%-17s%s%-10s|r%-10s%-25s%-s", row["player"], "", row["level"],
+				SecondsToTime(row["playedtime"]), "", row["localtime"])
 		elseif formattype == "Deaths" then
-			--this is a death row
+			-- this is a death row
 			if Hardcore:ValidateEntry(row) then
 				local _, name, classname, level, mapId, tod = string.split(COMM_FIELD_DELIM, row)
 				local mapName = C_Map.GetMapInfo(mapId).name
 				local color = Hardcore:GetClassColorText(classname)
 				if fullcolor then
-					row_str = string.format("%s%-17s%-10s%-10s%-25s%-s|r", color, name, classname, level, mapName, date("%Y-%m-%d %H:%M:%S", tod))
+					row_str = string.format("%s%-17s%-10s%-10s%-25s%-s|r", color, name, classname, level, mapName,
+						date("%Y-%m-%d %H:%M:%S", tod))
 				else
-					row_str = string.format("%-17s%s%-10s|r%-10s%-25s%-s", name, color, classname, level, mapName, date("%Y-%m-%d %H:%M:%S", tod))
+					row_str = string.format("%-17s%s%-10s|r%-10s%-25s%-s", name, color, classname, level, mapName,
+						date("%Y-%m-%d %H:%M:%S", tod))
 				end
 			end
 		elseif formattype == "AddonStatus" then
@@ -771,33 +776,33 @@ function Hardcore:FormatRow(row, fullcolor, formattype)
 				local FULL_PLAYER_NAME = Hardcore_GetPlayerPlusRealmName()
 				local statusText
 				local color
-	
+
 				-- Player has sent an addon pulse and is online... or its you
 				if (online_pulsing[row.name] and guild_online[row.name]) or row.name == FULL_PLAYER_NAME then
-					
+
 					local version
-	
+
 					if row.name == FULL_PLAYER_NAME then
 						version = GetAddOnMetadata('Hardcore', 'Version')
 					else
 						version = guild_versions[row.name]
 					end
-	
+
 					if guild_versions_status[row.name] == 'updated' then
 						color = COLOR_GREEN
 					else
 						color = COLOR_YELLOW
 					end
-					
-					statusText = 'HC Addon: Detected ('..version..')'
+
+					statusText = 'HC Addon: Detected (' .. version .. ')'
 				else
 					statusText = 'HC Addon: Not Detected'
 					color = COLOR_RED
 				end
-				
+
 				row_str = string.format("%sLv: %s %s (%s)", color, row.level, row.name, statusText)
 			end
-			
+
 		elseif formattype == "Rules" then
 			row_str = row
 		elseif formattype == "GetVerified" then
@@ -896,25 +901,25 @@ end
 
 --[[ UI Methods ]]--
 
---switch between displays
+-- switch between displays
 function Hardcore:SwitchDisplay(displayparam)
 
 	if displayparam ~= nil then
 		display = displayparam
-	end	
+	end
 
-	--refresh the page
+	-- refresh the page
 	Hardcore_Frame_OnShow()
 end
 
-function Hardcore_SortByLevel(pipe1, pipe2) 
+function Hardcore_SortByLevel(pipe1, pipe2)
 	return pipe1.level < pipe2.level
 end
 
 function Hardcore_Frame_OnShow()
-	Hardcore:Debug('display: '..display)
-	--refresh data source
-	if display == "Levels" then		
+	Hardcore:Debug('display: ' .. display)
+	-- refresh data source
+	if display == "Levels" then
 		displaylist = Hardcore_Settings.level_list
 		Hardcore_Name_Sort:Show()
 		Hardcore_Class_Sort:Show()
@@ -922,7 +927,7 @@ function Hardcore_Frame_OnShow()
 		Hardcore_Zone_Sort:Show()
 		Hardcore_TOD_Sort:Show()
 	elseif display == "GetVerified" then
-		--hide buttons 
+		-- hide buttons 
 		Hardcore_Name_Sort:Hide()
 		Hardcore_Class_Sort:Hide()
 		Hardcore_Level_Sort:Hide()
@@ -932,7 +937,7 @@ function Hardcore_Frame_OnShow()
 
 		local verificationstring = Hardcore:GenerateVerificationString()
 		local f = {}
-		table.insert(f,"To get verified, copy the string below and visit https://classichc.net/get-verified")
+		table.insert(f, "To get verified, copy the string below and visit https://classichc.net/get-verified")
 		table.insert(f, "")
 		table.insert(f, verificationstring)
 		displaylist = f
@@ -943,7 +948,7 @@ function Hardcore_Frame_OnShow()
 		Hardcore:UpdateGuildRosterRows()
 
 	elseif display == "Rules" then
-		--hide buttons 
+		-- hide buttons 
 		Hardcore_Name_Sort:Hide()
 		Hardcore_Class_Sort:Hide()
 		Hardcore_Level_Sort:Hide()
@@ -952,55 +957,56 @@ function Hardcore_Frame_OnShow()
 
 		-- hard coded rules table lol
 		local f = {}
-		table.insert(f,"Official website with info, rules, news, hall of legends, challenges \n")
-		table.insert(f,"https://classichc.net")
-		table.insert(f,"Help is avaiable on discord (link on website)")
-		table.insert(f,"")
-		table.insert(f,"11/24/2020 from https://classichc.net/rules/")
-		table.insert(f,"")
-		table.insert(f,"All professions allowed")
-		table.insert(f,"No restriction on talents")
-		table.insert(f,"")
-		table.insert(f,"You can use gear that you pickup or craft")
-		table.insert(f,"No Auction house, No mailbox, No trading")
-		table.insert(f,"")
-		table.insert(f,"No grouping in open world")
-		table.insert(f,"")
-		table.insert(f,"Buffs from others are allowed, don't ask for others for buffs")
-		table.insert(f,"")
-		table.insert(f,"Dungeon Groups are authorized but only ONE run of each Dungeon per character")
-		table.insert(f,"Everyone in party must be following hardcore rules")
-		table.insert(f,"Everyone must be in level range of the meeting stone.")
-		table.insert(f,"Group at the meeting stone to start the dungeon.")		
-		table.insert(f,"You can invite people who are on the way.")
-		table.insert(f,"")
-		table.insert(f,"If you level up inside of the dungeon and exceed the meeting stone requirement you can stay")
-		table.insert(f,"Warlocks are allowed to summon players to the meeting stone")
-		table.insert(f,"")
-		table.insert(f,"Warlocks can’t resurrect via SS")
-		table.insert(f,"Shamans can’t resurrect via Ankh")
-		table.insert(f,"Paladins can’t Bubble Hearth")
-		table.insert(f,"No Light of Elune + Hearthstone")
-		table.insert(f,"")
-		table.insert(f,"You need a record your journey to be verified")
-		table.insert(f,"Stream or record and upload to youtube or twitch")
-		table.insert(f,"then submit the playlist of your run on the verification page")
-		table.insert(f,"")
-		table.insert(f,"At 60 you earn your IMMORTALITY and become a full fledged character with insane bragging rights ")
-		table.insert(f,"")
-		table.insert(f,"")
-		table.insert(f,"=============== DUOS ===============")
-		table.insert(f,"")
-		table.insert(f,"You must not leave the same zone as each other")
-		table.insert(f,"*unless you are a Druid going to Moonglade to complete essential class quests")
-		table.insert(f,"You must choose a combo that spawns in the same starting location.")
-		table.insert(f,"")
-		table.insert(f,"If one of you dies, the other must fall on the sword and the run is over.")
-		table.insert(f,"")
-		table.insert(f,"You can trade your duo partner found or crafted items, including gold")
-		table.insert(f,"")
-		table.insert(f,"Multiboxing goes against the spirit of the Hardcore Challenge and is not allowed")
-		table.insert(f,"")
+		table.insert(f, "Official website with info, rules, news, hall of legends, challenges \n")
+		table.insert(f, "https://classichc.net")
+		table.insert(f, "Help is avaiable on discord (link on website)")
+		table.insert(f, "")
+		table.insert(f, "11/24/2020 from https://classichc.net/rules/")
+		table.insert(f, "")
+		table.insert(f, "All professions allowed")
+		table.insert(f, "No restriction on talents")
+		table.insert(f, "")
+		table.insert(f, "You can use gear that you pickup or craft")
+		table.insert(f, "No Auction house, No mailbox, No trading")
+		table.insert(f, "")
+		table.insert(f, "No grouping in open world")
+		table.insert(f, "")
+		table.insert(f, "Buffs from others are allowed, don't ask for others for buffs")
+		table.insert(f, "")
+		table.insert(f, "Dungeon Groups are authorized but only ONE run of each Dungeon per character")
+		table.insert(f, "Everyone in party must be following hardcore rules")
+		table.insert(f, "Everyone must be in level range of the meeting stone.")
+		table.insert(f, "Group at the meeting stone to start the dungeon.")
+		table.insert(f, "You can invite people who are on the way.")
+		table.insert(f, "")
+		table.insert(f, "If you level up inside of the dungeon and exceed the meeting stone requirement you can stay")
+		table.insert(f, "Warlocks are allowed to summon players to the meeting stone")
+		table.insert(f, "")
+		table.insert(f, "Warlocks can’t resurrect via SS")
+		table.insert(f, "Shamans can’t resurrect via Ankh")
+		table.insert(f, "Paladins can’t Bubble Hearth")
+		table.insert(f, "No Light of Elune + Hearthstone")
+		table.insert(f, "")
+		table.insert(f, "You need a record your journey to be verified")
+		table.insert(f, "Stream or record and upload to youtube or twitch")
+		table.insert(f, "then submit the playlist of your run on the verification page")
+		table.insert(f, "")
+		table.insert(f,
+			"At 60 you earn your IMMORTALITY and become a full fledged character with insane bragging rights ")
+		table.insert(f, "")
+		table.insert(f, "")
+		table.insert(f, "=============== DUOS ===============")
+		table.insert(f, "")
+		table.insert(f, "You must not leave the same zone as each other")
+		table.insert(f, "*unless you are a Druid going to Moonglade to complete essential class quests")
+		table.insert(f, "You must choose a combo that spawns in the same starting location.")
+		table.insert(f, "")
+		table.insert(f, "If one of you dies, the other must fall on the sword and the run is over.")
+		table.insert(f, "")
+		table.insert(f, "You can trade your duo partner found or crafted items, including gold")
+		table.insert(f, "")
+		table.insert(f, "Multiboxing goes against the spirit of the Hardcore Challenge and is not allowed")
+		table.insert(f, "")
 		displaylist = f
 	end
 
@@ -1008,9 +1014,9 @@ function Hardcore_Frame_OnShow()
 		Hardcore_VerificationString:Hide()
 	end
 
-	--subtitle text
+	-- subtitle text
 	if display == "Levels" and #displaylist > 0 then
-		Hardcore_SubTitle:SetText("You've leveled up "..tostring(#displaylist).." times!")
+		Hardcore_SubTitle:SetText("You've leveled up " .. tostring(#displaylist) .. " times!")
 	elseif display == "AddonStatus" and guild_roster_loading then
 		Hardcore_SubTitle:SetText("Loading Updated Guild Addon Status...")
 	else
@@ -1018,20 +1024,20 @@ function Hardcore_Frame_OnShow()
 	end
 
 	Hardcore_Deathlist_ScrollBar_Update()
-	
+
 end
 
 function Hardcore_Deathlist_ScrollBar_Update()
-	--max value
+	-- max value
 	if not (displaylist == nil) then
 		FauxScrollFrame_Update(MyModScrollBar, #displaylist, 20, 16)
 
-		--loop through lines adding data
-		for line=1, 20 do
+		-- loop through lines adding data
+		for line = 1, 20 do
 			local lineplusoffset = line + FauxScrollFrame_GetOffset(MyModScrollBar)
-			local button = getglobal("DeathListEntry"..line)
+			local button = getglobal("DeathListEntry" .. line)
 			if lineplusoffset <= #displaylist then
-				--get data
+				-- get data
 				local row = Hardcore:FormatRow(displaylist[lineplusoffset], true, display)
 				if row then
 					-- Hacky way to display the verification string in a EditBox
@@ -1055,10 +1061,15 @@ function Hardcore_Deathlist_ScrollBar_Update()
 end
 
 function Hardcore:RecordReminder()
-	if Hardcore_Settings.enabled == false then return end
-	if Hardcore_Settings.notify == false then return end
+	if Hardcore_Settings.enabled == false then
+		return
+	end
+	if Hardcore_Settings.notify == false then
+		return
+	end
 
-	Hardcore:ShowAlertFrame('hc_red_delayed_10', "Hardcore Enabled")
+	Hardcore:ShowAlertFrame(ALERT_STYLES.hc_green, "Hardcore Enabled\n START RECORDING")
+
 end
 
 ----------------------------------------------------------------------
@@ -1071,9 +1082,13 @@ function Hardcore:initMinimapButton()
 	local function MiniBtnClickFunc(arg1)
 
 		-- Prevent options panel from showing if Blizzard options panel is showing
-		if InterfaceOptionsFrame:IsShown() or VideoOptionsFrame:IsShown() or ChatConfigFrame:IsShown() then return end
+		if InterfaceOptionsFrame:IsShown() or VideoOptionsFrame:IsShown() or ChatConfigFrame:IsShown() then
+			return
+		end
 		-- Prevent options panel from showing if Blizzard Store is showing
-		if StoreFrame and StoreFrame:GetAttribute("isshown") then return end
+		if StoreFrame and StoreFrame:GetAttribute("isshown") then
+			return
+		end
 		-- Left button down
 		if arg1 == "LeftButton" then
 
@@ -1096,10 +1111,10 @@ function Hardcore:initMinimapButton()
 
 			-- No modifier key toggles the options panel
 			if Hardcore_Frame:IsShown() then
-				Hardcore_Frame:Hide()				
+				Hardcore_Frame:Hide()
 			else
 				Hardcore_Frame:Show()
-			end			
+			end
 		end
 	end
 
@@ -1112,12 +1127,14 @@ function Hardcore:initMinimapButton()
 			MiniBtnClickFunc(btn)
 		end,
 		OnTooltipShow = function(tooltip)
-			if not tooltip or not tooltip.AddLine then return end
+			if not tooltip or not tooltip.AddLine then
+				return
+			end
 			tooltip:AddLine("Hardcore")
 			tooltip:AddLine("|cFFCFCFCFclick|r show window")
 			tooltip:AddLine("|cFFCFCFCFshift click|r toggle enable")
 			tooltip:AddLine("|cFFCFCFCFctrl click|r toggle minimap button")
-		end,
+		end
 	})
 
 	icon = LibStub("LibDBIcon-1.0", true)
@@ -1134,7 +1151,7 @@ function Hardcore:initMinimapButton()
 	-- 	end
 	-- end
 
-	if(Hardcore_Settings["hide"] == false) then
+	if (Hardcore_Settings["hide"] == false) then
 		icon:Show("Hardcore")
 	end
 
@@ -1157,7 +1174,7 @@ end
 
 function Hardcore:PrintBubbleHearthInfractions()
 	if Hardcore_Character.bubble_hearth_incidents ~= nil then
-		for i,v in ipairs(Hardcore_Character.bubble_hearth_incidents) do
+		for i, v in ipairs(Hardcore_Character.bubble_hearth_incidents) do
 			if v.guid == PLAYER_GUID then
 				message = "\124cffFF0000Player has a " .. v.aura_type .. " hearth infraction at date " .. v.start_cast
 				Hardcore:Print(message)
@@ -1172,13 +1189,16 @@ function Hardcore:GenerateVerificationString()
 	local realm = GetRealmName()
 	local level = UnitLevel("player")
 
-	local baseVerificationData = {Hardcore_Character.guid, realm, race, class, name, level, Hardcore_Character.time_played, Hardcore_Character.time_tracked, Hardcore_Character.deaths}
-	local baseVerificationString = Hardcore_join(Hardcore_map(baseVerificationData, Hardcore_stringOrNumberToUnicode), ATTRIBUTE_SEPARATOR)
+	local baseVerificationData = {Hardcore_Character.guid, realm, race, class, name, level,
+								  Hardcore_Character.time_played, Hardcore_Character.time_tracked,
+								  Hardcore_Character.deaths}
+	local baseVerificationString = Hardcore_join(Hardcore_map(baseVerificationData, Hardcore_stringOrNumberToUnicode),
+		ATTRIBUTE_SEPARATOR)
 	local bubbleHearthIncidentsVerificationString = Hardcore_tableToUnicode(Hardcore_Character.bubble_hearth_incidents)
 	local playedtimeGapsVerificationString = Hardcore_tableToUnicode(Hardcore_Character.played_time_gap_warnings)
 
-
-	return Hardcore_join({baseVerificationString, bubbleHearthIncidentsVerificationString, playedtimeGapsVerificationString}, ATTRIBUTE_SEPARATOR)
+	return Hardcore_join({baseVerificationString, bubbleHearthIncidentsVerificationString,
+						  playedtimeGapsVerificationString}, ATTRIBUTE_SEPARATOR)
 end
 
 --[[ Timers ]]--
@@ -1189,7 +1209,7 @@ function Hardcore:InitiatePulse()
 		if CTL and isInGuild then
 			-- Send along the version we're using
 			local version = GetAddOnMetadata("Hardcore", "Version")
-			local commMessage = COMM_COMMANDS[1]..COMM_COMMAND_DELIM..version
+			local commMessage = COMM_COMMANDS[1] .. COMM_COMMAND_DELIM .. version
 			CTL:SendAddonMessage("BULK", COMM_NAME, commMessage, "GUILD")
 		end
 	end)
@@ -1238,14 +1258,13 @@ end
 
 function Hardcore:CheckVersionsAndUpdate(playername, versionstring)
 
-	if guild_highest_version == nil then 
+	if guild_highest_version == nil then
 		guild_highest_version = GetAddOnMetadata('Hardcore', 'Version')
 	end
 
 	-- Hardcore:Debug('Comparing: data: '..versionstring.. ' to guild_highest_version: '..guild_highest_version)
 	if versionstring ~= guild_highest_version then
-		
-		
+
 		local greaterVersion = Hardcore_GetGreaterVersion(versionstring, guild_highest_version)
 		-- Hardcore:Debug('higest is: '..greaterVersion)
 
@@ -1290,31 +1309,29 @@ function Hardcore:FetchGuildRoster()
 	SetGuildRosterShowOffline(false)
 	requestGuildRoster = C_Timer.NewTicker(2, function()
 		local postfix = ""
-		
 
 		if guild_roster_loading then
 			-- generate animated ellipsis to show loading
 			if num_ellipsis == 4 then
 				num_ellipsis = 1
 			end
-			for i=1, num_ellipsis do
-				postfix = postfix..'.'
+			for i = 1, num_ellipsis do
+				postfix = postfix .. '.'
 			end
 			-- end animated elllipsis
 
 			if display == "AddonStatus" then
-				Hardcore_SubTitle:SetText("Loading Updated Guild Addon Status"..postfix)
+				Hardcore_SubTitle:SetText("Loading Updated Guild Addon Status" .. postfix)
 			end
 			GuildRoster()
 		else
 			requestGuildRoster:Cancel()
-			
+
 		end
 
 		num_ellipsis = num_ellipsis + 1
 	end)
 end
-
 
 --[[ Timers ]]--
 local PLAY_TIME_UPDATE_INTERVAL = 1
@@ -1322,15 +1339,10 @@ C_Timer.NewTicker(PLAY_TIME_UPDATE_INTERVAL, function()
 	Hardcore_Character.time_tracked = Hardcore_Character.time_tracked + PLAY_TIME_UPDATE_INTERVAL
 	Hardcore:RequestTimePlayed()
 	if RECEIVED_FIRST_PLAYED_TIME_MSG == true then
-		Hardcore_Character.accumulated_time_diff =  Hardcore_Character.time_played - Hardcore_Character.time_tracked
+		Hardcore_Character.accumulated_time_diff = Hardcore_Character.time_played - Hardcore_Character.time_tracked
 	end
 end)
 
 --[[ Start Addon ]]--
 Hardcore:Startup()
-
-
-
-
-
 

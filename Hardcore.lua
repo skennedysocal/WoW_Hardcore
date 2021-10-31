@@ -169,7 +169,7 @@ local function SlashHandler(msg, editbox)
 			Hardcore:Print("Notification disabled")
 		end
 
-		-- Alert debug code
+	-- Alert debug code
 	elseif cmd == "alert" then
 		local head, tail = "", {}
 		for substring in args:gmatch("%S+") do
@@ -182,7 +182,7 @@ local function SlashHandler(msg, editbox)
 
 		local style, message = head, table.concat(tail, " ")
 		Hardcore:ShowAlertFrame(style, message)
-		-- End Alert debug code
+	-- End Alert debug code
 
 	else
 		-- If not handled above, display some sort of help message

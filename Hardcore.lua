@@ -26,7 +26,7 @@ Hardcore_Settings = {
 
 --[[ Character saved variables ]]--
 Hardcore_Character = {
-  guid = "",
+  	guid = "",
 	time_tracked = 0, 		          -- seconds
 	time_played = 0, 		            -- seconds
 	accumulated_time_diff = 0, 	    -- seconds

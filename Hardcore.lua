@@ -17,14 +17,14 @@ You should have received a copy of the GNU General Public License
 along with the Hardcore AddOn. If not, see <http://www.gnu.org/licenses/>.
 --]]
 
---[[ Global saved variables ]] --
+--[[ Global saved variables ]]--
 Hardcore_Settings = {
 	enabled = true,
 	notify = true,
-	level_list = {}
+	level_list = {},
 }
 
---[[ Character saved variables ]] --
+--[[ Character saved variables ]]--
 Hardcore_Character = {
 	guid = "",
 	time_tracked = 0, -- seconds
@@ -33,10 +33,10 @@ Hardcore_Character = {
 	tracked_played_percentage = nil,
 	deaths = 0,
 	bubble_hearth_incidents = {},
-	played_time_gap_warnings = {}
+	played_time_gap_warnings = {},
 }
 
---[[ Local variables ]] --
+--[[ Local variables ]]--
 local debug = false
 local pulses = {}
 local online_pulsing = {}
@@ -49,7 +49,7 @@ local guild_roster_loading = false
 local bubble_hearth_vars = {
 	spell_id = 8690,
 	bubble_name = "Divine Shield",
-	light_of_elune_name = "Light of Elune"
+	light_of_elune_name = "Light of Elune",
 }
 
 -- addon communication
@@ -95,42 +95,42 @@ local ALERT_STYLES = {
 		text = Hardcore_Alert_Text, -- text layer
 		icon = Hardcore_Alert_Icon, -- icon layer
 		file = "logo-emblem.blp", -- string
-		delay = COMM_DELAY -- int seconds
+		delay = COMM_DELAY, -- int seconds
 	},
 	death = {
 		frame = Hardcore_Alert_Frame,
 		text = Hardcore_Alert_Text,
 		icon = Hardcore_Alert_Icon,
 		file = "alert-death.blp",
-		delay = COMM_DELAY
+		delay = COMM_DELAY,
 	},
 	hc_green = {
 		frame = Hardcore_Alert_Frame,
 		text = Hardcore_Alert_Text,
 		icon = Hardcore_Alert_Icon,
 		file = "alert-hc-green.blp",
-		delay = COMM_DELAY
+		delay = COMM_DELAY,
 	},
 	hc_red = {
 		frame = Hardcore_Alert_Frame,
 		text = Hardcore_Alert_Text,
 		icon = Hardcore_Alert_Icon,
 		file = "alert-hc-red.blp",
-		delay = COMM_DELAY
+		delay = COMM_DELAY,
 	},
 	spirithealer = {
 		frame = Hardcore_Alert_Frame,
 		text = Hardcore_Alert_Text,
 		icon = Hardcore_Alert_Icon,
 		file = "alert-spirithealer.blp",
-		delay = COMM_DELAY
+		delay = COMM_DELAY,
 	},
 	bubble = {
 		frame = Hardcore_Alert_Frame,
 		text = Hardcore_Alert_Text,
 		icon = Hardcore_Alert_Icon,
 		file = "alert-hc-red.blp",
-		delay = 8
+		delay = 8,
 	}
 }
 
@@ -140,7 +140,7 @@ Hardcore.ALERT_STYLES = ALERT_STYLES
 
 Hardcore_Frame:ApplyBackdrop()
 
---[[ Command line handler ]] --
+--[[ Command line handler ]]--
 
 local function SlashHandler(msg, editbox)
 	local _, _, cmd, args = string.find(msg, "%s?(%w+)%s?(.*)")
@@ -194,7 +194,7 @@ end
 SLASH_HARDCORE1, SLASH_HARDCORE2 = '/hardcore', '/hc'
 SlashCmdList["HARDCORE"] = SlashHandler
 
---[[ Startup ]] --
+--[[ Startup ]]--
 
 function Hardcore:Startup()
 	-- the entry point of our addon
@@ -210,7 +210,7 @@ function Hardcore:Startup()
 	self:RegisterEvent("PLAYER_LOGIN")
 end
 
---[[ Events ]] --
+--[[ Events ]]--
 
 function Hardcore:PLAYER_LOGIN()
 	-- cache player data
@@ -631,7 +631,7 @@ function Hardcore:GUILD_ROSTER_UPDATE(...)
 	end
 end
 
---[[ Utility Methods ]] --
+--[[ Utility Methods ]]--
 
 function Hardcore:Print(msg)
 	print("|cffed9121Hardcore|r: " .. (msg or ""))
@@ -916,7 +916,7 @@ function Hardcore:ValidateEntry(data)
 	return true
 end
 
---[[ UI Methods ]] --
+--[[ UI Methods ]]--
 
 -- switch between displays
 function Hardcore:SwitchDisplay(displayparam)
@@ -1224,7 +1224,7 @@ function Hardcore:GenerateVerificationString()
 						  playedtimeGapsVerificationString}, ATTRIBUTE_SEPARATOR)
 end
 
---[[ Timers ]] --
+--[[ Timers ]]--
 function Hardcore:InitiatePulse()
 	-- Set send pulses ticker
 	C_Timer.NewTicker(COMM_PULSE_FREQUENCY, function()
@@ -1355,7 +1355,7 @@ function Hardcore:FetchGuildRoster()
 	end)
 end
 
---[[ Timers ]] --
+--[[ Timers ]]--
 local PLAY_TIME_UPDATE_INTERVAL = 1
 C_Timer.NewTicker(PLAY_TIME_UPDATE_INTERVAL, function()
 	Hardcore_Character.time_tracked = Hardcore_Character.time_tracked + PLAY_TIME_UPDATE_INTERVAL
@@ -1365,6 +1365,6 @@ C_Timer.NewTicker(PLAY_TIME_UPDATE_INTERVAL, function()
 	end
 end)
 
---[[ Start Addon ]] --
+--[[ Start Addon ]]--
 Hardcore:Startup()
 

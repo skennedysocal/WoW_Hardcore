@@ -631,15 +631,12 @@ end
 
 -- Alert UI
 function Hardcore:ShowAlertFrame(style, message)
-	-- style is a string-based key within ALERT_STYLES
+	-- style is a key-based property of ALERT_STYLES
 	-- message is any text accepted by FontString:SetText(message)
 
 	message = message or ""
 
 	local frame, text, icon, file, filename, delay = nil, nil, nil, nil, nil, nil
-	if ALERT_STYLES[style] == nil then
-		Hardcore:Debug("Alert Style not found: " .. style .. ". Using fallback.")
-	end
 	local data = ALERT_STYLES[style] or ALERT_STYLES["hc_red"]
 	frame, text, icon, file, delay = data.frame, data.text, data.icon, data.file, data.delay
 

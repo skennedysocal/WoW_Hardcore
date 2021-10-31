@@ -673,13 +673,6 @@ function Hardcore:Add(data)
 		local messageString = string.format(messageFormat, name, class_color, class_name, level, map_name)
 
 		Hardcore:ShowAlertFrame(ALERT_STYLES.death, messageString)
-
-        -- Hardcore_Notification_Text:SetText(messageString)
-        -- Hardcore_Notification_Frame:Show()
-        -- PlaySound(8959)
-        -- C_Timer.After(COMM_DELAY, function()
-        --     Hardcore_Notification_Frame:Hide()
-        -- end)
 	end
 end
 

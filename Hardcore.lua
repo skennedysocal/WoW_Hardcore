@@ -26,7 +26,7 @@ Hardcore_Settings = {
 
 --[[ Character saved variables ]]--
 Hardcore_Character = {
-  	guid = "",
+	guid = "",
 	time_tracked = 0, 		          -- seconds
 	time_played = 0, 		            -- seconds
 	accumulated_time_diff = 0, 	    -- seconds
@@ -603,7 +603,9 @@ function Hardcore:GUILD_ROSTER_UPDATE(...)
 	end
 
 	Hardcore:UpdateGuildRosterRows()
-	Hardcore_SubTitle:SetText("Guild Addon Status")
+	if display == "AddonStatus" then
+		Hardcore_SubTitle:SetText("Guild Addon Status")
+	end
 end
 
 --[[ Utility Methods ]]--
@@ -1293,7 +1295,9 @@ function Hardcore:FetchGuildRoster()
 			end
 			-- end animated elllipsis
 
-			Hardcore_SubTitle:SetText("Loading Updated Guild Addon Status"..postfix)
+			if display == "AddonStatus" then
+				Hardcore_SubTitle:SetText("Loading Updated Guild Addon Status"..postfix)
+			end
 			GuildRoster()
 		else
 			requestGuildRoster:Cancel()

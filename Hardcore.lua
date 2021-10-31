@@ -71,10 +71,60 @@ local display = "Rules"
 local displaylist = Hardcore_Settings.level_list
 local icon = nil
 
+-- available alert frame/icon styles
+local MEDIA_DIR = "Interface\\AddOns\\Hardcore\\Media\\"
+local ALERT_STYLES = {
+	logo = {
+		frame = Hardcore_Alert_Frame, -- frame object
+		text = Hardcore_Alert_Text, -- text layer
+		icon = Hardcore_Alert_Icon, -- icon layer
+		file = "logo-emblem.blp", -- string
+		delay = COMM_DELAY, -- int seconds
+	},
+	death = {
+		frame = Hardcore_Alert_Frame,
+		text = Hardcore_Alert_Text,
+		icon = Hardcore_Alert_Icon,
+		file = "alert-death.blp",
+		delay = COMM_DELAY,
+	},
+	hc_green = {
+		frame = Hardcore_Alert_Frame,
+		text = Hardcore_Alert_Text,
+		icon = Hardcore_Alert_Icon,
+		file  = "alert-hc-green.blp",
+		delay = COMM_DELAY,
+	},
+	hc_red = {
+		frame = Hardcore_Alert_Frame,
+		text = Hardcore_Alert_Text,
+		icon = Hardcore_Alert_Icon,
+		file  = "alert-hc-red.blp",
+		delay = COMM_DELAY,
+	},
+	spirithealer = {
+		frame = Hardcore_Alert_Frame,
+		text = Hardcore_Alert_Text,
+		icon = Hardcore_Alert_Icon,
+		file  = "alert-spirithealer.blp",
+		delay = COMM_DELAY,
+	},
+	bubble = {
+		frame = Hardcore_Alert_Frame,
+		text = Hardcore_Alert_Text,
+		icon = Hardcore_Alert_Icon,
+		file = "alert-hc-red.blp",
+		delay = 8,
+	}
+}
+
 --the big frame object for our addon
 local Hardcore = CreateFrame("Frame", "Hardcore", nil, "BackdropTemplate")
+Hardcore.ALERT_STYLES = ALERT_STYLES
 
 Hardcore_Frame:ApplyBackdrop()
+
+
 
 --[[ Command line handler ]]--
 
@@ -104,6 +154,22 @@ local function SlashHandler(msg, editbox)
 		else
 			Hardcore:Print("Notification disabled")
 		end
+
+	-- Alert debug code
+	elseif cmd == "alert" then
+		local head, tail = "", {}
+		for substring in args:gmatch("%S+") do
+			if head == "" then
+				head = substring
+			else
+				table.insert(tail, substring)
+			end
+		end
+
+		local style, message = head, table.concat(tail, " ")
+		Hardcore:ShowAlertFrame(style, message)
+-- End Zdeyn's debug code
+
 	else
 		-- If not handled above, display some sort of help message
 		Hardcore:Print("|cff00ff00Syntax:|r/hardcore [command]")
@@ -452,6 +518,37 @@ function Hardcore:Debug(msg)
 	if true == debug then
 		print("|cfffd9122HCDebug|r: "..(msg or ""))
 	end
+end
+
+-- Alert UI
+function Hardcore:ShowAlertFrame(style, message)
+	-- style is a string-based key within ALERT_STYLES
+	-- message is any text accepted by FontString:SetText(message)
+
+	message = message or ""
+	
+	local frame, text, icon, file, filename, delay = nil, nil, nil, nil, nil, nil
+	if ALERT_STYLES[style] == nil then
+		Hardcore:Debug("Alert Style not found: " .. style .. ". Using fallback.")
+	end
+	local data = ALERT_STYLES[style] or ALERT_STYLES["hc_red"]
+	frame, text, icon, file, delay = data.frame, data.text, data.icon, data.file, data.delay
+
+	filename = MEDIA_DIR .. file
+	icon:SetTexture(filename)
+	text:SetText(message)
+
+	frame:Show()
+
+	-- TODO: Allow custom sounds per-frame, or allow passing a sound to the function
+	PlaySound(8959)
+
+	-- HACK:
+	-- There's a bug here where a sequence of overlapping notifications share one 'hide' timer
+	-- There should be a step here that unbinds all-but-the-last notification's Hide() callback
+	C_Timer.After(delay, function()
+		frame:Hide()
+	end)
 end
 
 function Hardcore:Add(data)
@@ -859,7 +956,7 @@ function Hardcore:initMinimapButton()
 	local miniButton = LibStub("LibDataBroker-1.1"):NewDataObject("Hardcore", {
 		type = "data source",
 		text = "Hardcore",
-		icon = "Interface\\AddOns\\Hardcore\\Media\\logo_emblem.blp",
+		icon = "Interface\\AddOns\\Hardcore\\Media\\logo-emblem.blp",
 		OnClick = function(self, btn)
 			MiniBtnClickFunc(btn)
 		end,

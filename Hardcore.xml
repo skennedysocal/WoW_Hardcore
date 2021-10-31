@@ -5,6 +5,28 @@
     </FontHeight>
   </Font>
 
+  <Font name="HardcoreFont" font="Interface\AddOns\Hardcore\Media\BreatheFire.ttf" virtual="true">
+
+	<Color r="0.98" g="0.86" b="0" a="1"/> -- 252, 222, 0
+	<FontHeight val="32"/>
+	<Shadow>
+    	<Offset x="-2" y="-2" />
+    	<Color r="0" g="0" b="0"/>
+  	</Shadow>
+	<Shadow>
+    	<Offset x="-2" y="2" />
+    	<Color r="0" g="0" b="0"/>
+  	</Shadow>
+	<Shadow>
+    	<Offset x="2" y="-2" />
+    	<Color r="0" g="0" b="0"/>
+  	</Shadow>
+	<Shadow>
+    	<Offset x="2" y="2" />
+    	<Color r="0" g="0" b="0"/>
+  	</Shadow>
+  </Font>
+
   <Button name = "DeathListEntryTemplate" virtual="true">
     <Size>
       <AbsDimension x="150" y="16" />
@@ -19,7 +41,7 @@
 		</Anchors>
 		<Layers>
 			<Layer>
-				<Texture name="Hardcore_Notification_Logo" file="Interface\AddOns\Hardcore\Media\logo_emblem.blp">
+				<Texture name="Hardcore_Notification_Logo" file="Interface\AddOns\Hardcore\Media\logo-emblem.blp">
 					<Size x="50" y="50" />
 					<Anchors>
 						<Anchor point="CENTER" y="45" />
@@ -44,7 +66,7 @@
 		</Anchors>
 		<Layers>
 			<Layer>
-				<Texture name="Hardcore_Warning_Logo" file="Interface\AddOns\Hardcore\Media\logo_emblem.blp">
+				<Texture name="Hardcore_Warning_Logo" file="Interface\AddOns\Hardcore\Media\logo-emblem.blp">
 					<Size x="50" y="50" />
 					<Anchors>
 						<Anchor point="CENTER" y="45" />
@@ -62,6 +84,32 @@
 		</Layers>
   </Frame>
 
+  <?comment msg="This provides dynamic style templating, via ALERT_STYLES" ?>
+  <Frame name="Hardcore_Alert_Frame" parent="UIParent" hidden="true" toplevel="true">
+		<Size x="400" y="610" />
+		<Anchors>
+			<Anchor point="TOP" relativeTo="UIParent" relativePoint="TOP" y="-150" /> <?comment msg="This controls the position of the entire frame, relative to UI Parent" ?>
+		</Anchors>
+		<Layers>
+			<Layer>
+				<Texture name="Hardcore_Alert_Icon" file="Interface\AddOns\Hardcore\Media\logo-emblem.blp">
+					<Size x="400" y="200" />
+					<Anchors>
+						<Anchor point="TOP" relativeTo="Hardcore_Alert_Frame" relativePoint="TOP" y="50" /> 
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<FontString name="Hardcore_Alert_Text" inherits="HardcoreFont" justifyH="CENTER" justifyV="TOP">
+					<Size x="360" y="350" />
+					<Anchors>
+						<Anchor point="TOP" relativeTo="Hardcore_Alert_Icon" relativePoint="TOP" y="-140" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+  </Frame>
+
   <Frame name="Hardcore_Frame" parent="UIParent" hidden="true" toplevel="true" movable="true" enableMouse="true" inherits="BackdropTemplate">>
 		<Size x="700" y="500" />
 		<Anchors>
@@ -72,13 +120,13 @@
 		</KeyValues>
 		<Layers>
 			<Layer>
-				<Texture name="Hardcore_Logo1" file="Interface\AddOns\Hardcore\Media\logo_emblem.blp">
+				<Texture name="Hardcore_Logo1" file="Interface\AddOns\Hardcore\Media\logo-emblem.blp">
 					<Size x="70" y="70" />
 					<Anchors>
 						<Anchor point="TOPLEFT" x="67" y="-15" />
 					</Anchors>
 				</Texture>
-				<Texture name="Hardcore_Logo2" file="Interface\AddOns\Hardcore\Media\logo_emblem.blp">
+				<Texture name="Hardcore_Logo2" file="Interface\AddOns\Hardcore\Media\logo-emblem.blp">
 					<Size x="70" y="70" />
 					<Anchors>
 						<Anchor point="TOPLEFT" x="572" y="-15" />

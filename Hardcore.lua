@@ -398,14 +398,6 @@ function Hardcore:PLAYER_UNGHOST()
 	SendChatMessage(message, "GUILD", nil, nil)
 
 	Hardcore:ShowAlertFrame(ALERT_STYLES.spirithealer, message)
-
-    -- Screen notification
-    -- Hardcore_Notification_Text:SetText(message)
-    -- Hardcore_Notification_Frame:Show()
-    -- PlaySound(8959)
-    -- C_Timer.After(COMM_DELAY, function()
-    --     Hardcore_Notification_Frame:Hide()
-    -- end)
 end
 
 function Hardcore:MAIL_SHOW()

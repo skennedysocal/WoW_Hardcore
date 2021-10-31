@@ -1066,12 +1066,6 @@ function Hardcore:RecordReminder()
 
 	Hardcore:ShowAlertFrame(ALERT_STYLES.hc_green, "Hardcore Enabled\n START RECORDING")
 
-    -- Hardcore_Notification_Text:SetText()
-    -- Hardcore_Notification_Frame:Show()
-    -- PlaySound(8959)
-    -- C_Timer.After(10, function()
-    --     Hardcore_Notification_Frame:Hide()
-    -- end)
 end
 
 ----------------------------------------------------------------------

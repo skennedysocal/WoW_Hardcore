@@ -614,11 +614,14 @@ function Hardcore:GUILD_ROSTER_UPDATE(...)
 		local name, rankName, rankIndex, level, classDisplayName, zone, publicNote, officerNote, isOnline, status,
 			class, achievementPoints, achievementRank, isMobile, canSoR, repStanding, GUID = GetGuildRosterInfo(i)
 
-		guild_online[name] = {
-			name = name,
-			level = level,
-			classDisplayName = classDisplayName
-		}
+		-- name is nil after a gquit, so nil check here
+		if name then
+			guild_online[name] = {
+				name = name,
+				level = level,
+				classDisplayName = classDisplayName
+			}
+		end
 	end
 
 	Hardcore:UpdateGuildRosterRows()

@@ -19,7 +19,6 @@ along with the Hardcore AddOn. If not, see <http://www.gnu.org/licenses/>.
 
 --[[ Global saved variables ]]--
 Hardcore_Settings = {
-	enabled = true,
 	notify = true,
 	level_list = {},
 }
@@ -81,6 +80,8 @@ local PLAYED_TIME_MIN_PLAYED_THRESH = 6000 -- seconds
 local COLOR_RED = "|c00ff0000"
 local COLOR_GREEN = "|c0000ff00"
 local COLOR_YELLOW = "|c00ffff00"
+local STRING_ADDON_STATUS_SUBTITLE = "Guild Addon Status"
+local STRING_ADDON_STATUS_SUBTITLE_LOADING = "Guild Addon Status (Loading)"
 
 -- frame display
 local display = "Rules"
@@ -96,6 +97,7 @@ local ALERT_STYLES = {
 		icon = Hardcore_Alert_Icon, -- icon layer
 		file = "logo-emblem.blp", -- string
 		delay = COMM_DELAY, -- int seconds
+		alertSound = 8959
 	},
 	death = {
 		frame = Hardcore_Alert_Frame,
@@ -103,6 +105,7 @@ local ALERT_STYLES = {
 		icon = Hardcore_Alert_Icon,
 		file = "alert-death.blp",
 		delay = COMM_DELAY,
+		alertSound = nil
 	},
 	hc_green = {
 		frame = Hardcore_Alert_Frame,
@@ -110,6 +113,7 @@ local ALERT_STYLES = {
 		icon = Hardcore_Alert_Icon,
 		file = "alert-hc-green.blp",
 		delay = COMM_DELAY,
+		alertSound = 8959
 	},
 	hc_red = {
 		frame = Hardcore_Alert_Frame,
@@ -117,6 +121,7 @@ local ALERT_STYLES = {
 		icon = Hardcore_Alert_Icon,
 		file = "alert-hc-red.blp",
 		delay = COMM_DELAY,
+		alertSound = 8959
 	},
 	spirithealer = {
 		frame = Hardcore_Alert_Frame,
@@ -124,6 +129,7 @@ local ALERT_STYLES = {
 		icon = Hardcore_Alert_Icon,
 		file = "alert-spirithealer.blp",
 		delay = COMM_DELAY,
+		alertSound = 8959
 	},
 	bubble = {
 		frame = Hardcore_Alert_Frame,
@@ -131,13 +137,15 @@ local ALERT_STYLES = {
 		icon = Hardcore_Alert_Icon,
 		file = "alert-hc-red.blp",
 		delay = 8,
+		alertSound = 8959
 	},
-	hc_red_delayed_10 = {
+	hc_enabled = {
 		frame = Hardcore_Alert_Frame,
 		text = Hardcore_Alert_Text,
 		icon = Hardcore_Alert_Icon,
 		file  = "alert-hc-red.blp",
 		delay = 10,
+		alertSound = nil
 	},
 }
 
@@ -156,10 +164,6 @@ local function SlashHandler(msg, editbox)
 		Hardcore:Levels()
 	elseif cmd == "alllevels" then
 		Hardcore:Levels(true)
-	elseif cmd == "enable" then
-		Hardcore:Enable(true)
-	elseif cmd == "disable" then
-		Hardcore:Enable(false)
 	elseif cmd == "show" then
 		Hardcore_Frame:Show()
 	elseif cmd == "hide" then
@@ -188,7 +192,14 @@ local function SlashHandler(msg, editbox)
 		end
 
 		local style, message = head, table.concat(tail, " ")
-		Hardcore:ShowAlertFrame(style, message)
+		local styleConfig
+		if ALERT_STYLES[style] then
+			styleConfig = ALERT_STYLES[style]
+		else
+			styleConfig = ALERT_STYLES.hc_red
+		end
+
+		Hardcore:ShowAlertFrame(styleConfig, message)
 	-- End Alert debug code
 
 	else
@@ -351,9 +362,6 @@ function Hardcore:PLAYER_ENTERING_WORLD()
 end
 
 function Hardcore:PLAYER_DEAD()
-	if Hardcore_Settings.enabled == false then
-		return
-	end
 
 	-- screenshot
 	C_Timer.After(PICTURE_DELAY, Screenshot)
@@ -390,9 +398,6 @@ function Hardcore:PLAYER_DEAD()
 end
 
 function Hardcore:PLAYER_UNGHOST()
-	if Hardcore_Settings.enabled == false then
-		return
-	end
 	if UnitIsDeadOrGhost("player") == 1 then
 		return
 	end -- prevent message on ghost login or zone
@@ -405,28 +410,16 @@ function Hardcore:PLAYER_UNGHOST()
 end
 
 function Hardcore:MAIL_SHOW()
-	if Hardcore_Settings.enabled == false then
-		return
-	end
-
 	Hardcore:Print("Hardcore mode is enabled, mailbox access is blocked.")
 	CloseMail()
 end
 
 function Hardcore:AUCTION_HOUSE_SHOW()
-	if Hardcore_Settings.enabled == false then
-		return
-	end
-
 	Hardcore:Print("Hardcore mode is enabled, auction house access is blocked.")
 	CloseAuctionHouse()
 end
 
 function Hardcore:PLAYER_LEVEL_UP(...)
-	if Hardcore_Settings.enabled == false then
-		return
-	end
-
 	-- store the recent level up to use in TIME_PLAYED_MSG
 	local level, healthDelta, powerDelta, numNewTalents, numNewPvpTalentSlots, strengthDelta, agilityDelta,
 		staminaDelta, intellectDelta = ...
@@ -446,10 +439,6 @@ function Hardcore:PLAYER_LEVEL_UP(...)
 end
 
 function Hardcore:TIME_PLAYED_MSG(...)
-	if Hardcore_Settings.enabled == false then
-		return
-	end
-
 	local totalTimePlayed, _ = ...
 	Hardcore_Character.time_played = totalTimePlayed
 
@@ -569,10 +558,6 @@ function Hardcore:RequestTimePlayed()
 end
 
 function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
-	if Hardcore_Settings.enabled == false then
-		return
-	end
-
 	-- Ignore messages that are not ours
 	if COMM_NAME == prefix then
 		-- Get the command
@@ -626,7 +611,7 @@ function Hardcore:GUILD_ROSTER_UPDATE(...)
 
 	Hardcore:UpdateGuildRosterRows()
 	if display == "AddonStatus" then
-		Hardcore_SubTitle:SetText("Guild Addon Status")
+		Hardcore_SubTitle:SetText(STRING_ADDON_STATUS_SUBTITLE)
 	end
 end
 
@@ -643,15 +628,13 @@ function Hardcore:Debug(msg)
 end
 
 -- Alert UI
-function Hardcore:ShowAlertFrame(style, message)
-	-- style is a key-based property of ALERT_STYLES
+function Hardcore:ShowAlertFrame(styleConfig, message)
 	-- message is any text accepted by FontString:SetText(message)
 
 	message = message or ""
 
-	local frame, text, icon, file, filename, delay = nil, nil, nil, nil, nil, nil
-	local data = ALERT_STYLES[style] or ALERT_STYLES["hc_red"]
-	frame, text, icon, file, delay = data.frame, data.text, data.icon, data.file, data.delay
+	local data = styleConfig or ALERT_STYLES["hc_red"]
+	local frame, text, icon, file, delay, alertSound = data.frame, data.text, data.icon, data.file, data.delay, data.alertSound
 
 	filename = MEDIA_DIR .. file
 	icon:SetTexture(filename)
@@ -659,8 +642,7 @@ function Hardcore:ShowAlertFrame(style, message)
 
 	frame:Show()
 
-	-- TODO: Allow custom sounds per-frame, or allow passing a sound to the function
-	PlaySound(8959)
+	if alertSound then PlaySound(alertSound) end
 
 	-- HACK:
 	-- There's a bug here where a sequence of overlapping notifications share one 'hide' timer
@@ -683,29 +665,6 @@ function Hardcore:Add(data)
 		local messageString = string.format(messageFormat, name, class_color, class_name, level, map_name)
 
 		Hardcore:ShowAlertFrame(ALERT_STYLES.death, messageString)
-	end
-end
-
--- Should we remove this functionality?
-function Hardcore:Enable(setting)
-	-- Check if we are attempting to set the existing state
-	if Hardcore_Settings.enabled == setting then
-		if setting == false then
-			Hardcore:Print("Already disabled")
-		else
-			Hardcore:Print("Already enabled")
-		end
-		return
-	end
-
-	Hardcore_Settings.enabled = setting
-	if setting == false then
-		Hardcore_EnableToggle:SetText("Enable")
-		Hardcore:Print("Disabled")
-	else
-		Hardcore:RecordReminder()
-		Hardcore_EnableToggle:SetText("Disable")
-		Hardcore:Print("Enabled")
 	end
 end
 
@@ -1024,7 +983,7 @@ function Hardcore_Frame_OnShow()
 	if display == "Levels" and #displaylist > 0 then
 		Hardcore_SubTitle:SetText("You've leveled up " .. tostring(#displaylist) .. " times!")
 	elseif display == "AddonStatus" and guild_roster_loading then
-		Hardcore_SubTitle:SetText("Loading Updated Guild Addon Status...")
+		Hardcore_SubTitle:SetText(STRING_ADDON_STATUS_SUBTITLE_LOADING)
 	else
 		Hardcore_SubTitle:SetText("classichc.net")
 	end
@@ -1067,14 +1026,11 @@ function Hardcore_Deathlist_ScrollBar_Update()
 end
 
 function Hardcore:RecordReminder()
-	if Hardcore_Settings.enabled == false then
-		return
-	end
 	if Hardcore_Settings.notify == false then
 		return
 	end
 
-	Hardcore:ShowAlertFrame(ALERT_STYLES.hc_green, "Hardcore Enabled\n START RECORDING")
+	Hardcore:ShowAlertFrame(ALERT_STYLES.hc_enabled, "Hardcore Enabled")
 
 end
 
@@ -1101,12 +1057,6 @@ function Hardcore:initMinimapButton()
 			-- Control key 
 			if IsControlKeyDown() and not IsShiftKeyDown() then
 				Hardcore:ToggleMinimapIcon()
-				return
-			end
-
-			-- Shift key 
-			if IsShiftKeyDown() and not IsControlKeyDown() then
-				Hardcore:Enable(not Hardcore_Settings.enabled)
 				return
 			end
 
@@ -1138,7 +1088,6 @@ function Hardcore:initMinimapButton()
 			end
 			tooltip:AddLine("Hardcore")
 			tooltip:AddLine("|cFFCFCFCFclick|r show window")
-			tooltip:AddLine("|cFFCFCFCFshift click|r toggle enable")
 			tooltip:AddLine("|cFFCFCFCFctrl click|r toggle minimap button")
 		end
 	})
@@ -1314,28 +1263,15 @@ function Hardcore:FetchGuildRoster()
 	-- Request a new roster update when we show the addonstatus list
 	SetGuildRosterShowOffline(false)
 	requestGuildRoster = C_Timer.NewTicker(2, function()
-		local postfix = ""
-
 		if guild_roster_loading then
-			-- generate animated ellipsis to show loading
-			if num_ellipsis == 4 then
-				num_ellipsis = 1
-			end
-			for i = 1, num_ellipsis do
-				postfix = postfix .. '.'
-			end
-			-- end animated elllipsis
 
 			if display == "AddonStatus" then
-				Hardcore_SubTitle:SetText("Loading Updated Guild Addon Status" .. postfix)
+				Hardcore_SubTitle:SetText(STRING_ADDON_STATUS_SUBTITLE_LOADING)
 			end
 			GuildRoster()
 		else
 			requestGuildRoster:Cancel()
-
 		end
-
-		num_ellipsis = num_ellipsis + 1
 	end)
 end
 

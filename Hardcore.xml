@@ -331,7 +331,7 @@
 			<Button name="Hardcore_DispLevels" inherits="UIPanelButtonTemplate" text="Levels">
 				<Size x="75" y="37" />
 				<Anchors>
-					<Anchor point="TOPLEFT" x="30" y="-450" />
+					<Anchor point="TOPLEFT" x="70" y="-450" />
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -342,7 +342,7 @@
 			<Button name="Hardcore_GetVerified" inherits="UIPanelButtonTemplate" text="Get verified">
 				<Size x="95" y="37" />
 				<Anchors>
-					<Anchor point="TOPLEFT" x="120" y="-450" />
+					<Anchor point="TOPLEFT" x="165" y="-450" />
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -353,7 +353,7 @@
 			<Button name="Hardcore_DispRules" inherits="UIPanelButtonTemplate" text="Rules">
 				<Size x="75" y="37" />
 				<Anchors>
-					<Anchor point="TOPLEFT" x="240" y="-450" />
+					<Anchor point="TOPLEFT" x="280" y="-450" />
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -361,21 +361,10 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="Hardcore_EnableToggle" inherits="UIPanelButtonTemplate" text="Enable">
-				<Size x="75" y="37" />
-				<Anchors>
-					<Anchor point="TOPLEFT" x="340" y="-450" />
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						Hardcore:Enable(not Hardcore_Settings.enabled)
-					</OnClick>
-				</Scripts>
-			</Button>
 			<Button name="Hardcore_MinimapToggle" inherits="UIPanelButtonTemplate" text="Minimap button">
 				<Size x="120" y="37" />
 				<Anchors>
-					<Anchor point="TOPLEFT" x="440" y="-450" />
+					<Anchor point="TOPLEFT" x="380" y="-450" />
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -386,7 +375,7 @@
 			<Button name="Hardcore_DispAddonStatus" inherits="UIPanelButtonTemplate" text="Accountability">
 				<Size x="105" y="37" />
 				<Anchors>
-					<Anchor point="TOPLEFT" x="575" y="-450" />
+					<Anchor point="TOPLEFT" x="520" y="-450" />
 				</Anchors>
 				<Scripts>
 					<OnClick>

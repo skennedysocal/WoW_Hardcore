@@ -80,6 +80,8 @@ local PLAYED_TIME_MIN_PLAYED_THRESH = 6000 -- seconds
 local COLOR_RED = "|c00ff0000"
 local COLOR_GREEN = "|c0000ff00"
 local COLOR_YELLOW = "|c00ffff00"
+local STRING_ADDON_STATUS_SUBTITLE = "Guild Addon Status"
+local STRING_ADDON_STATUS_SUBTITLE_LOADING = "Guild Addon Status (Loading)"
 
 -- frame display
 local display = "Rules"
@@ -609,7 +611,7 @@ function Hardcore:GUILD_ROSTER_UPDATE(...)
 
 	Hardcore:UpdateGuildRosterRows()
 	if display == "AddonStatus" then
-		Hardcore_SubTitle:SetText("Guild Addon Status")
+		Hardcore_SubTitle:SetText(STRING_ADDON_STATUS_SUBTITLE)
 	end
 end
 
@@ -981,7 +983,7 @@ function Hardcore_Frame_OnShow()
 	if display == "Levels" and #displaylist > 0 then
 		Hardcore_SubTitle:SetText("You've leveled up " .. tostring(#displaylist) .. " times!")
 	elseif display == "AddonStatus" and guild_roster_loading then
-		Hardcore_SubTitle:SetText("Loading Updated Guild Addon Status...")
+		Hardcore_SubTitle:SetText(STRING_ADDON_STATUS_SUBTITLE_LOADING)
 	else
 		Hardcore_SubTitle:SetText("classichc.net")
 	end
@@ -1261,28 +1263,15 @@ function Hardcore:FetchGuildRoster()
 	-- Request a new roster update when we show the addonstatus list
 	SetGuildRosterShowOffline(false)
 	requestGuildRoster = C_Timer.NewTicker(2, function()
-		local postfix = ""
-
 		if guild_roster_loading then
-			-- generate animated ellipsis to show loading
-			if num_ellipsis == 4 then
-				num_ellipsis = 1
-			end
-			for i = 1, num_ellipsis do
-				postfix = postfix .. '.'
-			end
-			-- end animated elllipsis
 
 			if display == "AddonStatus" then
-				Hardcore_SubTitle:SetText("Loading Updated Guild Addon Status" .. postfix)
+				Hardcore_SubTitle:SetText(STRING_ADDON_STATUS_SUBTITLE_LOADING)
 			end
 			GuildRoster()
 		else
 			requestGuildRoster:Cancel()
-
 		end
-
-		num_ellipsis = num_ellipsis + 1
 	end)
 end
 

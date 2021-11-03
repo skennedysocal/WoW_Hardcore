@@ -190,7 +190,14 @@ local function SlashHandler(msg, editbox)
 		end
 
 		local style, message = head, table.concat(tail, " ")
-		Hardcore:ShowAlertFrame(style, message)
+		local styleConfig
+		if ALERT_STYLES[style] then
+			styleConfig = ALERT_STYLES[style]
+		else
+			styleConfig = ALERT_STYLES.hc_red
+		end
+
+		Hardcore:ShowAlertFrame(styleConfig, message)
 	-- End Alert debug code
 
 	else
@@ -1017,9 +1024,6 @@ function Hardcore_Deathlist_ScrollBar_Update()
 end
 
 function Hardcore:RecordReminder()
-	if Hardcore_Settings.enabled == false then
-		return
-	end
 	if Hardcore_Settings.notify == false then
 		return
 	end
@@ -1082,7 +1086,6 @@ function Hardcore:initMinimapButton()
 			end
 			tooltip:AddLine("Hardcore")
 			tooltip:AddLine("|cFFCFCFCFclick|r show window")
-			tooltip:AddLine("|cFFCFCFCFshift click|r toggle enable")
 			tooltip:AddLine("|cFFCFCFCFctrl click|r toggle minimap button")
 		end
 	})

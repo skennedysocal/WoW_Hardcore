@@ -96,6 +96,7 @@ local ALERT_STYLES = {
 		icon = Hardcore_Alert_Icon, -- icon layer
 		file = "logo-emblem.blp", -- string
 		delay = COMM_DELAY, -- int seconds
+		alertSound = 8959
 	},
 	death = {
 		frame = Hardcore_Alert_Frame,
@@ -103,6 +104,7 @@ local ALERT_STYLES = {
 		icon = Hardcore_Alert_Icon,
 		file = "alert-death.blp",
 		delay = COMM_DELAY,
+		alertSound = nil
 	},
 	hc_green = {
 		frame = Hardcore_Alert_Frame,
@@ -110,6 +112,7 @@ local ALERT_STYLES = {
 		icon = Hardcore_Alert_Icon,
 		file = "alert-hc-green.blp",
 		delay = COMM_DELAY,
+		alertSound = 8959
 	},
 	hc_red = {
 		frame = Hardcore_Alert_Frame,
@@ -117,6 +120,7 @@ local ALERT_STYLES = {
 		icon = Hardcore_Alert_Icon,
 		file = "alert-hc-red.blp",
 		delay = COMM_DELAY,
+		alertSound = 8959
 	},
 	spirithealer = {
 		frame = Hardcore_Alert_Frame,
@@ -124,6 +128,7 @@ local ALERT_STYLES = {
 		icon = Hardcore_Alert_Icon,
 		file = "alert-spirithealer.blp",
 		delay = COMM_DELAY,
+		alertSound = 8959
 	},
 	bubble = {
 		frame = Hardcore_Alert_Frame,
@@ -131,13 +136,15 @@ local ALERT_STYLES = {
 		icon = Hardcore_Alert_Icon,
 		file = "alert-hc-red.blp",
 		delay = 8,
+		alertSound = 8959
 	},
-	hc_red_delayed_10 = {
+	hc_enabled = {
 		frame = Hardcore_Alert_Frame,
 		text = Hardcore_Alert_Text,
 		icon = Hardcore_Alert_Icon,
 		file  = "alert-hc-red.blp",
 		delay = 10,
+		alertSound = nil
 	},
 }
 
@@ -643,15 +650,13 @@ function Hardcore:Debug(msg)
 end
 
 -- Alert UI
-function Hardcore:ShowAlertFrame(style, message)
-	-- style is a key-based property of ALERT_STYLES
+function Hardcore:ShowAlertFrame(styleConfig, message)
 	-- message is any text accepted by FontString:SetText(message)
 
 	message = message or ""
 
-	local frame, text, icon, file, filename, delay = nil, nil, nil, nil, nil, nil
-	local data = ALERT_STYLES[style] or ALERT_STYLES["hc_red"]
-	frame, text, icon, file, delay = data.frame, data.text, data.icon, data.file, data.delay
+	local data = styleConfig or ALERT_STYLES["hc_red"]
+	local frame, text, icon, file, delay, alertSound = data.frame, data.text, data.icon, data.file, data.delay, data.alertSound
 
 	filename = MEDIA_DIR .. file
 	icon:SetTexture(filename)
@@ -659,8 +664,7 @@ function Hardcore:ShowAlertFrame(style, message)
 
 	frame:Show()
 
-	-- TODO: Allow custom sounds per-frame, or allow passing a sound to the function
-	PlaySound(8959)
+	if alertSound then PlaySound(alertSound) end
 
 	-- HACK:
 	-- There's a bug here where a sequence of overlapping notifications share one 'hide' timer
@@ -1074,7 +1078,7 @@ function Hardcore:RecordReminder()
 		return
 	end
 
-	Hardcore:ShowAlertFrame(ALERT_STYLES.hc_green, "Hardcore Enabled\n START RECORDING")
+	Hardcore:ShowAlertFrame(ALERT_STYLES.hc_enabled, "Hardcore Enabled")
 
 end
 

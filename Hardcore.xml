@@ -34,56 +34,6 @@
     <NormalFont style="DeathListFont"/>
   </Button>
 
-  <Frame name="Hardcore_Notification_Frame" parent="UIParent" hidden="true" toplevel="true">
-		<Size x="300" y="110" />
-		<Anchors>
-			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER" y="300" />
-		</Anchors>
-		<Layers>
-			<Layer>
-				<Texture name="Hardcore_Notification_Logo" file="Interface\AddOns\Hardcore\Media\logo-emblem.blp">
-					<Size x="50" y="50" />
-					<Anchors>
-						<Anchor point="CENTER" y="45" />
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<FontString name="Hardcore_Notification_Text" inherits="GameFontNormalHuge2">
-					<Size x="280" y="80" />
-					<Anchors>
-						<Anchor point="TOPLEFT" x="10" y="-20" />
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-  </Frame>
-
-  <Frame name="Hardcore_Warning_Frame" parent="UIParent" hidden="true" toplevel="true">
-		<Size x="600" y="110" />
-		<Anchors>
-			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER" y="300" />
-		</Anchors>
-		<Layers>
-			<Layer>
-				<Texture name="Hardcore_Warning_Logo" file="Interface\AddOns\Hardcore\Media\logo-emblem.blp">
-					<Size x="50" y="50" />
-					<Anchors>
-						<Anchor point="CENTER" y="45" />
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<FontString name="Hardcore_Warning_Text" inherits="GameFontNormalHuge2">
-					<Size x="600" y="80" />
-					<Anchors>
-						<Anchor point="TOPLEFT" x="10" y="-20" />
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-  </Frame>
-
   <?comment msg="This provides dynamic style templating, via ALERT_STYLES" ?>
   <Frame name="Hardcore_Alert_Frame" parent="UIParent" hidden="true" toplevel="true">
 		<Size x="400" y="610" />

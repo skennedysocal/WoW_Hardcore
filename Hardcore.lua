@@ -19,7 +19,6 @@ along with the Hardcore AddOn. If not, see <http://www.gnu.org/licenses/>.
 
 --[[ Global saved variables ]]--
 Hardcore_Settings = {
-	enabled = true,
 	notify = true,
 	level_list = {},
 }
@@ -163,10 +162,6 @@ local function SlashHandler(msg, editbox)
 		Hardcore:Levels()
 	elseif cmd == "alllevels" then
 		Hardcore:Levels(true)
-	elseif cmd == "enable" then
-		Hardcore:Enable(true)
-	elseif cmd == "disable" then
-		Hardcore:Enable(false)
 	elseif cmd == "show" then
 		Hardcore_Frame:Show()
 	elseif cmd == "hide" then
@@ -358,9 +353,6 @@ function Hardcore:PLAYER_ENTERING_WORLD()
 end
 
 function Hardcore:PLAYER_DEAD()
-	if Hardcore_Settings.enabled == false then
-		return
-	end
 
 	-- screenshot
 	C_Timer.After(PICTURE_DELAY, Screenshot)
@@ -397,9 +389,6 @@ function Hardcore:PLAYER_DEAD()
 end
 
 function Hardcore:PLAYER_UNGHOST()
-	if Hardcore_Settings.enabled == false then
-		return
-	end
 	if UnitIsDeadOrGhost("player") == 1 then
 		return
 	end -- prevent message on ghost login or zone
@@ -412,28 +401,16 @@ function Hardcore:PLAYER_UNGHOST()
 end
 
 function Hardcore:MAIL_SHOW()
-	if Hardcore_Settings.enabled == false then
-		return
-	end
-
 	Hardcore:Print("Hardcore mode is enabled, mailbox access is blocked.")
 	CloseMail()
 end
 
 function Hardcore:AUCTION_HOUSE_SHOW()
-	if Hardcore_Settings.enabled == false then
-		return
-	end
-
 	Hardcore:Print("Hardcore mode is enabled, auction house access is blocked.")
 	CloseAuctionHouse()
 end
 
 function Hardcore:PLAYER_LEVEL_UP(...)
-	if Hardcore_Settings.enabled == false then
-		return
-	end
-
 	-- store the recent level up to use in TIME_PLAYED_MSG
 	local level, healthDelta, powerDelta, numNewTalents, numNewPvpTalentSlots, strengthDelta, agilityDelta,
 		staminaDelta, intellectDelta = ...
@@ -453,10 +430,6 @@ function Hardcore:PLAYER_LEVEL_UP(...)
 end
 
 function Hardcore:TIME_PLAYED_MSG(...)
-	if Hardcore_Settings.enabled == false then
-		return
-	end
-
 	local totalTimePlayed, _ = ...
 	Hardcore_Character.time_played = totalTimePlayed
 
@@ -576,10 +549,6 @@ function Hardcore:RequestTimePlayed()
 end
 
 function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
-	if Hardcore_Settings.enabled == false then
-		return
-	end
-
 	-- Ignore messages that are not ours
 	if COMM_NAME == prefix then
 		-- Get the command
@@ -687,29 +656,6 @@ function Hardcore:Add(data)
 		local messageString = string.format(messageFormat, name, class_color, class_name, level, map_name)
 
 		Hardcore:ShowAlertFrame(ALERT_STYLES.death, messageString)
-	end
-end
-
--- Should we remove this functionality?
-function Hardcore:Enable(setting)
-	-- Check if we are attempting to set the existing state
-	if Hardcore_Settings.enabled == setting then
-		if setting == false then
-			Hardcore:Print("Already disabled")
-		else
-			Hardcore:Print("Already enabled")
-		end
-		return
-	end
-
-	Hardcore_Settings.enabled = setting
-	if setting == false then
-		Hardcore_EnableToggle:SetText("Enable")
-		Hardcore:Print("Disabled")
-	else
-		Hardcore:RecordReminder()
-		Hardcore_EnableToggle:SetText("Disable")
-		Hardcore:Print("Enabled")
 	end
 end
 
@@ -1105,12 +1051,6 @@ function Hardcore:initMinimapButton()
 			-- Control key 
 			if IsControlKeyDown() and not IsShiftKeyDown() then
 				Hardcore:ToggleMinimapIcon()
-				return
-			end
-
-			-- Shift key 
-			if IsShiftKeyDown() and not IsControlKeyDown() then
-				Hardcore:Enable(not Hardcore_Settings.enabled)
 				return
 			end
 

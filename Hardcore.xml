@@ -411,17 +411,6 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="Hardcore_EnableToggle" inherits="UIPanelButtonTemplate" text="Enable">
-				<Size x="75" y="37" />
-				<Anchors>
-					<Anchor point="TOPLEFT" x="340" y="-450" />
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						Hardcore:Enable(not Hardcore_Settings.enabled)
-					</OnClick>
-				</Scripts>
-			</Button>
 			<Button name="Hardcore_MinimapToggle" inherits="UIPanelButtonTemplate" text="Minimap button">
 				<Size x="120" y="37" />
 				<Anchors>

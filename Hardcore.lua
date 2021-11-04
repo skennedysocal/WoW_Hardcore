@@ -285,7 +285,7 @@ function Hardcore:PLAYER_LOGIN()
 	_, class, _ = UnitClass("player")
 	PLAYER_NAME, _ = UnitName("player")
 	PLAYER_GUID = UnitGUID("player")
-  PLAYER_FACTION, _ = UnitFactionGroup("player")
+	PLAYER_FACTION, _ = UnitFactionGroup("player")
 	local PLAYER_LEVEL = UnitLevel("player")
 
 	-- fires on first loading
@@ -405,25 +405,25 @@ function Hardcore:PLAYER_ENTERING_WORLD()
 		C_ChatInfo.RegisterAddonMessagePrefix(COMM_NAME)
 	end
 
-  -- Hook TargetFrame classification and warn if PvP enabled and enemy faction 
-  hooksecurefunc("TargetFrame_CheckClassification",function(self, lock)
-    if Hardcore_Settings.grief_warning_conditions == PVP then
-      if UnitIsPVP("target") and UnitGUID("target") ~= PLAYER_GUID then
-        local target_name, _ = UnitName("target")
-        Hardcore:ShowAlertFrame("hc_red", "Target " .. target_name .. " is PvP enabled!")
-      end
-    elseif Hardcore_Settings.grief_warning_conditions == PVP_AND_ENEMY_FACTION then
-      if UnitGUID("target") ~= PLAYER_GUID and UnitIsPVP("target")  then 
-        local faction, _ = UnitFactionGroup("target")
-        if faction ~= nil then
-          if (faction == "Horde" and PLAYER_FACTION == "Alliance") or (faction == "Alliance" and PLAYER_FACTION == "Horde") then
-            local target_name, _ = UnitName("target")
-            Hardcore:ShowAlertFrame("hc_red", "Target " .. target_name .. " is PvP enabled!")
-          end
-        end
-      end
-    end
-  end);
+	-- Hook TargetFrame classification and warn if PvP enabled and enemy faction 
+	hooksecurefunc("TargetFrame_CheckClassification",function(self, lock)
+		if Hardcore_Settings.grief_warning_conditions == PVP then
+			if UnitIsPVP("target") and UnitGUID("target") ~= PLAYER_GUID then
+				local target_name, _ = UnitName("target")
+				Hardcore:ShowAlertFrame("hc_red", "Target " .. target_name .. " is PvP enabled!")
+			end
+		elseif Hardcore_Settings.grief_warning_conditions == PVP_AND_ENEMY_FACTION then
+			if UnitGUID("target") ~= PLAYER_GUID and UnitIsPVP("target")  then 
+				local faction, _ = UnitFactionGroup("target")
+				if faction ~= nil then
+					if (faction~=PLAYER_FACTION) then
+						local target_name, _ = UnitName("target")
+						Hardcore:ShowAlertFrame("hc_red", "Target " .. target_name .. " is PvP enabled!")
+					end
+				end
+			end
+		end
+	end);
 end
 
 function Hardcore:PLAYER_ALIVE()

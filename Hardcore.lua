@@ -33,6 +33,7 @@ Hardcore_Character = {
 	deaths = {},
 	bubble_hearth_incidents = {},
 	played_time_gap_warnings = {},
+	trade_partners = {},
 }
 
 --[[ Local variables ]]--
@@ -212,6 +213,14 @@ end
 SLASH_HARDCORE1, SLASH_HARDCORE2 = '/hardcore', '/hc'
 SlashCmdList["HARDCORE"] = SlashHandler
 
+--[[ Override default WoW UI ]]--
+
+TradeFrameTradeButton:SetScript("OnClick", function()
+	table.insert(Hardcore_Character.trade_partners, TradeFrameRecipientNameText:GetText())
+	Hardcore_Character.trade_partners = Hardcore_FilterUnique(Hardcore_Character.trade_partners)
+	AcceptTrade()
+end)
+
 --[[ Startup ]]--
 
 function Hardcore:Startup()
@@ -266,7 +275,8 @@ function Hardcore:PLAYER_LOGIN()
 			tracked_played_percentage = 0,
 			deaths = {},
 			bubble_hearth_incidents = {},
-			played_time_gap_warnings ={}
+			played_time_gap_warnings ={},
+			trade_partners = {}
 		}
 	end
 
@@ -1162,9 +1172,10 @@ function Hardcore:GenerateVerificationString()
 	local realm = GetRealmName()
 	local level = UnitLevel("player")
 
+	local tradePartners = Hardcore_join(Hardcore_Character.trade_partners, ",")
 	local baseVerificationData = {Hardcore_Character.guid, realm, race, class, name, level,
 									Hardcore_Character.time_played, Hardcore_Character.time_tracked,
-									#Hardcore_Character.deaths}
+									#Hardcore_Character.deaths, tradePartners}
 	local baseVerificationString = Hardcore_join(Hardcore_map(baseVerificationData, Hardcore_stringOrNumberToUnicode),
 		ATTRIBUTE_SEPARATOR)
 	local bubbleHearthIncidentsVerificationString = Hardcore_tableToUnicode(Hardcore_Character.bubble_hearth_incidents)

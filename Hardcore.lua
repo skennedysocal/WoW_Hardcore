@@ -72,7 +72,8 @@ local GENDER_GREETING = {"guildmate", "brother", "sister"}
 local recent_levelup = nil
 local Last_Attack_Source = nil
 local PICTURE_DELAY = .65
-local HIDE_RTP_CHAT_MSG = false
+local HIDE_RTP_CHAT_MSG_BUFFER = 0 -- number of messages in queue
+local HIDE_RTP_CHAT_MSG_BUFFER_MAX = 2 -- number of maximum messages to wait for
 local STARTED_BUBBLE_HEARTH_INFO = nil
 local RECEIVED_FIRST_PLAYED_TIME_MSG = false
 local PLAYED_TIME_GAP_THRESH = 600 -- seconds
@@ -596,15 +597,18 @@ end
 
 local Cached_ChatFrame_DisplayTimePlayed = ChatFrame_DisplayTimePlayed
 ChatFrame_DisplayTimePlayed = function(...)
-	if HIDE_RTP_CHAT_MSG then
-		HIDE_RTP_CHAT_MSG = false
+	if HIDE_RTP_CHAT_MSG_BUFFER > 0 then
+		HIDE_RTP_CHAT_MSG_BUFFER = HIDE_RTP_CHAT_MSG_BUFFER - 1
 		return
 	end
 	return Cached_ChatFrame_DisplayTimePlayed(...)
 end
 
 function Hardcore:RequestTimePlayed()
-	HIDE_RTP_CHAT_MSG = true
+	HIDE_RTP_CHAT_MSG_BUFFER = HIDE_RTP_CHAT_MSG_BUFFER + 1
+	if HIDE_RTP_CHAT_MSG_BUFFER > HIDE_RTP_CHAT_MSG_BUFFER_MAX then
+		HIDE_RTP_CHAT_MSG_BUFFER = HIDE_RTP_CHAT_MSG_BUFFER_MAX 
+	end
 	RequestTimePlayed()
 end
 

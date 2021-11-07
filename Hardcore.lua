@@ -163,7 +163,7 @@ local ALERT_STYLES = {
 		icon = Hardcore_Alert_Icon,
 		file  = "hc-pvp-alert.blp",
 		delay = 10,
-		alertSound = 8959 
+		alertSound = 8192
 	},
 }
 Hardcore_Alert_Frame:SetScale(0.7)

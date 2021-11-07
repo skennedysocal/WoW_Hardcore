@@ -149,6 +149,7 @@ local ALERT_STYLES = {
 		alertSound = nil
 	},
 }
+Hardcore_Alert_Frame:SetScale(0.7)
 
 -- the big frame object for our addon
 local Hardcore = CreateFrame("Frame", "Hardcore", nil, "BackdropTemplate")

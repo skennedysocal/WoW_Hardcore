@@ -463,10 +463,10 @@ function Hardcore:PLAYER_ENTERING_WORLD()
 				if faction ~= nil then
 					if faction ~= PLAYER_FACTION then
 						local target_name, _ = UnitName("target")
-						Hardcore:ShowAlertFrame("hc_red", "Target " .. target_name .. " is PvP enabled!")
+						Hardcore:ShowAlertFrame(ALERT_STYLES.hc_red, "Target " .. target_name .. " is PvP enabled!")
 					elseif UnitPlayerControlled("target") then
 						local target_name, _ = UnitName("target")
-						Hardcore:ShowAlertFrame("hc_red", "Target " .. target_name .. " is PvP enabled!")
+						Hardcore:ShowAlertFrame(ALERT_STYLES.hc_red, "Target " .. target_name .. " is PvP enabled!")
 					end
 				end
 			end
@@ -476,7 +476,7 @@ function Hardcore:PLAYER_ENTERING_WORLD()
 				if faction ~= nil then
 					if (faction ~= PLAYER_FACTION) then
 						local target_name, _ = UnitName("target")
-						Hardcore:ShowAlertFrame("hc_red", "Target " .. target_name .. " is PvP enabled!")
+						Hardcore:ShowAlertFrame(ALERT_STYLES.hc_red, "Target " .. target_name .. " is PvP enabled!")
 					end
 				end
 			end
@@ -486,7 +486,7 @@ function Hardcore:PLAYER_ENTERING_WORLD()
 				if faction ~= nil then
 					if faction == PLAYER_FACTION and UnitPlayerControlled("target") then
 						local target_name, _ = UnitName("target")
-						Hardcore:ShowAlertFrame("hc_red", "Target " .. target_name .. " is PvP enabled!")
+						Hardcore:ShowAlertFrame(ALERT_STYLES.hc_red, "Target " .. target_name .. " is PvP enabled!")
 					end
 				end
 			end

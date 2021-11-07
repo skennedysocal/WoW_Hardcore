@@ -40,7 +40,7 @@ Hardcore_Character = {
 	bubble_hearth_incidents = {},
 	played_time_gap_warnings = {},
 	trade_partners = {},
-	grief_warning_conditions = GRIEF_WARNING_OFF,
+	grief_warning_conditions = GRIEF_WARNING_BOTH_FACTIONS,
 }
 
 --[[ Local variables ]]--
@@ -157,6 +157,14 @@ local ALERT_STYLES = {
 		delay = 10,
 		alertSound = nil
 	},
+	hc_pvp_warning = {
+		frame = Hardcore_Alert_Frame,
+		text = Hardcore_Alert_Text,
+		icon = Hardcore_Alert_Icon,
+		file  = "hc-pvp-alert.blp",
+		delay = 10,
+		alertSound = 8959 
+	},
 }
 Hardcore_Alert_Frame:SetScale(0.7)
 
@@ -207,7 +215,6 @@ local function SlashHandler(msg, editbox)
 				Hardcore:Print("Grief alert set to enemy faction.")
 			end
 		elseif grief_alert_option == "alliance" then
-			Hardcore:Print(PLAYER_FACTION)
 			if PLAYER_FACTION == "Alliance" then
 				Hardcore_Character.grief_warning_conditions = GRIEF_WARNING_SAME_FACTION
 				Hardcore:Print("Grief alert set to same faction.")
@@ -463,10 +470,10 @@ function Hardcore:PLAYER_ENTERING_WORLD()
 				if faction ~= nil then
 					if faction ~= PLAYER_FACTION then
 						local target_name, _ = UnitName("target")
-						Hardcore:ShowAlertFrame(ALERT_STYLES.hc_red, "Target " .. target_name .. " is PvP enabled!")
+						Hardcore:ShowAlertFrame(ALERT_STYLES.hc_pvp_warning, "Target " .. target_name .. " is PvP enabled!")
 					elseif UnitPlayerControlled("target") then
 						local target_name, _ = UnitName("target")
-						Hardcore:ShowAlertFrame(ALERT_STYLES.hc_red, "Target " .. target_name .. " is PvP enabled!")
+						Hardcore:ShowAlertFrame(ALERT_STYLES.hc_pvp_warning, "Target " .. target_name .. " is PvP enabled!")
 					end
 				end
 			end
@@ -476,7 +483,7 @@ function Hardcore:PLAYER_ENTERING_WORLD()
 				if faction ~= nil then
 					if (faction ~= PLAYER_FACTION) then
 						local target_name, _ = UnitName("target")
-						Hardcore:ShowAlertFrame(ALERT_STYLES.hc_red, "Target " .. target_name .. " is PvP enabled!")
+						Hardcore:ShowAlertFrame(ALERT_STYLES.hc_pvp_warning, "Target " .. target_name .. " is PvP enabled!")
 					end
 				end
 			end
@@ -486,7 +493,7 @@ function Hardcore:PLAYER_ENTERING_WORLD()
 				if faction ~= nil then
 					if faction == PLAYER_FACTION and UnitPlayerControlled("target") then
 						local target_name, _ = UnitName("target")
-						Hardcore:ShowAlertFrame(ALERT_STYLES.hc_red, "Target " .. target_name .. " is PvP enabled!")
+						Hardcore:ShowAlertFrame(ALERT_STYLES.hc_pvp_warning, "Target " .. target_name .. " is PvP enabled!")
 					end
 				end
 			end

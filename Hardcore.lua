@@ -17,6 +17,12 @@ You should have received a copy of the GNU General Public License
 along with the Hardcore AddOn. If not, see <http://www.gnu.org/licenses/>.
 --]]
 
+--[[ Const variables ]]--
+local GRIEF_WARNING_OFF = 0
+local GRIEF_WARNING_SAME_FACTION = 1
+local GRIEF_WARNING_ENEMY_FACTION = 2
+local GRIEF_WARNING_BOTH_FACTIONS = 3
+
 --[[ Global saved variables ]]--
 Hardcore_Settings = {
 	notify = true,
@@ -34,6 +40,7 @@ Hardcore_Character = {
 	bubble_hearth_incidents = {},
 	played_time_gap_warnings = {},
 	trade_partners = {},
+	grief_warning_conditions = GRIEF_WARNING_OFF,
 }
 
 --[[ Local variables ]]--
@@ -68,6 +75,7 @@ local COMM_COMMANDS = {"PULSE", "ADD", nil}
 -- stuff
 local PLAYER_NAME, _ = nil
 local PLAYER_GUID = nil
+local PLAYER_FACTION = nil
 local GENDER_GREETING = {"guildmate", "brother", "sister"}
 local recent_levelup = nil
 local Last_Attack_Source = nil
@@ -182,7 +190,56 @@ local function SlashHandler(msg, editbox)
 		else
 			Hardcore:Print("Notification disabled")
 		end
-
+	elseif cmd == "griefalert" then
+		local grief_alert_option = ""
+		for substring in args:gmatch("%S+") do
+			grief_alert_option = substring
+		end
+		if grief_alert_option == "off" then
+			Hardcore_Character.grief_warning_conditions = GRIEF_WARNING_OFF
+			Hardcore:Print("Grief alert set to off.")
+		elseif grief_alert_option == "horde" then
+			if PLAYER_FACTION == "Horde" then
+				Hardcore_Character.grief_warning_conditions = GRIEF_WARNING_SAME_FACTION
+				Hardcore:Print("Grief alert set to same faction.")
+			else
+				Hardcore_Character.grief_warning_conditions = GRIEF_WARNING_ENEMY_FACTION
+				Hardcore:Print("Grief alert set to enemy faction.")
+			end
+		elseif grief_alert_option == "alliance" then
+			Hardcore:Print(PLAYER_FACTION)
+			if PLAYER_FACTION == "Alliance" then
+				Hardcore_Character.grief_warning_conditions = GRIEF_WARNING_SAME_FACTION
+				Hardcore:Print("Grief alert set to same faction.")
+			else
+				Hardcore_Character.grief_warning_conditions = GRIEF_WARNING_ENEMY_FACTION
+				Hardcore:Print("Grief alert set to enemy faction.")
+			end
+		elseif grief_alert_option == "both" then
+			Hardcore_Character.grief_warning_conditions = GRIEF_WARNING_BOTH_FACTIONS
+			Hardcore:Print("Grief alert set to both factions.")
+		else
+			local grief_alert_setting_msg = ""
+			if Hardcore_Character.grief_warning_conditions == GRIEF_WARNING_OFF then
+				grief_alert_setting_msg = "off"
+			elseif Hardcore_Character.grief_warning_conditions == GRIEF_WARNING_SAME_FACTION then
+				if PLAYER_FACTION == "Alliance" then
+					grief_alert_setting_msg = "same faction (alliance)"
+				else
+					grief_alert_setting_msg = "same faction (horde)"
+				end
+			elseif Hardcore_Character.grief_warning_conditions == GRIEF_WARNING_ENEMY_FACTION then
+				if PLAYER_FACTION == "Alliance" then
+					grief_alert_setting_msg = "enemy faction (horde)"
+				else
+					grief_alert_setting_msg = "enemy faction (alliance)"
+				end
+			elseif Hardcore_Character.grief_warning_conditions == GRIEF_WARNING_BOTH_FACTIONS then
+				grief_alert_setting_msg = "both factions"
+			end
+			Hardcore:Print("Grief alert is currently set to: " .. grief_alert_setting_msg)
+			Hardcore:Print("|cff00ff00Grief alert options:|roff horde alliance both")
+		end
 	-- Alert debug code
 	elseif cmd == "alert" then
 		local head, tail = "", {}
@@ -207,8 +264,8 @@ local function SlashHandler(msg, editbox)
 
 	else
 		-- If not handled above, display some sort of help message
-		Hardcore:Print("|cff00ff00Syntax:|r/hardcore [command]")
-		Hardcore:Print("|cff00ff00Commands:|rshow deaths levels enable disable")
+		Hardcore:Print("|cff00ff00Syntax:|r/hardcore [command] [options]")
+		Hardcore:Print("|cff00ff00Commands:|rshow deaths levels enable disable griefalert")
 	end
 end
 
@@ -278,6 +335,7 @@ function Hardcore:PLAYER_LOGIN()
 	_, class, _ = UnitClass("player")
 	PLAYER_NAME, _ = UnitName("player")
 	PLAYER_GUID = UnitGUID("player")
+	PLAYER_FACTION, _ = UnitFactionGroup("player")
 	local PLAYER_LEVEL = UnitLevel("player")
 
 	-- fires on first loading
@@ -396,6 +454,44 @@ function Hardcore:PLAYER_ENTERING_WORLD()
 	if (not C_ChatInfo.IsAddonMessagePrefixRegistered(COMM_NAME)) then
 		C_ChatInfo.RegisterAddonMessagePrefix(COMM_NAME)
 	end
+
+	-- Hook TargetFrame classification and warn if PvP enabled and enemy faction 
+	hooksecurefunc("TargetFrame_CheckClassification",function(self, lock)
+		if Hardcore_Character.grief_warning_conditions == GRIEF_WARNING_BOTH_FACTIONS then
+			if UnitIsPVP("target") and UnitGUID("target") ~= PLAYER_GUID then
+				local faction, _ = UnitFactionGroup("target")
+				if faction ~= nil then
+					if faction ~= PLAYER_FACTION then
+						local target_name, _ = UnitName("target")
+						Hardcore:ShowAlertFrame(ALERT_STYLES.hc_red, "Target " .. target_name .. " is PvP enabled!")
+					elseif UnitPlayerControlled("target") then
+						local target_name, _ = UnitName("target")
+						Hardcore:ShowAlertFrame(ALERT_STYLES.hc_red, "Target " .. target_name .. " is PvP enabled!")
+					end
+				end
+			end
+		elseif Hardcore_Character.grief_warning_conditions == GRIEF_WARNING_ENEMY_FACTION then
+			if UnitGUID("target") ~= PLAYER_GUID and UnitIsPVP("target")  then
+				local faction, _ = UnitFactionGroup("target")
+				if faction ~= nil then
+					if (faction ~= PLAYER_FACTION) then
+						local target_name, _ = UnitName("target")
+						Hardcore:ShowAlertFrame(ALERT_STYLES.hc_red, "Target " .. target_name .. " is PvP enabled!")
+					end
+				end
+			end
+		elseif Hardcore_Character.grief_warning_conditions == GRIEF_WARNING_SAME_FACTION then
+			if UnitGUID("target") ~= PLAYER_GUID and UnitIsPVP("target")  then
+				local faction, _ = UnitFactionGroup("target")
+				if faction ~= nil then
+					if faction == PLAYER_FACTION and UnitPlayerControlled("target") then
+						local target_name, _ = UnitName("target")
+						Hardcore:ShowAlertFrame(ALERT_STYLES.hc_red, "Target " .. target_name .. " is PvP enabled!")
+					end
+				end
+			end
+		end
+	end);
 end
 
 function Hardcore:PLAYER_ALIVE()

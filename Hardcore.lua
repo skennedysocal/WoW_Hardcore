@@ -516,24 +516,20 @@ function Hardcore:PLAYER_DEAD()
 end
 
 function Hardcore:PLAYER_TARGET_CHANGED()
-	if Hardcore_Character.grief_warning_conditions == GRIEF_WARNING_BOTH_FACTIONS then
-		if UnitIsPVP("target") and UnitGUID("target") ~= PLAYER_GUID then
+	if UnitGUID("target") ~= PLAYER_GUID and UnitIsPVP("target") then
+		if Hardcore_Character.grief_warning_conditions == GRIEF_WARNING_BOTH_FACTIONS then
 			local faction, _ = UnitFactionGroup("target")
 			if faction ~= nil and (faction ~= PLAYER_FACTION or (faction == PLAYER_FACTION and UnitPlayerControlled("target"))) then
 				local target_name, _ = UnitName("target")
 				Hardcore:ShowAlertFrame(ALERT_STYLES.hc_pvp_warning, "Target " .. target_name .. " is PvP enabled!")
 			end
-		end
-	elseif Hardcore_Character.grief_warning_conditions == GRIEF_WARNING_ENEMY_FACTION then
-		if UnitGUID("target") ~= PLAYER_GUID and UnitIsPVP("target")  then
+		elseif Hardcore_Character.grief_warning_conditions == GRIEF_WARNING_ENEMY_FACTION then
 			local faction, _ = UnitFactionGroup("target")
 			if faction ~= nil and faction ~= PLAYER_FACTION then
 				local target_name, _ = UnitName("target")
 				Hardcore:ShowAlertFrame(ALERT_STYLES.hc_pvp_warning, "Target " .. target_name .. " is PvP enabled!")
 			end
-		end
-	elseif Hardcore_Character.grief_warning_conditions == GRIEF_WARNING_SAME_FACTION then
-		if UnitGUID("target") ~= PLAYER_GUID and UnitIsPVP("target")  then
+		elseif Hardcore_Character.grief_warning_conditions == GRIEF_WARNING_SAME_FACTION then
 			local faction, _ = UnitFactionGroup("target")
 			if faction ~= nil and faction == PLAYER_FACTION and UnitPlayerControlled("target") then
 				local target_name, _ = UnitName("target")

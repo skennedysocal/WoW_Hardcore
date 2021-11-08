@@ -349,6 +349,7 @@ function Hardcore:PLAYER_LOGIN()
 	self:RegisterEvent("PLAYER_UNGHOST")
 	self:RegisterEvent("PLAYER_ALIVE")
 	self:RegisterEvent("PLAYER_DEAD")
+	self:RegisterEvent("PLAYER_TARGET_CHANGED")
 	self:RegisterEvent("CHAT_MSG_ADDON")
 	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	self:RegisterEvent("GUILD_ROSTER_UPDATE")
@@ -461,44 +462,6 @@ function Hardcore:PLAYER_ENTERING_WORLD()
 	if (not C_ChatInfo.IsAddonMessagePrefixRegistered(COMM_NAME)) then
 		C_ChatInfo.RegisterAddonMessagePrefix(COMM_NAME)
 	end
-
-	-- Hook TargetFrame classification and warn if PvP enabled and enemy faction 
-	hooksecurefunc("TargetFrame_CheckClassification",function(self, lock)
-		if Hardcore_Character.grief_warning_conditions == GRIEF_WARNING_BOTH_FACTIONS then
-			if UnitIsPVP("target") and UnitGUID("target") ~= PLAYER_GUID then
-				local faction, _ = UnitFactionGroup("target")
-				if faction ~= nil then
-					if faction ~= PLAYER_FACTION then
-						local target_name, _ = UnitName("target")
-						Hardcore:ShowAlertFrame(ALERT_STYLES.hc_pvp_warning, "Target " .. target_name .. " is PvP enabled!")
-					elseif UnitPlayerControlled("target") then
-						local target_name, _ = UnitName("target")
-						Hardcore:ShowAlertFrame(ALERT_STYLES.hc_pvp_warning, "Target " .. target_name .. " is PvP enabled!")
-					end
-				end
-			end
-		elseif Hardcore_Character.grief_warning_conditions == GRIEF_WARNING_ENEMY_FACTION then
-			if UnitGUID("target") ~= PLAYER_GUID and UnitIsPVP("target")  then
-				local faction, _ = UnitFactionGroup("target")
-				if faction ~= nil then
-					if (faction ~= PLAYER_FACTION) then
-						local target_name, _ = UnitName("target")
-						Hardcore:ShowAlertFrame(ALERT_STYLES.hc_pvp_warning, "Target " .. target_name .. " is PvP enabled!")
-					end
-				end
-			end
-		elseif Hardcore_Character.grief_warning_conditions == GRIEF_WARNING_SAME_FACTION then
-			if UnitGUID("target") ~= PLAYER_GUID and UnitIsPVP("target")  then
-				local faction, _ = UnitFactionGroup("target")
-				if faction ~= nil then
-					if faction == PLAYER_FACTION and UnitPlayerControlled("target") then
-						local target_name, _ = UnitName("target")
-						Hardcore:ShowAlertFrame(ALERT_STYLES.hc_pvp_warning, "Target " .. target_name .. " is PvP enabled!")
-					end
-				end
-			end
-		end
-	end);
 end
 
 function Hardcore:PLAYER_ALIVE()
@@ -549,6 +512,43 @@ function Hardcore:PLAYER_DEAD()
 	local commMessage = COMM_COMMANDS[2] .. COMM_COMMAND_DELIM .. deathData
 	if CTL then
 		CTL:SendAddonMessage("ALERT", COMM_NAME, commMessage, "GUILD")
+	end
+end
+
+function Hardcore:PLAYER_TARGET_CHANGED()
+	if Hardcore_Character.grief_warning_conditions == GRIEF_WARNING_BOTH_FACTIONS then
+		if UnitIsPVP("target") and UnitGUID("target") ~= PLAYER_GUID then
+			local faction, _ = UnitFactionGroup("target")
+			if faction ~= nil then
+				if faction ~= PLAYER_FACTION then
+					local target_name, _ = UnitName("target")
+					Hardcore:ShowAlertFrame(ALERT_STYLES.hc_pvp_warning, "Target " .. target_name .. " is PvP enabled!")
+				elseif UnitPlayerControlled("target") then
+					local target_name, _ = UnitName("target")
+					Hardcore:ShowAlertFrame(ALERT_STYLES.hc_pvp_warning, "Target " .. target_name .. " is PvP enabled!")
+				end
+			end
+		end
+	elseif Hardcore_Character.grief_warning_conditions == GRIEF_WARNING_ENEMY_FACTION then
+		if UnitGUID("target") ~= PLAYER_GUID and UnitIsPVP("target")  then
+			local faction, _ = UnitFactionGroup("target")
+			if faction ~= nil then
+				if (faction ~= PLAYER_FACTION) then
+					local target_name, _ = UnitName("target")
+					Hardcore:ShowAlertFrame(ALERT_STYLES.hc_pvp_warning, "Target " .. target_name .. " is PvP enabled!")
+				end
+			end
+		end
+	elseif Hardcore_Character.grief_warning_conditions == GRIEF_WARNING_SAME_FACTION then
+		if UnitGUID("target") ~= PLAYER_GUID and UnitIsPVP("target")  then
+			local faction, _ = UnitFactionGroup("target")
+			if faction ~= nil then
+				if faction == PLAYER_FACTION and UnitPlayerControlled("target") then
+					local target_name, _ = UnitName("target")
+					Hardcore:ShowAlertFrame(ALERT_STYLES.hc_pvp_warning, "Target " .. target_name .. " is PvP enabled!")
+				end
+			end
+		end
 	end
 end
 

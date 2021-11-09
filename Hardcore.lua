@@ -115,7 +115,7 @@ local ALERT_STYLES = {
 		icon = Hardcore_Alert_Icon,
 		file = "alert-death.blp",
 		delay = COMM_DELAY,
-		alertSound = nil
+		alertSound = 8959
 	},
 	hc_green = {
 		frame = Hardcore_Alert_Frame,

@@ -34,56 +34,6 @@
     <NormalFont style="DeathListFont"/>
   </Button>
 
-  <Frame name="Hardcore_Notification_Frame" parent="UIParent" hidden="true" toplevel="true">
-		<Size x="300" y="110" />
-		<Anchors>
-			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER" y="300" />
-		</Anchors>
-		<Layers>
-			<Layer>
-				<Texture name="Hardcore_Notification_Logo" file="Interface\AddOns\Hardcore\Media\logo-emblem.blp">
-					<Size x="50" y="50" />
-					<Anchors>
-						<Anchor point="CENTER" y="45" />
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<FontString name="Hardcore_Notification_Text" inherits="GameFontNormalHuge2">
-					<Size x="280" y="80" />
-					<Anchors>
-						<Anchor point="TOPLEFT" x="10" y="-20" />
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-  </Frame>
-
-  <Frame name="Hardcore_Warning_Frame" parent="UIParent" hidden="true" toplevel="true">
-		<Size x="600" y="110" />
-		<Anchors>
-			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER" y="300" />
-		</Anchors>
-		<Layers>
-			<Layer>
-				<Texture name="Hardcore_Warning_Logo" file="Interface\AddOns\Hardcore\Media\logo-emblem.blp">
-					<Size x="50" y="50" />
-					<Anchors>
-						<Anchor point="CENTER" y="45" />
-					</Anchors>
-				</Texture>
-			</Layer>
-			<Layer level="OVERLAY">
-				<FontString name="Hardcore_Warning_Text" inherits="GameFontNormalHuge2">
-					<Size x="600" y="80" />
-					<Anchors>
-						<Anchor point="TOPLEFT" x="10" y="-20" />
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-  </Frame>
-
   <?comment msg="This provides dynamic style templating, via ALERT_STYLES" ?>
   <Frame name="Hardcore_Alert_Frame" parent="UIParent" hidden="true" toplevel="true">
 		<Size x="400" y="610" />
@@ -119,22 +69,17 @@
 			<KeyValue key="backdropInfo" value="BACKDROP_DIALOG_32_32" type="global"/>
 		</KeyValues>
 		<Layers>
-			<Layer>
-				<Texture name="Hardcore_Logo1" file="Interface\AddOns\Hardcore\Media\logo-emblem.blp">
-					<Size x="70" y="70" />
-					<Anchors>
-						<Anchor point="TOPLEFT" x="67" y="-15" />
-					</Anchors>
-				</Texture>
-				<Texture name="Hardcore_Logo2" file="Interface\AddOns\Hardcore\Media\logo-emblem.blp">
-					<Size x="70" y="70" />
-					<Anchors>
-						<Anchor point="TOPLEFT" x="572" y="-15" />
-					</Anchors>
-				</Texture>
-			</Layer>
+		<Layer>
+			<Texture name="Hardcore_Logo1" file="Interface\AddOns\Hardcore\Media\wowhc-emblem-white-red.blp">
+				<Size x="50" y="50" />
+				<Anchors>
+					<Anchor point="TOPLEFT" x="235" y="-5" />
+				</Anchors>
+			</Texture>
+		</Layer>
 			<Layer level="OVERLAY">
-				<FontString name="Hardcore_Title" inherits="GameFontNormalHuge3" text="Hardcore">
+				<FontString name="Hardcore_Title" inherits="HardcoreFont" text="HARDCORE">
+					<Color a="1" r="1" g="1" b="1" />
 					<Size x="242" y="37" />
 					<Anchors>
 						<Anchor point="TOPLEFT" x="242" y="-15" />
@@ -201,7 +146,7 @@
 				<AbsDimension x="500" y="200"></AbsDimension>
 			</Size>
 			<Anchors>
-				<Anchor point="TOPLEFT" relativeTo="DeathListEntry2" relativePoint="BOTTOMLEFT" x="-200"/>
+				<Anchor point="TOPLEFT" relativeTo="DeathListEntry2" relativePoint="BOTTOMLEFT" x="-150"/>
 			</Anchors>
 			<Layers>
     </Layers>
@@ -381,7 +326,7 @@
 			<Button name="Hardcore_DispLevels" inherits="UIPanelButtonTemplate" text="Levels">
 				<Size x="75" y="37" />
 				<Anchors>
-					<Anchor point="TOPLEFT" x="30" y="-450" />
+					<Anchor point="TOPLEFT" x="70" y="-450" />
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -392,7 +337,7 @@
 			<Button name="Hardcore_GetVerified" inherits="UIPanelButtonTemplate" text="Get verified">
 				<Size x="95" y="37" />
 				<Anchors>
-					<Anchor point="TOPLEFT" x="120" y="-450" />
+					<Anchor point="TOPLEFT" x="165" y="-450" />
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -403,7 +348,7 @@
 			<Button name="Hardcore_DispRules" inherits="UIPanelButtonTemplate" text="Rules">
 				<Size x="75" y="37" />
 				<Anchors>
-					<Anchor point="TOPLEFT" x="240" y="-450" />
+					<Anchor point="TOPLEFT" x="280" y="-450" />
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -411,21 +356,10 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="Hardcore_EnableToggle" inherits="UIPanelButtonTemplate" text="Enable">
-				<Size x="75" y="37" />
-				<Anchors>
-					<Anchor point="TOPLEFT" x="340" y="-450" />
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						Hardcore:Enable(not Hardcore_Settings.enabled)
-					</OnClick>
-				</Scripts>
-			</Button>
 			<Button name="Hardcore_MinimapToggle" inherits="UIPanelButtonTemplate" text="Minimap button">
 				<Size x="120" y="37" />
 				<Anchors>
-					<Anchor point="TOPLEFT" x="440" y="-450" />
+					<Anchor point="TOPLEFT" x="380" y="-450" />
 				</Anchors>
 				<Scripts>
 					<OnClick>
@@ -436,7 +370,7 @@
 			<Button name="Hardcore_DispAddonStatus" inherits="UIPanelButtonTemplate" text="Accountability">
 				<Size x="105" y="37" />
 				<Anchors>
-					<Anchor point="TOPLEFT" x="575" y="-450" />
+					<Anchor point="TOPLEFT" x="520" y="-450" />
 				</Anchors>
 				<Scripts>
 					<OnClick>

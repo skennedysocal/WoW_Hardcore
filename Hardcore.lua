@@ -17,9 +17,14 @@ You should have received a copy of the GNU General Public License
 along with the Hardcore AddOn. If not, see <http://www.gnu.org/licenses/>.
 --]]
 
+--[[ Const variables ]]--
+local GRIEF_WARNING_OFF = 0
+local GRIEF_WARNING_SAME_FACTION = 1
+local GRIEF_WARNING_ENEMY_FACTION = 2
+local GRIEF_WARNING_BOTH_FACTIONS = 3
+
 --[[ Global saved variables ]]--
 Hardcore_Settings = {
-	enabled = true,
 	notify = true,
 	level_list = {},
 }
@@ -31,9 +36,11 @@ Hardcore_Character = {
 	time_played = 0, -- seconds
 	accumulated_time_diff = 0, -- seconds
 	tracked_played_percentage = 0,
-	deaths = 0,
+	deaths = {},
 	bubble_hearth_incidents = {},
 	played_time_gap_warnings = {},
+	trade_partners = {},
+	grief_warning_conditions = GRIEF_WARNING_BOTH_FACTIONS,
 }
 
 --[[ Local variables ]]--
@@ -68,11 +75,13 @@ local COMM_COMMANDS = {"PULSE", "ADD", nil}
 -- stuff
 local PLAYER_NAME, _ = nil
 local PLAYER_GUID = nil
+local PLAYER_FACTION = nil
 local GENDER_GREETING = {"guildmate", "brother", "sister"}
 local recent_levelup = nil
 local Last_Attack_Source = nil
 local PICTURE_DELAY = .65
-local HIDE_RTP_CHAT_MSG = false
+local HIDE_RTP_CHAT_MSG_BUFFER = 0 -- number of messages in queue
+local HIDE_RTP_CHAT_MSG_BUFFER_MAX = 2 -- number of maximum messages to wait for
 local STARTED_BUBBLE_HEARTH_INFO = nil
 local RECEIVED_FIRST_PLAYED_TIME_MSG = false
 local PLAYED_TIME_GAP_THRESH = 600 -- seconds
@@ -83,6 +92,8 @@ local TIME_PLAYED_PULSE = 60
 local COLOR_RED = "|c00ff0000"
 local COLOR_GREEN = "|c0000ff00"
 local COLOR_YELLOW = "|c00ffff00"
+local STRING_ADDON_STATUS_SUBTITLE = "Guild Addon Status"
+local STRING_ADDON_STATUS_SUBTITLE_LOADING = "Guild Addon Status (Loading)"
 
 -- frame display
 local display = "Rules"
@@ -98,6 +109,7 @@ local ALERT_STYLES = {
 		icon = Hardcore_Alert_Icon, -- icon layer
 		file = "logo-emblem.blp", -- string
 		delay = COMM_DELAY, -- int seconds
+		alertSound = 8959
 	},
 	death = {
 		frame = Hardcore_Alert_Frame,
@@ -105,6 +117,7 @@ local ALERT_STYLES = {
 		icon = Hardcore_Alert_Icon,
 		file = "alert-death.blp",
 		delay = COMM_DELAY,
+		alertSound = 8959
 	},
 	hc_green = {
 		frame = Hardcore_Alert_Frame,
@@ -112,6 +125,7 @@ local ALERT_STYLES = {
 		icon = Hardcore_Alert_Icon,
 		file = "alert-hc-green.blp",
 		delay = COMM_DELAY,
+		alertSound = 8959
 	},
 	hc_red = {
 		frame = Hardcore_Alert_Frame,
@@ -119,6 +133,7 @@ local ALERT_STYLES = {
 		icon = Hardcore_Alert_Icon,
 		file = "alert-hc-red.blp",
 		delay = COMM_DELAY,
+		alertSound = 8959
 	},
 	spirithealer = {
 		frame = Hardcore_Alert_Frame,
@@ -126,6 +141,7 @@ local ALERT_STYLES = {
 		icon = Hardcore_Alert_Icon,
 		file = "alert-spirithealer.blp",
 		delay = COMM_DELAY,
+		alertSound = 8959
 	},
 	bubble = {
 		frame = Hardcore_Alert_Frame,
@@ -133,15 +149,26 @@ local ALERT_STYLES = {
 		icon = Hardcore_Alert_Icon,
 		file = "alert-hc-red.blp",
 		delay = 8,
+		alertSound = 8959
 	},
-	hc_red_delayed_10 = {
+	hc_enabled = {
 		frame = Hardcore_Alert_Frame,
 		text = Hardcore_Alert_Text,
 		icon = Hardcore_Alert_Icon,
 		file  = "alert-hc-red.blp",
 		delay = 10,
+		alertSound = nil
+	},
+	hc_pvp_warning = {
+		frame = Hardcore_Alert_Frame,
+		text = Hardcore_Alert_Text,
+		icon = Hardcore_Alert_Icon,
+		file  = "hc-pvp-alert.blp",
+		delay = 10,
+		alertSound = 8192
 	},
 }
+Hardcore_Alert_Frame:SetScale(0.7)
 
 -- the big frame object for our addon
 local Hardcore = CreateFrame("Frame", "Hardcore", nil, "BackdropTemplate")
@@ -158,10 +185,6 @@ local function SlashHandler(msg, editbox)
 		Hardcore:Levels()
 	elseif cmd == "alllevels" then
 		Hardcore:Levels(true)
-	elseif cmd == "enable" then
-		Hardcore:Enable(true)
-	elseif cmd == "disable" then
-		Hardcore:Enable(false)
 	elseif cmd == "show" then
 		Hardcore_Frame:Show()
 	elseif cmd == "hide" then
@@ -177,7 +200,55 @@ local function SlashHandler(msg, editbox)
 		else
 			Hardcore:Print("Notification disabled")
 		end
-
+	elseif cmd == "griefalert" then
+		local grief_alert_option = ""
+		for substring in args:gmatch("%S+") do
+			grief_alert_option = substring
+		end
+		if grief_alert_option == "off" then
+			Hardcore_Character.grief_warning_conditions = GRIEF_WARNING_OFF
+			Hardcore:Print("Grief alert set to off.")
+		elseif grief_alert_option == "horde" then
+			if PLAYER_FACTION == "Horde" then
+				Hardcore_Character.grief_warning_conditions = GRIEF_WARNING_SAME_FACTION
+				Hardcore:Print("Grief alert set to same faction.")
+			else
+				Hardcore_Character.grief_warning_conditions = GRIEF_WARNING_ENEMY_FACTION
+				Hardcore:Print("Grief alert set to enemy faction.")
+			end
+		elseif grief_alert_option == "alliance" then
+			if PLAYER_FACTION == "Alliance" then
+				Hardcore_Character.grief_warning_conditions = GRIEF_WARNING_SAME_FACTION
+				Hardcore:Print("Grief alert set to same faction.")
+			else
+				Hardcore_Character.grief_warning_conditions = GRIEF_WARNING_ENEMY_FACTION
+				Hardcore:Print("Grief alert set to enemy faction.")
+			end
+		elseif grief_alert_option == "both" then
+			Hardcore_Character.grief_warning_conditions = GRIEF_WARNING_BOTH_FACTIONS
+			Hardcore:Print("Grief alert set to both factions.")
+		else
+			local grief_alert_setting_msg = ""
+			if Hardcore_Character.grief_warning_conditions == GRIEF_WARNING_OFF then
+				grief_alert_setting_msg = "off"
+			elseif Hardcore_Character.grief_warning_conditions == GRIEF_WARNING_SAME_FACTION then
+				if PLAYER_FACTION == "Alliance" then
+					grief_alert_setting_msg = "same faction (alliance)"
+				else
+					grief_alert_setting_msg = "same faction (horde)"
+				end
+			elseif Hardcore_Character.grief_warning_conditions == GRIEF_WARNING_ENEMY_FACTION then
+				if PLAYER_FACTION == "Alliance" then
+					grief_alert_setting_msg = "enemy faction (horde)"
+				else
+					grief_alert_setting_msg = "enemy faction (alliance)"
+				end
+			elseif Hardcore_Character.grief_warning_conditions == GRIEF_WARNING_BOTH_FACTIONS then
+				grief_alert_setting_msg = "both factions"
+			end
+			Hardcore:Print("Grief alert is currently set to: " .. grief_alert_setting_msg)
+			Hardcore:Print("|cff00ff00Grief alert options:|roff horde alliance both")
+		end
 	-- Alert debug code
 	elseif cmd == "alert" then
 		local head, tail = "", {}
@@ -190,18 +261,64 @@ local function SlashHandler(msg, editbox)
 		end
 
 		local style, message = head, table.concat(tail, " ")
-		Hardcore:ShowAlertFrame(style, message)
+		local styleConfig
+		if ALERT_STYLES[style] then
+			styleConfig = ALERT_STYLES[style]
+		else
+			styleConfig = ALERT_STYLES.hc_red
+		end
+
+		Hardcore:ShowAlertFrame(styleConfig, message)
 	-- End Alert debug code
 
 	else
 		-- If not handled above, display some sort of help message
-		Hardcore:Print("|cff00ff00Syntax:|r/hardcore [command]")
-		Hardcore:Print("|cff00ff00Commands:|rshow deaths levels enable disable")
+		Hardcore:Print("|cff00ff00Syntax:|r/hardcore [command] [options]")
+		Hardcore:Print("|cff00ff00Commands:|rshow deaths levels enable disable griefalert")
 	end
 end
 
 SLASH_HARDCORE1, SLASH_HARDCORE2 = '/hardcore', '/hc'
 SlashCmdList["HARDCORE"] = SlashHandler
+
+local saved_variable_meta = {
+	{ key = "guid", initial_data = UnitGUID("player") },
+	{ key = "time_tracked", initial_data = 0 },
+	{ key = "time_played", initial_data = 0 },
+	{ key = "accumulated_time_diff", initial_data = 0 },
+	{ key = "tracked_played_percentage", initial_data = 0 },
+	{ key = "deaths", initial_data = {} },
+	{ key = "bubble_hearth_incidents", initial_data = {} },
+	{ key = "played_time_gap_warnings", initial_data = {} },
+	{ key = "trade_partners", initial_data = {} },
+	{ key = "grief_warning_conditions", initial_data = GRIEF_WARNING_BOTH_FACTIONS }
+}
+
+function Hardcore:InitializeSavedVariables()
+	if Hardcore_Character == nil then
+		Hardcore_Character = {}
+	end
+
+	for i, v in ipairs(saved_variable_meta) do
+		if Hardcore_Character[v.key] == nil then
+			Hardcore_Character[v.key] = v.initial_data
+		end
+	end
+end
+
+function Hardcore:ForceResetSavedVariables()
+	for i, v in ipairs(saved_variable_meta) do
+		Hardcore_Character[v.key] = v.initial_data
+	end
+end
+
+--[[ Override default WoW UI ]]--
+
+TradeFrameTradeButton:SetScript("OnClick", function()
+	table.insert(Hardcore_Character.trade_partners, TradeFrameRecipientNameText:GetText())
+	Hardcore_Character.trade_partners = Hardcore_FilterUnique(Hardcore_Character.trade_partners)
+	AcceptTrade()
+end)
 
 --[[ Startup ]]--
 
@@ -222,15 +339,20 @@ end
 --[[ Events ]]--
 
 function Hardcore:PLAYER_LOGIN()
+	Hardcore:HandleLegacyDeaths()
+
 	-- cache player data
 	_, class, _ = UnitClass("player")
 	PLAYER_NAME, _ = UnitName("player")
 	PLAYER_GUID = UnitGUID("player")
+	PLAYER_FACTION, _ = UnitFactionGroup("player")
 	local PLAYER_LEVEL = UnitLevel("player")
 
 	-- fires on first loading
 	self:RegisterEvent("PLAYER_UNGHOST")
+	self:RegisterEvent("PLAYER_ALIVE")
 	self:RegisterEvent("PLAYER_DEAD")
+	self:RegisterEvent("PLAYER_TARGET_CHANGED")
 	self:RegisterEvent("CHAT_MSG_ADDON")
 	self:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	self:RegisterEvent("GUILD_ROSTER_UPDATE")
@@ -244,18 +366,11 @@ function Hardcore:PLAYER_LOGIN()
 	self:RegisterEvent("UNIT_SPELLCAST_STOP")
 	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 
-	-- different guid + lvl1 means new character with the same name
+	Hardcore:InitializeSavedVariables()
+
+	-- different guid means new character with the same name
 	if Hardcore_Character.guid ~= PLAYER_GUID then
-		Hardcore_Character = {
-			guid = PLAYER_GUID,
-			time_tracked = 0,
-			time_played = 0,
-			accumulated_time_diff = 0,
-			tracked_played_percentage = 0,
-			deaths = 0,
-			bubble_hearth_incidents = {},
-			played_time_gap_warnings ={}
-		}
+		Hardcore:ForceResetSavedVariables()
 	end
 
 	-- cache player name
@@ -355,16 +470,28 @@ function Hardcore:PLAYER_ENTERING_WORLD()
 	end
 end
 
-function Hardcore:PLAYER_DEAD()
-	if Hardcore_Settings.enabled == false then
+function Hardcore:PLAYER_ALIVE()
+	if #Hardcore_Character.deaths == 0 then
 		return
 	end
+
+	if Hardcore_Character.deaths[#Hardcore_Character.deaths].player_alive_trigger == nil then
+		Hardcore_Character.deaths[#Hardcore_Character.deaths].player_alive_trigger = date("%m/%d/%y %H:%M:%S")
+	end
+end
+
+function Hardcore:PLAYER_DEAD()
 
 	-- screenshot
 	C_Timer.After(PICTURE_DELAY, Screenshot)
 
-	-- Update death count
-	Hardcore_Character.deaths = Hardcore_Character.deaths + 1
+	-- Update deaths
+	if #Hardcore_Character.deaths == 0 or (#Hardcore_Character.deaths > 0 and Hardcore_Character.deaths[#Hardcore_Character.deaths].player_alive_trigger ~= nil) then
+		table.insert(Hardcore_Character.deaths, {
+			player_dead_trigger = date("%m/%d/%y %H:%M:%S"),
+			player_alive_trigger = nil
+		})
+	end
 
 	-- Get information
 	local playerId = UnitGUID("player")
@@ -394,10 +521,31 @@ function Hardcore:PLAYER_DEAD()
 	end
 end
 
-function Hardcore:PLAYER_UNGHOST()
-	if Hardcore_Settings.enabled == false then
-		return
+function Hardcore:PLAYER_TARGET_CHANGED()
+	if UnitGUID("target") ~= PLAYER_GUID and UnitIsPVP("target") then
+		if Hardcore_Character.grief_warning_conditions == GRIEF_WARNING_BOTH_FACTIONS then
+			local faction, _ = UnitFactionGroup("target")
+			if faction ~= nil and (faction ~= PLAYER_FACTION or (faction == PLAYER_FACTION and UnitPlayerControlled("target"))) then
+				local target_name, _ = UnitName("target")
+				Hardcore:ShowAlertFrame(ALERT_STYLES.hc_pvp_warning, "Target " .. target_name .. " is PvP enabled!")
+			end
+		elseif Hardcore_Character.grief_warning_conditions == GRIEF_WARNING_ENEMY_FACTION then
+			local faction, _ = UnitFactionGroup("target")
+			if faction ~= nil and faction ~= PLAYER_FACTION then
+				local target_name, _ = UnitName("target")
+				Hardcore:ShowAlertFrame(ALERT_STYLES.hc_pvp_warning, "Target " .. target_name .. " is PvP enabled!")
+			end
+		elseif Hardcore_Character.grief_warning_conditions == GRIEF_WARNING_SAME_FACTION then
+			local faction, _ = UnitFactionGroup("target")
+			if faction ~= nil and faction == PLAYER_FACTION and UnitPlayerControlled("target") then
+				local target_name, _ = UnitName("target")
+				Hardcore:ShowAlertFrame(ALERT_STYLES.hc_pvp_warning, "Target " .. target_name .. " is PvP enabled!")
+			end
+		end
 	end
+end
+
+function Hardcore:PLAYER_UNGHOST()
 	if UnitIsDeadOrGhost("player") == 1 then
 		return
 	end -- prevent message on ghost login or zone
@@ -410,28 +558,16 @@ function Hardcore:PLAYER_UNGHOST()
 end
 
 function Hardcore:MAIL_SHOW()
-	if Hardcore_Settings.enabled == false then
-		return
-	end
-
 	Hardcore:Print("Hardcore mode is enabled, mailbox access is blocked.")
 	CloseMail()
 end
 
 function Hardcore:AUCTION_HOUSE_SHOW()
-	if Hardcore_Settings.enabled == false then
-		return
-	end
-
 	Hardcore:Print("Hardcore mode is enabled, auction house access is blocked.")
 	CloseAuctionHouse()
 end
 
 function Hardcore:PLAYER_LEVEL_UP(...)
-	if Hardcore_Settings.enabled == false then
-		return
-	end
-
 	-- store the recent level up to use in TIME_PLAYED_MSG
 	local level, healthDelta, powerDelta, numNewTalents, numNewPvpTalentSlots, strengthDelta, agilityDelta,
 		staminaDelta, intellectDelta = ...
@@ -451,10 +587,6 @@ function Hardcore:PLAYER_LEVEL_UP(...)
 end
 
 function Hardcore:TIME_PLAYED_MSG(...)
-	if Hardcore_Settings.enabled == false then
-		return
-	end
-
 	local totalTimePlayed, _ = ...
 	Hardcore_Character.time_played = totalTimePlayed
 
@@ -561,23 +693,22 @@ end
 
 local Cached_ChatFrame_DisplayTimePlayed = ChatFrame_DisplayTimePlayed
 ChatFrame_DisplayTimePlayed = function(...)
-	if HIDE_RTP_CHAT_MSG then
-		HIDE_RTP_CHAT_MSG = false
+	if HIDE_RTP_CHAT_MSG_BUFFER > 0 then
+		HIDE_RTP_CHAT_MSG_BUFFER = HIDE_RTP_CHAT_MSG_BUFFER - 1
 		return
 	end
 	return Cached_ChatFrame_DisplayTimePlayed(...)
 end
 
 function Hardcore:RequestTimePlayed()
-	HIDE_RTP_CHAT_MSG = true
+	HIDE_RTP_CHAT_MSG_BUFFER = HIDE_RTP_CHAT_MSG_BUFFER + 1
+	if HIDE_RTP_CHAT_MSG_BUFFER > HIDE_RTP_CHAT_MSG_BUFFER_MAX then
+		HIDE_RTP_CHAT_MSG_BUFFER = HIDE_RTP_CHAT_MSG_BUFFER_MAX
+	end
 	RequestTimePlayed()
 end
 
 function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
-	if Hardcore_Settings.enabled == false then
-		return
-	end
-
 	-- Ignore messages that are not ours
 	if COMM_NAME == prefix then
 		-- Get the command
@@ -631,7 +762,7 @@ function Hardcore:GUILD_ROSTER_UPDATE(...)
 
 	Hardcore:UpdateGuildRosterRows()
 	if display == "AddonStatus" then
-		Hardcore_SubTitle:SetText("Guild Addon Status")
+		Hardcore_SubTitle:SetText(STRING_ADDON_STATUS_SUBTITLE)
 	end
 end
 
@@ -648,15 +779,13 @@ function Hardcore:Debug(msg)
 end
 
 -- Alert UI
-function Hardcore:ShowAlertFrame(style, message)
-	-- style is a key-based property of ALERT_STYLES
+function Hardcore:ShowAlertFrame(styleConfig, message)
 	-- message is any text accepted by FontString:SetText(message)
 
 	message = message or ""
 
-	local frame, text, icon, file, filename, delay = nil, nil, nil, nil, nil, nil
-	local data = ALERT_STYLES[style] or ALERT_STYLES["hc_red"]
-	frame, text, icon, file, delay = data.frame, data.text, data.icon, data.file, data.delay
+	local data = styleConfig or ALERT_STYLES["hc_red"]
+	local frame, text, icon, file, delay, alertSound = data.frame, data.text, data.icon, data.file, data.delay, data.alertSound
 
 	filename = MEDIA_DIR .. file
 	icon:SetTexture(filename)
@@ -664,8 +793,7 @@ function Hardcore:ShowAlertFrame(style, message)
 
 	frame:Show()
 
-	-- TODO: Allow custom sounds per-frame, or allow passing a sound to the function
-	PlaySound(8959)
+	if alertSound then PlaySound(alertSound) end
 
 	-- HACK:
 	-- There's a bug here where a sequence of overlapping notifications share one 'hide' timer
@@ -688,29 +816,6 @@ function Hardcore:Add(data)
 		local messageString = string.format(messageFormat, name, class_color, class_name, level, map_name)
 
 		Hardcore:ShowAlertFrame(ALERT_STYLES.death, messageString)
-	end
-end
-
--- Should we remove this functionality?
-function Hardcore:Enable(setting)
-	-- Check if we are attempting to set the existing state
-	if Hardcore_Settings.enabled == setting then
-		if setting == false then
-			Hardcore:Print("Already disabled")
-		else
-			Hardcore:Print("Already enabled")
-		end
-		return
-	end
-
-	Hardcore_Settings.enabled = setting
-	if setting == false then
-		Hardcore_EnableToggle:SetText("Enable")
-		Hardcore:Print("Disabled")
-	else
-		Hardcore:RecordReminder()
-		Hardcore_EnableToggle:SetText("Disable")
-		Hardcore:Print("Enabled")
 	end
 end
 
@@ -948,7 +1053,7 @@ function Hardcore_Frame_OnShow()
 
 		local verificationstring = Hardcore:GenerateVerificationString()
 		local f = {}
-		table.insert(f, "To get verified, copy the string below and visit https://classichc.net/get-verified")
+		table.insert(f, "To get verified, copy the string below and visit the classichc website.")
 		table.insert(f, "")
 		table.insert(f, verificationstring)
 		displaylist = f
@@ -968,11 +1073,9 @@ function Hardcore_Frame_OnShow()
 
 		-- hard coded rules table lol
 		local f = {}
-		table.insert(f, "Official website with info, rules, news, hall of legends, challenges \n")
-		table.insert(f, "https://classichc.net")
-		table.insert(f, "Help is avaiable on discord (link on website)")
-		table.insert(f, "")
-		table.insert(f, "11/24/2020 from https://classichc.net/rules/")
+		table.insert(f, "For more info, rules, news, hall of legends, challenges, and more\n")
+		table.insert(f, "visit the classichc website.")
+		table.insert(f, "Help is available on discord (link on website)")
 		table.insert(f, "")
 		table.insert(f, "All professions allowed")
 		table.insert(f, "No restriction on talents")
@@ -1029,9 +1132,9 @@ function Hardcore_Frame_OnShow()
 	if display == "Levels" and #displaylist > 0 then
 		Hardcore_SubTitle:SetText("You've leveled up " .. tostring(#displaylist) .. " times!")
 	elseif display == "AddonStatus" and guild_roster_loading then
-		Hardcore_SubTitle:SetText("Loading Updated Guild Addon Status...")
+		Hardcore_SubTitle:SetText(STRING_ADDON_STATUS_SUBTITLE_LOADING)
 	else
-		Hardcore_SubTitle:SetText("classichc.net")
+		Hardcore_SubTitle:SetText("DEATH = DELETE")
 	end
 
 	Hardcore_Deathlist_ScrollBar_Update()
@@ -1072,14 +1175,11 @@ function Hardcore_Deathlist_ScrollBar_Update()
 end
 
 function Hardcore:RecordReminder()
-	if Hardcore_Settings.enabled == false then
-		return
-	end
 	if Hardcore_Settings.notify == false then
 		return
 	end
 
-	Hardcore:ShowAlertFrame(ALERT_STYLES.hc_green, "Hardcore Enabled\n START RECORDING")
+	Hardcore:ShowAlertFrame(ALERT_STYLES.hc_enabled, "Character Activity is Being Monitored")
 
 end
 
@@ -1106,12 +1206,6 @@ function Hardcore:initMinimapButton()
 			-- Control key
 			if IsControlKeyDown() and not IsShiftKeyDown() then
 				Hardcore:ToggleMinimapIcon()
-				return
-			end
-
-			-- Shift key
-			if IsShiftKeyDown() and not IsControlKeyDown() then
-				Hardcore:Enable(not Hardcore_Settings.enabled)
 				return
 			end
 
@@ -1143,7 +1237,6 @@ function Hardcore:initMinimapButton()
 			end
 			tooltip:AddLine("Hardcore")
 			tooltip:AddLine("|cFFCFCFCFclick|r show window")
-			tooltip:AddLine("|cFFCFCFCFshift click|r toggle enable")
 			tooltip:AddLine("|cFFCFCFCFctrl click|r toggle minimap button")
 		end
 	})
@@ -1200,9 +1293,10 @@ function Hardcore:GenerateVerificationString()
 	local realm = GetRealmName()
 	local level = UnitLevel("player")
 
+	local tradePartners = Hardcore_join(Hardcore_Character.trade_partners, ",")
 	local baseVerificationData = {Hardcore_Character.guid, realm, race, class, name, level,
 									Hardcore_Character.time_played, Hardcore_Character.time_tracked,
-									Hardcore_Character.deaths}
+									#Hardcore_Character.deaths, tradePartners}
 	local baseVerificationString = Hardcore_join(Hardcore_map(baseVerificationData, Hardcore_stringOrNumberToUnicode),
 		ATTRIBUTE_SEPARATOR)
 	local bubbleHearthIncidentsVerificationString = Hardcore_tableToUnicode(Hardcore_Character.bubble_hearth_incidents)
@@ -1337,29 +1431,29 @@ function Hardcore:FetchGuildRoster()
 	-- Request a new roster update when we show the addonstatus list
 	SetGuildRosterShowOffline(false)
 	requestGuildRoster = C_Timer.NewTicker(2, function()
-		local postfix = ""
-
 		if guild_roster_loading then
-			-- generate animated ellipsis to show loading
-			if num_ellipsis == 4 then
-				num_ellipsis = 1
-			end
-			for i = 1, num_ellipsis do
-				postfix = postfix .. '.'
-			end
-			-- end animated elllipsis
 
 			if display == "AddonStatus" then
-				Hardcore_SubTitle:SetText("Loading Updated Guild Addon Status" .. postfix)
+				Hardcore_SubTitle:SetText(STRING_ADDON_STATUS_SUBTITLE_LOADING)
 			end
 			GuildRoster()
 		else
 			requestGuildRoster:Cancel()
-
 		end
-
-		num_ellipsis = num_ellipsis + 1
 	end)
+end
+
+function Hardcore:HandleLegacyDeaths()
+	if type(Hardcore_Character.deaths) == "number" then
+		local deathcount = Hardcore_Character.deaths
+		Hardcore_Character.deaths = {}
+		for i = 1, deathcount do
+			table.insert(Hardcore_Character.deaths, {
+				player_dead_trigger = date("%m/%d/%y %H:%M:%S"),
+				player_alive_trigger = date("%m/%d/%y %H:%M:%S")
+			})
+		end
+	end
 end
 
 --[[ Start Addon ]]--

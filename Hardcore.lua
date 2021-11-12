@@ -25,11 +25,10 @@ local GRIEF_WARNING_BOTH_FACTIONS = 3
 
 --[[ Global saved variables ]]--
 Hardcore_Settings = {
-	notify = true,
 	level_list = {},
 }
 
-Hardcore_Settings.shouldAlertDeaths = Hardcore_Settings.shouldAlertDeaths or true -- Will display death alerts by default.
+Hardcore_Settings.notify = Hardcore_Settings.notify or true -- Will display death alerts by default.
 
 --[[ Character saved variables ]]--
 Hardcore_Character = {
@@ -193,12 +192,12 @@ local function SlashHandler(msg, editbox)
 	elseif cmd == "debug" then
 		debug = not debug
 		Hardcore:Print("Debugging set to " .. tostring(debug))
-	elseif cmd == "notify" then
-		Hardcore_Settings.notify = not Hardcore_Settings.notify
+	elseif cmd == "alerts" then
+		Hardcore_Toggle_Alerts()
 		if true == Hardcore_Settings.notify then
-			Hardcore:Print("Notification enabled")
+			Hardcore:Print("Alerts enabled")
 		else
-			Hardcore:Print("Notification disabled")
+			Hardcore:Print("Alerts disabled")
 		end
 	elseif cmd == "griefalert" then
 		local grief_alert_option = ""
@@ -457,7 +456,7 @@ end
 
 function Hardcore:PLAYER_ENTERING_WORLD()
     Hardcore_Frame:RegisterForDrag("LeftButton")
-    Hardcore_Alerts_Button:SetText(Hardcore_Settings.shouldAlertDeaths and "Disable alerts" or "Enable alerts")
+    Hardcore_Alerts_Button:SetText(Hardcore_Settings.notify and "Disable alerts" or "Enable alerts")
     
 	-- cache player name
 	PLAYER_NAME, _ = UnitName("player")
@@ -808,7 +807,7 @@ function Hardcore:Add(data)
 		Hardcore:Debug("Adding new record " .. data)
         
 		-- Display the death locally if alerts are not toggled off.
-        if Hardcore_Settings.shouldAlertDeaths then
+        if Hardcore_Settings.notify then
             local _, name, class_name, level, map_id, _ = string.split(COMM_FIELD_DELIM, data)
             local class_color = Hardcore:GetClassColorText(class_name)
             local map_name = C_Map.GetMapInfo(tonumber(map_id)).name
@@ -1144,8 +1143,8 @@ end
 
 -- Toggles death alerts on or off.
 function Hardcore_Toggle_Alerts()
-    Hardcore_Settings.shouldAlertDeaths = not Hardcore_Settings.shouldAlertDeaths
-    Hardcore_Alerts_Button:SetText(Hardcore_Settings.shouldAlertDeaths and "Disable alerts" or "Enable alerts")
+    Hardcore_Settings.notify = not Hardcore_Settings.notify
+    Hardcore_Alerts_Button:SetText(Hardcore_Settings.notify and "Disable alerts" or "Enable alerts")
 end
 
 function Hardcore_Deathlist_ScrollBar_Update()
@@ -1182,7 +1181,7 @@ function Hardcore_Deathlist_ScrollBar_Update()
 end
 
 function Hardcore:RecordReminder()
-	if Hardcore_Settings.notify == false then
+	if not Hardcore_Settings.notify then
 		return
 	end
 

@@ -60,7 +60,7 @@
 		</Layers>
   </Frame>
 
-  <Frame name="Hardcore_Frame" parent="UIParent" hidden="true" toplevel="true" movable="true" enableMouse="true" inherits="BackdropTemplate">>
+  <Frame name="Hardcore_Frame" parent="UIParent" hidden="true" toplevel="true" clampedToScreen="true" enableMouse="true" movable="true" inherits="BackdropTemplate">
 		<Size x="700" y="500" />
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="UIParent" relativePoint="TOPLEFT" x="336" y="-35" />
@@ -94,6 +94,12 @@
 			</Layer>
 		</Layers>
 		<Scripts>
+          <OnDragStart>
+            self:StartMoving()
+          </OnDragStart>
+          <OnDragStop>
+            self:StopMovingOrSizing()
+          </OnDragStop>
 		  <OnLoad>
 			tinsert(UISpecialFrames, self:GetName());
 		  </OnLoad>
@@ -243,6 +249,17 @@
 			</Anchors>
 		  </Button>
 
+            <Button name="Hardcore_Alerts_Button" inherits="UIPanelButtonTemplate" text="Disable alerts">
+				<Size x="120" y="37" />
+				<Anchors>
+					<Anchor point="TOPLEFT" x="520" y="-20" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+                        Hardcore_Toggle_Alerts()
+					</OnClick>
+				</Scripts>
+			</Button>
 			<Button name="Hardcore_Name_Sort" inherits="OptionsButtonTemplate" text="Name">
 				<Size x="100" y="20" />
 				<Anchors>

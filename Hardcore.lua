@@ -29,6 +29,8 @@ Hardcore_Settings = {
 	level_list = {},
 }
 
+Hardcore_Settings.shouldAlertDeaths = Hardcore_Settings.shouldAlertDeaths or true -- Will display death alerts by default.
+
 --[[ Character saved variables ]]--
 Hardcore_Character = {
 	guid = "",
@@ -328,7 +330,6 @@ function Hardcore:Startup()
 	self:SetScript("OnEvent", function(self, event, ...)
 		self[event](self, ...)
 	end)
-
 	-- actually start loading the addon once player ui is loading
 	self:RegisterEvent("PLAYER_ENTERING_WORLD")
 	self:RegisterEvent("PLAYER_LOGIN")
@@ -455,6 +456,9 @@ function Hardcore:UNIT_SPELLCAST_SUCCEEDED(...)
 end
 
 function Hardcore:PLAYER_ENTERING_WORLD()
+    Hardcore_Frame:RegisterForDrag("LeftButton")
+    Hardcore_Alerts_Button:SetText(Hardcore_Settings.shouldAlertDeaths and "Disable alerts" or "Enable alerts")
+    
 	-- cache player name
 	PLAYER_NAME, _ = UnitName("player")
 	Hardcore:PrintBubbleHearthInfractions()
@@ -802,15 +806,17 @@ function Hardcore:Add(data)
 	-- Add the record if needed
 	if true == Hardcore:ValidateEntry(data) then
 		Hardcore:Debug("Adding new record " .. data)
+        
+		-- Display the death locally if alerts are not toggled off.
+        if Hardcore_Settings.shouldAlertDeaths then
+            local _, name, class_name, level, map_id, _ = string.split(COMM_FIELD_DELIM, data)
+            local class_color = Hardcore:GetClassColorText(class_name)
+            local map_name = C_Map.GetMapInfo(tonumber(map_id)).name
+            local messageFormat = "%s the %s%s|r has died at level %d in %s"
+            local messageString = string.format(messageFormat, name, class_color, class_name, level, map_name)
 
-		-- Display the death locally
-		local _, name, class_name, level, map_id, _ = string.split(COMM_FIELD_DELIM, data)
-		local class_color = Hardcore:GetClassColorText(class_name)
-		local map_name = C_Map.GetMapInfo(tonumber(map_id)).name
-		local messageFormat = "%s the %s%s|r has died at level %d in %s"
-		local messageString = string.format(messageFormat, name, class_color, class_name, level, map_name)
-
-		Hardcore:ShowAlertFrame(ALERT_STYLES.death, messageString)
+            Hardcore:ShowAlertFrame(ALERT_STYLES.death, messageString)
+        end
 	end
 end
 
@@ -1134,6 +1140,12 @@ function Hardcore_Frame_OnShow()
 
 	Hardcore_Deathlist_ScrollBar_Update()
 
+end
+
+-- Toggles death alerts on or off.
+function Hardcore_Toggle_Alerts()
+    Hardcore_Settings.shouldAlertDeaths = not Hardcore_Settings.shouldAlertDeaths
+    Hardcore_Alerts_Button:SetText(Hardcore_Settings.shouldAlertDeaths and "Disable alerts" or "Enable alerts")
 end
 
 function Hardcore_Deathlist_ScrollBar_Update()

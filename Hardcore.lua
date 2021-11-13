@@ -41,6 +41,8 @@ local CLASSES = {
 Hardcore_Settings = {
 	level_list = {},
 	notify = true,
+	debug_log = {},
+	monitor = false,
 }
 
 --[[ Character saved variables ]]--
@@ -60,6 +62,13 @@ Hardcore_Character = {
 --[[ Local variables ]]--
 local debug = false
 local pulses = {}
+local alert_msg_time = { -- dict of players -> time()
+	PULSE = {},
+	ADD = {},
+	DEAD = {},
+	UNKNOWN = {},
+}
+local spam_alert_warning = {}
 local online_pulsing = {}
 local guild_versions = {}
 local guild_versions_status = {}
@@ -88,6 +97,14 @@ local COMM_COMMANDS = {
 	"PULSE",
 	"ADD", -- depreciated, we can only handle receiving
 	"DEAD" -- new death command
+}
+local COMM_SPAM_THRESHOLD = { -- msgs received within durations (s) are flagged as spam
+	PULSE = 3,
+	ADD = 180,
+	DEAD = 180,
+}
+local DEPRECATED_COMMANDS = {
+	UPDATE = 1,
 }
 
 -- stuff
@@ -215,6 +232,14 @@ local function SlashHandler(msg, editbox)
 			Hardcore:Print("Alerts enabled")
 		else
 			Hardcore:Print("Alerts disabled")
+		end
+	elseif cmd == "monitor" then
+		Hardcore_Settings.monitor = not Hardcore_Settings.monitor
+		Hardcore_Toggle_Alerts()
+		if Hardcore_Settings.monitor then
+			Hardcore:Monitor("Monitoring malicious users enabled.")
+		else
+			Hardcore:Print("Monitoring malicious users disabled.")
 		end
 	elseif cmd == "griefalert" then
 		local grief_alert_option = ""
@@ -406,6 +431,9 @@ function Hardcore:PLAYER_LOGIN()
 	-- check players version against highest version
 	local FULL_PLAYER_NAME = Hardcore_GetPlayerPlusRealmName()
 	Hardcore:CheckVersionsAndUpdate(FULL_PLAYER_NAME, GetAddOnMetadata('Hardcore', 'Version'))
+
+	-- reset debug log; To view debug log, log out and see saved variables before logging back in
+	Hardcore_Settings.debug_log = {}
 end
 
 function Hardcore:UNIT_SPELLCAST_START(...)
@@ -478,6 +506,9 @@ function Hardcore:PLAYER_ENTERING_WORLD()
 	-- cache player name
 	PLAYER_NAME, _ = UnitName("player")
 	Hardcore:PrintBubbleHearthInfractions()
+	if Hardcore_Settings.monitor == true then
+		Hardcore:Monitor("Monitoring malicious users enabled.")
+	end
 
 	-- initialize addon communication
 	if (not C_ChatInfo.IsAddonMessagePrefixRegistered(COMM_NAME)) then
@@ -722,6 +753,25 @@ function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
 		-- Get the command
 		local command, data = string.split(COMM_COMMAND_DELIM, datastr)
 
+		if alert_msg_time[command] == nil and DEPRECATED_COMMANDS[command] == nil then -- unknown command received
+			local debug_info = {command, data, sender}
+			table.insert(Hardcore_Settings.debug_log, debug_info)
+			alert_msg_time.UNKNOWN[sender] = time()
+			-- Display that someone is trying to send unknown messages; notifies mods to look at saved_vars and remove player from guild
+			Hardcore:Monitor("|cffFF0000Received unknown messages from " .. sender .. ".")
+			return
+		end
+
+		if alert_msg_time[command][sender] and (time() - alert_msg_time[command][sender] < COMM_SPAM_THRESHOLD[command]) then
+			local debug_info = {command, data, sender}
+			table.insert(Hardcore_Settings.debug_log, debug_info)
+			alert_msg_time[command][sender] = time()
+			-- Display that someone is trying to send spam messages; notifies mods to look at saved_vars and remove player from guild
+			Hardcore:Monitor("|cffFF0000Received spam from " .. sender .. ", using the " .. command .. " command.")
+			return
+		end
+		alert_msg_time[command][sender] = time()
+
 		-- Determine what command was sent
 		-- COMM_COMMANDS[2] is deprecated, but its backwards compatible so we still can handle
 		if command == COMM_COMMANDS[2] or command == COMM_COMMANDS[3] then
@@ -784,6 +834,12 @@ end
 function Hardcore:Debug(msg)
 	if true == debug then
 		print("|cfffd9122HCDebug|r: " .. (msg or ""))
+	end
+end
+
+function Hardcore:Monitor(msg)
+	if true == Hardcore_Settings.monitor then
+		print("|cff00ffffHCMonitor|r: " .. (msg or ""))
 	end
 end
 

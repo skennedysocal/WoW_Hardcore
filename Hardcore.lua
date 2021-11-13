@@ -40,9 +40,8 @@ local CLASSES = {
 --[[ Global saved variables ]]--
 Hardcore_Settings = {
 	level_list = {},
+	notify = true,
 }
-
-Hardcore_Settings.notify = Hardcore_Settings.notify or true -- Will display death alerts by default.
 
 --[[ Character saved variables ]]--
 Hardcore_Character = {
@@ -291,7 +290,7 @@ local function SlashHandler(msg, editbox)
 	else
 		-- If not handled above, display some sort of help message
 		Hardcore:Print("|cff00ff00Syntax:|r/hardcore [command] [options]")
-		Hardcore:Print("|cff00ff00Commands:|rshow deaths levels enable disable griefalert")
+		Hardcore:Print("|cff00ff00Commands:|rshow deaths levels enable disable griefalert alerts")
 	end
 end
 

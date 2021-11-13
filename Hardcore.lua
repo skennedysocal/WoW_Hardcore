@@ -235,7 +235,6 @@ local function SlashHandler(msg, editbox)
 		end
 	elseif cmd == "monitor" then
 		Hardcore_Settings.monitor = not Hardcore_Settings.monitor
-		Hardcore_Toggle_Alerts()
 		if Hardcore_Settings.monitor then
 			Hardcore:Monitor("Monitoring malicious users enabled.")
 		else
@@ -506,9 +505,7 @@ function Hardcore:PLAYER_ENTERING_WORLD()
 	-- cache player name
 	PLAYER_NAME, _ = UnitName("player")
 	Hardcore:PrintBubbleHearthInfractions()
-	if Hardcore_Settings.monitor == true then
-		Hardcore:Monitor("Monitoring malicious users enabled.")
-	end
+	Hardcore:Monitor("Monitoring malicious users enabled.")
 
 	-- initialize addon communication
 	if (not C_ChatInfo.IsAddonMessagePrefixRegistered(COMM_NAME)) then

@@ -105,6 +105,7 @@ local COMM_SPAM_THRESHOLD = { -- msgs received within durations (s) are flagged 
 }
 local DEPRECATED_COMMANDS = {
 	UPDATE = 1,
+	SYNC = 1,
 }
 
 -- stuff
@@ -749,8 +750,10 @@ function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
 	if COMM_NAME == prefix then
 		-- Get the command
 		local command, data = string.split(COMM_COMMAND_DELIM, datastr)
+		if DEPRECATED_COMMANDS[command] then return end
 
-		if alert_msg_time[command] == nil and DEPRECATED_COMMANDS[command] == nil then -- unknown command received
+		-- Handle weird commands
+		if alert_msg_time[command] == nil then
 			local debug_info = {command, data, sender}
 			table.insert(Hardcore_Settings.debug_log, debug_info)
 			alert_msg_time.UNKNOWN[sender] = time()

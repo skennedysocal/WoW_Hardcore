@@ -249,14 +249,14 @@
 			</Anchors>
 		  </Button>
 
-            <Button name="Hardcore_Alerts_Button" inherits="UIPanelButtonTemplate" text="Disable alerts">
+			<Button name="Hardcore_Alerts_Button" inherits="UIPanelButtonTemplate" text="Disable alerts">
 				<Size x="120" y="37" />
 				<Anchors>
 					<Anchor point="TOPLEFT" x="520" y="-20" />
 				</Anchors>
 				<Scripts>
 					<OnClick>
-                        Hardcore_Toggle_Alerts()
+						Hardcore_Toggle_Alerts()
 					</OnClick>
 				</Scripts>
 			</Button>

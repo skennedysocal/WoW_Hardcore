@@ -23,18 +23,18 @@ local GRIEF_WARNING_SAME_FACTION = 1
 local GRIEF_WARNING_ENEMY_FACTION = 2
 local GRIEF_WARNING_BOTH_FACTIONS = 3
 local CLASSES = {
-		-- Classic:
-		[1] = "Warrior",
-		[2] = "Paladin",
-		[3] = "Hunter",
-		[4] = "Rogue",
-		[5] = "Priest",
-		[7] = "Shaman",
-		[8] = "Mage",
-		[9] = "Warlock",
-		[11] = "Druid",
-		-- WotLK:
-		[6] = "Death Knight"
+	-- Classic:
+	[1] = "Warrior",
+	[2] = "Paladin",
+	[3] = "Hunter",
+	[4] = "Rogue",
+	[5] = "Priest",
+	[7] = "Shaman",
+	[8] = "Mage",
+	[9] = "Warlock",
+	[11] = "Druid",
+	-- WotLK:
+	[6] = "Death Knight"
 }
 
 --[[ Global saved variables ]]--
@@ -473,8 +473,8 @@ function Hardcore:UNIT_SPELLCAST_SUCCEEDED(...)
 end
 
 function Hardcore:PLAYER_ENTERING_WORLD()
-		Hardcore_Frame:RegisterForDrag("LeftButton")
-		Hardcore_Alerts_Button:SetText(Hardcore_Settings.notify and "Disable alerts" or "Enable alerts")
+	Hardcore_Frame:RegisterForDrag("LeftButton")
+	Hardcore_Alerts_Button:SetText(Hardcore_Settings.notify and "Disable alerts" or "Enable alerts")
 		
 	-- cache player name
 	PLAYER_NAME, _ = UnitName("player")
@@ -509,12 +509,12 @@ function Hardcore:PLAYER_DEAD()
 	end
 
 	-- Send message to guild
-		local playerGreet = GENDER_GREETING[UnitSex("player")]
-		local name = UnitName("player")
-		local _, _, classID = UnitClass("player")
-		local class = CLASSES[classID]
-		local level = UnitLevel("player")
-		local zone = C_Map.GetMapInfo(C_Map.GetBestMapForUnit("player")).name
+	local playerGreet = GENDER_GREETING[UnitSex("player")]
+	local name = UnitName("player")
+	local _, _, classID = UnitClass("player")
+	local class = CLASSES[classID]
+	local level = UnitLevel("player")
+	local zone = C_Map.GetMapInfo(C_Map.GetBestMapForUnit("player")).name
 	local messageFormat = "Our brave %s, %s the %s, has died at level %d in %s"
 	local messageString = messageFormat:format(playerGreet, name, class, level, zone)
 	if not (Last_Attack_Source == nil) then
@@ -523,7 +523,7 @@ function Hardcore:PLAYER_DEAD()
 	end
 	SendChatMessage(messageString, "GUILD")
 
-		-- Send addon message
+	-- Send addon message
 	local commMessage = COMM_COMMANDS[3]
 	if CTL then
 		CTL:SendAddonMessage("ALERT", COMM_NAME, commMessage, "GUILD")
@@ -816,15 +816,15 @@ end
 function Hardcore:Add(sender)
 		-- Display the death locally if alerts are not toggled off.
 		if Hardcore_Settings.notify then
-				local name, class, level, zone
-				for i = 1, GetNumGuildMembers() do
-						name, _, _, level, _, zone, _, _, _, _, class = GetGuildRosterInfo(i)
-						if name == sender then
-								local messageFormat = "%s the %s%s|r has died at level %d in %s"
-								local messageString = messageFormat:format(name:gsub("%-.*", ""), "|c" .. RAID_CLASS_COLORS[class].colorStr, class, level, zone)
-								Hardcore:ShowAlertFrame(ALERT_STYLES.death, messageString)
-						end
+			local name, class, level, zone
+			for i = 1, GetNumGuildMembers() do
+				name, _, _, level, _, zone, _, _, _, _, class = GetGuildRosterInfo(i)
+				if name == sender then
+					local messageFormat = "%s the %s%s|r has died at level %d in %s"
+					local messageString = messageFormat:format(name:gsub("%-.*", ""), "|c" .. RAID_CLASS_COLORS[class].colorStr, class, level, zone)
+					Hardcore:ShowAlertFrame(ALERT_STYLES.death, messageString)
 				end
+			end
 	end
 end
 
@@ -1113,8 +1113,8 @@ end
 
 -- Toggles death alerts on or off.
 function Hardcore_Toggle_Alerts()
-		Hardcore_Settings.notify = not Hardcore_Settings.notify
-		Hardcore_Alerts_Button:SetText(Hardcore_Settings.notify and "Disable alerts" or "Enable alerts")
+	Hardcore_Settings.notify = not Hardcore_Settings.notify
+	Hardcore_Alerts_Button:SetText(Hardcore_Settings.notify and "Disable alerts" or "Enable alerts")
 end
 
 function Hardcore_Deathlist_ScrollBar_Update()

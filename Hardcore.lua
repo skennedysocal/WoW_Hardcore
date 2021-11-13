@@ -85,7 +85,11 @@ local COMM_BATCH_SIZE = 4
 local COMM_COMMAND_DELIM = "$"
 local COMM_FIELD_DELIM = "|"
 local COMM_RECORD_DELIM = "^"
-local COMM_COMMANDS = {"PULSE", "ADD", nil}
+local COMM_COMMANDS = {
+	"PULSE",
+	"ADD", -- depreciated, we can only handle receiving
+	"DEAD" -- new death command
+}
 
 -- stuff
 local PLAYER_NAME, _ = nil
@@ -520,7 +524,7 @@ function Hardcore:PLAYER_DEAD()
 	SendChatMessage(messageString, "GUILD")
 
     -- Send addon message
-	local commMessage = COMM_COMMANDS[2]
+	local commMessage = COMM_COMMANDS[3]
 	if CTL then
 		CTL:SendAddonMessage("ALERT", COMM_NAME, commMessage, "GUILD")
 	end
@@ -720,7 +724,8 @@ function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
 		local command, data = string.split(COMM_COMMAND_DELIM, datastr)
 
 		-- Determine what command was sent
-		if command == COMM_COMMANDS[2] then
+		-- COMM_COMMANDS[2] is deprecated, but its backwards compatible so we still can handle
+		if command == COMM_COMMANDS[2] or command == COMM_COMMANDS[3] then
 			Hardcore:Add(sender)
 		elseif command == COMM_COMMANDS[1] then
 			Hardcore:ReceivePulse(data, sender)

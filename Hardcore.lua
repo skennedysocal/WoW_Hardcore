@@ -62,13 +62,18 @@ Hardcore_Character = {
 --[[ Local variables ]]--
 local debug = false
 local pulses = {}
-local alert_msg_time = { -- dict of players -> time()
+local alert_msg_time = {
 	PULSE = {},
 	ADD = {},
 	DEAD = {},
 	UNKNOWN = {},
 }
-local spam_alert_warning = {}
+local monitor_msg_throttle = {
+	PULSE = {},
+	ADD = {},
+	DEAD = {},
+	UNKNOWN = {},
+}
 local online_pulsing = {}
 local guild_versions = {}
 local guild_versions_status = {}
@@ -128,6 +133,7 @@ local COLOR_GREEN = "|c0000ff00"
 local COLOR_YELLOW = "|c00ffff00"
 local STRING_ADDON_STATUS_SUBTITLE = "Guild Addon Status"
 local STRING_ADDON_STATUS_SUBTITLE_LOADING = "Guild Addon Status (Loading)"
+local THROTTLE_DURATION = 5
 
 -- frame display
 local display = "Rules"
@@ -758,7 +764,10 @@ function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
 			table.insert(Hardcore_Settings.debug_log, debug_info)
 			alert_msg_time.UNKNOWN[sender] = time()
 			-- Display that someone is trying to send unknown messages; notifies mods to look at saved_vars and remove player from guild
-			Hardcore:Monitor("|cffFF0000Received unknown messages from " .. sender .. ".")
+			if monitor_msg_throttle.UNKNOWN[sender] == nil or (time() - monitor_msg_throttle.UNKNOWN[sender] > THROTTLE_DURATION) then
+				Hardcore:Monitor("|cffFF0000Received unknown messages from " .. sender .. ".")
+				monitor_msg_throttle.UNKNOWN[sender] = time()
+			end
 			return
 		end
 
@@ -767,7 +776,10 @@ function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
 			table.insert(Hardcore_Settings.debug_log, debug_info)
 			alert_msg_time[command][sender] = time()
 			-- Display that someone is trying to send spam messages; notifies mods to look at saved_vars and remove player from guild
-			Hardcore:Monitor("|cffFF0000Received spam from " .. sender .. ", using the " .. command .. " command.")
+			if monitor_msg_throttle[command][sender] == nil or (time() - monitor_msg_throttle[command][sender] > THROTTLE_DURATION) then
+				Hardcore:Monitor("|cffFF0000Received spam from " .. sender .. ", using the " .. command .. " command.")
+				monitor_msg_throttle[command][sender] = time()
+			end
 			return
 		end
 		alert_msg_time[command][sender] = time()

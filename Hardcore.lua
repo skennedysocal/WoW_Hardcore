@@ -754,8 +754,7 @@ function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
 	if COMM_NAME == prefix then
 		-- Get the command
 		local command, data = string.split(COMM_COMMAND_DELIM, datastr)
-		if DEPRECATED_COMMANDS[command] then return end
-		if alert_msg_time[command] == nil then return end
+		if DEPRECATED_COMMANDS[command] or alert_msg_time[command] == nil then return end
 		if alert_msg_time[command][sender] and (time() - alert_msg_time[command][sender] < COMM_SPAM_THRESHOLD[command]) then
 			local debug_info = {command, data, sender}
 			table.insert(Hardcore_Settings.debug_log, debug_info)

@@ -66,13 +66,11 @@ local alert_msg_time = {
 	PULSE = {},
 	ADD = {},
 	DEAD = {},
-	UNKNOWN = {},
 }
 local monitor_msg_throttle = {
 	PULSE = {},
 	ADD = {},
 	DEAD = {},
-	UNKNOWN = {},
 }
 local online_pulsing = {}
 local guild_versions = {}
@@ -757,20 +755,7 @@ function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
 		-- Get the command
 		local command, data = string.split(COMM_COMMAND_DELIM, datastr)
 		if DEPRECATED_COMMANDS[command] then return end
-
-		-- Handle weird commands
-		if alert_msg_time[command] == nil then
-			local debug_info = {command, data, sender}
-			table.insert(Hardcore_Settings.debug_log, debug_info)
-			alert_msg_time.UNKNOWN[sender] = time()
-			-- Display that someone is trying to send unknown messages; notifies mods to look at saved_vars and remove player from guild
-			if monitor_msg_throttle.UNKNOWN[sender] == nil or (time() - monitor_msg_throttle.UNKNOWN[sender] > THROTTLE_DURATION) then
-				Hardcore:Monitor("|cffFF0000Received unknown messages from " .. sender .. ".")
-				monitor_msg_throttle.UNKNOWN[sender] = time()
-			end
-			return
-		end
-
+		if alert_msg_time[command] == nil then return end
 		if alert_msg_time[command][sender] and (time() - alert_msg_time[command][sender] < COMM_SPAM_THRESHOLD[command]) then
 			local debug_info = {command, data, sender}
 			table.insert(Hardcore_Settings.debug_log, debug_info)

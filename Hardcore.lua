@@ -124,8 +124,10 @@ local HIDE_RTP_CHAT_MSG_BUFFER_MAX = 2 -- number of maximum messages to wait for
 local STARTED_BUBBLE_HEARTH_INFO = nil
 local RECEIVED_FIRST_PLAYED_TIME_MSG = false
 local PLAYED_TIME_GAP_THRESH = 600 -- seconds
-local PLAYED_TIME_PERC_THRESH = 90 -- [0, 100]
-local PLAYED_TIME_MIN_PLAYED_THRESH = 6000 -- seconds
+local PLAYED_TIME_PERC_THRESH = 98 -- [0, 100] (2 minutes every 2 hours)
+local PLAYED_TIME_MIN_PLAYED_THRESH = 7200 -- seconds (2 hours)
+local TIME_TRACK_PULSE = 1
+local TIME_PLAYED_PULSE = 60
 local COLOR_RED = "|c00ff0000"
 local COLOR_GREEN = "|c0000ff00"
 local COLOR_YELLOW = "|c00ffff00"
@@ -431,6 +433,9 @@ function Hardcore:PLAYER_LOGIN()
 
 	-- initiate pulse heartbeat check
 	Hardcore:InitiatePulseCheck()
+
+	-- initiate pulse played time
+	Hardcore:InitiatePulsePlayed()
 
 	-- check players version against highest version
 	local FULL_PLAYER_NAME = Hardcore_GetPlayerPlusRealmName()
@@ -744,7 +749,7 @@ end
 function Hardcore:RequestTimePlayed()
 	HIDE_RTP_CHAT_MSG_BUFFER = HIDE_RTP_CHAT_MSG_BUFFER + 1
 	if HIDE_RTP_CHAT_MSG_BUFFER > HIDE_RTP_CHAT_MSG_BUFFER_MAX then
-		HIDE_RTP_CHAT_MSG_BUFFER = HIDE_RTP_CHAT_MSG_BUFFER_MAX 
+		HIDE_RTP_CHAT_MSG_BUFFER = HIDE_RTP_CHAT_MSG_BUFFER_MAX
 	end
 	RequestTimePlayed()
 end
@@ -1064,7 +1069,7 @@ function Hardcore_Frame_OnShow()
 		Hardcore_Zone_Sort:Show()
 		Hardcore_TOD_Sort:Show()
 	elseif display == "GetVerified" then
-		-- hide buttons 
+		-- hide buttons
 		Hardcore_Name_Sort:Hide()
 		Hardcore_Class_Sort:Hide()
 		Hardcore_Level_Sort:Hide()
@@ -1085,7 +1090,7 @@ function Hardcore_Frame_OnShow()
 		Hardcore:UpdateGuildRosterRows()
 
 	elseif display == "Rules" then
-		-- hide buttons 
+		-- hide buttons
 		Hardcore_Name_Sort:Hide()
 		Hardcore_Class_Sort:Hide()
 		Hardcore_Level_Sort:Hide()
@@ -1225,13 +1230,13 @@ function Hardcore:initMinimapButton()
 		-- Left button down
 		if arg1 == "LeftButton" then
 
-			-- Control key 
+			-- Control key
 			if IsControlKeyDown() and not IsShiftKeyDown() then
 				Hardcore:ToggleMinimapIcon()
 				return
 			end
 
-			-- Shift key and control key 
+			-- Shift key and control key
 			if IsShiftKeyDown() and IsControlKeyDown() then
 				return
 			end
@@ -1363,6 +1368,24 @@ function Hardcore:InitiatePulseCheck()
 	end)
 end
 
+function Hardcore:InitiatePulsePlayed()
+	--init time played
+	Hardcore:RequestTimePlayed()
+
+	--time accumulator
+	C_Timer.NewTicker(TIME_TRACK_PULSE, function()
+		Hardcore_Character.time_tracked = Hardcore_Character.time_tracked + TIME_TRACK_PULSE
+		if RECEIVED_FIRST_PLAYED_TIME_MSG == true then
+			Hardcore_Character.accumulated_time_diff = Hardcore_Character.time_played - Hardcore_Character.time_tracked
+		end
+	end)
+
+	--played time tracking
+	C_Timer.NewTicker(TIME_PLAYED_PULSE, function()
+		Hardcore:RequestTimePlayed()
+	end)
+end
+
 function Hardcore:ReceivePulse(data, sender)
 	local FULL_PLAYER_NAME = Hardcore_GetPlayerPlusRealmName()
 
@@ -1460,16 +1483,5 @@ function Hardcore:HandleLegacyDeaths()
 	end
 end
 
---[[ Timers ]]--
-local PLAY_TIME_UPDATE_INTERVAL = 1
-C_Timer.NewTicker(PLAY_TIME_UPDATE_INTERVAL, function()
-	Hardcore_Character.time_tracked = Hardcore_Character.time_tracked + PLAY_TIME_UPDATE_INTERVAL
-	Hardcore:RequestTimePlayed()
-	if RECEIVED_FIRST_PLAYED_TIME_MSG == true then
-		Hardcore_Character.accumulated_time_diff = Hardcore_Character.time_played - Hardcore_Character.time_tracked
-	end
-end)
-
 --[[ Start Addon ]]--
 Hardcore:Startup()
-

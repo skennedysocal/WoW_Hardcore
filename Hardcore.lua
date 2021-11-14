@@ -297,7 +297,7 @@ local function SlashHandler(msg, editbox)
 			Hardcore:Print("|cff00ff00Grief alert options:|roff horde alliance both")
 		end
 	-- Alert debug code
-	elseif cmd == "alert" then
+	elseif cmd == "alert" and debug == true then
 		local head, tail = "", {}
 		for substring in args:gmatch("%S+") do
 			if head == "" then

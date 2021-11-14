@@ -207,6 +207,14 @@ local ALERT_STYLES = {
 		delay = 10,
 		alertSound = 8192
 	},
+	videre_warning = {
+		frame = Hardcore_Alert_Frame,
+		text = Hardcore_Alert_Text,
+		icon = Hardcore_Alert_Icon,
+		file = "alert-hc-red.blp",
+		delay = 10,
+		alertSound = 8959
+	},
 }
 Hardcore_Alert_Frame:SetScale(0.7)
 
@@ -236,9 +244,9 @@ local function SlashHandler(msg, editbox)
 	elseif cmd == "alerts" then
 		Hardcore_Toggle_Alerts()
 		if Hardcore_Settings.notify then
-			Hardcore:Print("Alerts enabled")
+			Hardcore:Print("Alerts enabled.")
 		else
-			Hardcore:Print("Alerts disabled")
+			Hardcore:Print("Alerts disabled.")
 		end
 	elseif cmd == "monitor" then
 		Hardcore_Settings.monitor = not Hardcore_Settings.monitor
@@ -294,7 +302,7 @@ local function SlashHandler(msg, editbox)
 				grief_alert_setting_msg = "both factions"
 			end
 			Hardcore:Print("Grief alert is currently set to: " .. grief_alert_setting_msg)
-			Hardcore:Print("|cff00ff00Grief alert options:|roff horde alliance both")
+			Hardcore:Print("|cff00ff00Grief alert options:|r off horde alliance both")
 		end
 	-- Alert debug code
 	elseif cmd == "alert" and debug == true then
@@ -321,7 +329,7 @@ local function SlashHandler(msg, editbox)
 	else
 		-- If not handled above, display some sort of help message
 		Hardcore:Print("|cff00ff00Syntax:|r/hardcore [command] [options]")
-		Hardcore:Print("|cff00ff00Commands:|rshow deaths levels enable disable griefalert alerts")
+		Hardcore:Print("|cff00ff00Commands:|r show hide levels alllevels alerts monitor griefalert")
 	end
 end
 
@@ -406,6 +414,8 @@ function Hardcore:PLAYER_LOGIN()
 	self:RegisterEvent("AUCTION_HOUSE_SHOW")
 	self:RegisterEvent("PLAYER_LEVEL_UP")
 	self:RegisterEvent("TIME_PLAYED_MSG")
+	self:RegisterEvent("QUEST_ACCEPTED") -- For Videre Elixir quest.
+	self:RegisterEvent("QUEST_TURNED_IN") -- For Videre Elixir quest.
 
 	-- Register spell cast events for paladin for checking bubble hearth
 	self:RegisterEvent("UNIT_SPELLCAST_START")
@@ -443,6 +453,23 @@ function Hardcore:PLAYER_LOGIN()
 
 	-- reset debug log; To view debug log, log out and see saved variables before logging back in
 	Hardcore_Settings.debug_log = {}
+end
+
+local function GiveVidereWarning()
+	Hardcore:Print("|cFFFF0000WARNING:|r drinking the Videre Elixir will kill you. You cannot appeal this death.")
+	Hardcore:ShowAlertFrame(ALERT_STYLES.videre_warning, "WARNING: drinking the Videre Elixir will kill you. You cannot appeal this death.")
+end
+
+function Hardcore:QUEST_ACCEPTED(_, questID)
+	if questID == 3912 then
+		GiveVidereWarning()
+	end
+end
+
+function Hardcore:QUEST_TURNED_IN(questID)
+	if questID == 4041 then
+		GiveVidereWarning()
+	end
 end
 
 function Hardcore:UNIT_SPELLCAST_START(...)
@@ -870,17 +897,17 @@ function Hardcore:ShowAlertFrame(styleConfig, message)
 end
 
 function Hardcore:Add(sender)
-		-- Display the death locally if alerts are not toggled off.
-		if Hardcore_Settings.notify then
-			local name, class, level, zone
-			for i = 1, GetNumGuildMembers() do
-				name, _, _, level, _, zone, _, _, _, _, class = GetGuildRosterInfo(i)
-				if name == sender then
-					local messageFormat = "%s the %s%s|r has died at level %d in %s"
-					local messageString = messageFormat:format(name:gsub("%-.*", ""), "|c" .. RAID_CLASS_COLORS[class].colorStr, class, level, zone)
-					Hardcore:ShowAlertFrame(ALERT_STYLES.death, messageString)
-				end
+	-- Display the death locally if alerts are not toggled off.
+	if Hardcore_Settings.notify then
+		local name, class, level, zone
+		for i = 1, GetNumGuildMembers() do
+			name, _, _, level, _, zone, _, _, _, _, class = GetGuildRosterInfo(i)
+			if name == sender then
+				local messageFormat = "%s the %s%s|r has died at level %d in %s"
+				local messageString = messageFormat:format(name:gsub("%-.*", ""), "|c" .. RAID_CLASS_COLORS[class].colorStr, class, level, zone)
+				Hardcore:ShowAlertFrame(ALERT_STYLES.death, messageString)
 			end
+		end
 	end
 end
 

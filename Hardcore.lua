@@ -634,28 +634,23 @@ end
 
 function Hardcore:TIME_PLAYED_MSG(...)
 	local totalTimePlayed, _ = ...
-	Hardcore_Character.time_played = totalTimePlayed
+	Hardcore_Character.time_played = totalTimePlayed or 1
+	-- Check playtime gap percentage
+	Hardcore_Character.tracked_played_percentage = Hardcore_Character.time_tracked / Hardcore_Character.time_played * 100.0
+
+	Hardcore:Debug(Hardcore_Character.tracked_played_percentage)
 
 	-- Check to see if the gap since the last recording is too long.  When receiving played time for the first time.
 	if RECEIVED_FIRST_PLAYED_TIME_MSG == false and Hardcore_Character.accumulated_time_diff ~= nil then
-
-		-- Check playtime gap percentage
-		if Hardcore_Character.time_played ~= 0 then
-			Hardcore_Character.tracked_played_percentage = Hardcore_Character.time_tracked /
-																 Hardcore_Character.time_played * 100.0
-		else
-			Hardcore_Character.tracked_played_percentage = 100.0
-		end
 
 		local debug_message = "Playtime gap percentage: " .. Hardcore_Character.tracked_played_percentage .. "%."
 		Hardcore:Debug(debug_message)
 
 		-- Only warn user about playtime percentage if percentage is low enough and enough playtime is logged.
-		if Hardcore_Character.tracked_played_percentage < PLAYED_TIME_PERC_THRESH and Hardcore_Character.time_played >
-			PLAYED_TIME_MIN_PLAYED_THRESH then
-			local message =
-				"\124cffFF0000Detected that the player's addon active time is much lower than played time. Please record the rest of your run."
-			Hardcore:Print(message)
+		local level = UnitLevel("player")
+		local percentage = Hardcore_Character.tracked_played_percentage
+		if Hardcore:ShouldShowPlaytimeWarning(level, percentage) then
+			Hardcore:DisplayPlaytimeWarning(level)
 		end
 
 		-- Check playtime gap since last session
@@ -752,6 +747,35 @@ function Hardcore:RequestTimePlayed()
 		HIDE_RTP_CHAT_MSG_BUFFER = HIDE_RTP_CHAT_MSG_BUFFER_MAX
 	end
 	RequestTimePlayed()
+end
+
+function Hardcore:ShouldShowPlaytimeWarning(level, percentage)
+	if level <= 5 then
+		return false
+	elseif level <= 15 then
+		return percentage <= 40
+	elseif level <= 20 then
+		return percentage <= 70
+	elseif level <= 25 then
+		return percentage <= 80
+	elseif level <= 30 then
+		return percentage <= 85
+	elseif level <= 35 then
+		return percentage <= 90
+	else
+		return percentage <= 93
+	end
+end
+
+function Hardcore:DisplayPlaytimeWarning(level)
+	local messageprefix = "\124cffFF0000"
+
+	if level <= 20 then
+		Hardcore:Print(messageprefix.."Detected that the player's addon active time is much lower than played time. If you have just installed the addon, start a new character.")
+	else
+		Hardcore:Print(messageprefix.."Detected that the player's addon active time is much lower than played time. If you have just installed the addon: consider starting a new character. Continuing on means you risk your lv 60, HC Verified Status.")
+		Hardcore:Print(messageprefix.."If you have had Hardcore 0.5.0 or greater installed since level 1, contact a mod and a record the rest of your run.")
+	end
 end
 
 function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)

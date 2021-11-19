@@ -33,8 +33,6 @@ local CLASSES = {
 	[8] = "Mage",
 	[9] = "Warlock",
 	[11] = "Druid",
-	-- WotLK:
-	[6] = "Death Knight"
 }
 
 --[[ Global saved variables ]]--
@@ -783,7 +781,7 @@ function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
 		-- Determine what command was sent
 		-- COMM_COMMANDS[2] is deprecated, but its backwards compatible so we still can handle
 		if command == COMM_COMMANDS[2] or command == COMM_COMMANDS[3] then
-			Hardcore:Add(sender)
+			Hardcore:Add(data, sender)
 		elseif command == COMM_COMMANDS[1] then
 			Hardcore:ReceivePulse(data, sender)
 		else

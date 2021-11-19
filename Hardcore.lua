@@ -1287,7 +1287,7 @@ function Hardcore:initMinimapButton()
 			if not tooltip or not tooltip.AddLine then
 				return
 			end
-			tooltip:AddLine("Hardcore")
+			tooltip:AddLine("Hardcore ("..GetAddOnMetadata("Hardcore", "Version")..")")
 			tooltip:AddLine("|cFFCFCFCFclick|r show window")
 			tooltip:AddLine("|cFFCFCFCFctrl click|r toggle minimap button")
 		end

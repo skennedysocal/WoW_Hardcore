@@ -759,11 +759,11 @@ function Hardcore:ShouldShowPlaytimeWarning(level, percentage)
 	elseif level <= 25 then
 		return percentage <= 80
 	elseif level <= 30 then
-		return percentage <= 85
-	elseif level <= 35 then
 		return percentage <= 90
-	else
+	elseif level <= 35 then
 		return percentage <= 93
+	else
+		return percentage <= 95
 	end
 end
 
@@ -774,7 +774,7 @@ function Hardcore:DisplayPlaytimeWarning(level)
 		Hardcore:Print(messageprefix.."Detected that the player's addon active time is much lower than played time. If you have just installed the addon, start a new character.")
 	else
 		Hardcore:Print(messageprefix.."Detected that the player's addon active time is much lower than played time. If you have just installed the addon: consider starting a new character. Continuing on means you risk your lv 60, HC Verified Status.")
-		Hardcore:Print(messageprefix.."If you have had Hardcore 0.5.0 or greater installed since level 1, contact a mod and a record the rest of your run.")
+		Hardcore:Print(messageprefix.."If you have had Hardcore 0.5.0 or greater installed since level 1, contact a mod and record the rest of your run.")
 	end
 end
 

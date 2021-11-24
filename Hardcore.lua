@@ -642,6 +642,17 @@ function Hardcore:PLAYER_LEVEL_UP(...)
 	-- take screenshot (got this idea from DingPics addon)
 	-- wait a bit so the yellow animation appears
 	C_Timer.After(PICTURE_DELAY, Screenshot)
+
+	-- send a message to the guild if the player's level is divisible by 10
+	local landmarkLevel = (level % 10) == 0
+	if (landmarkLevel) then
+		local playerName = UnitName("player")
+		local localizedClass = UnitClass("player")
+		
+		local messageFormat = "%s the %s has reached level %s!"
+		local messageString = string.format(messageFormat, playerName, localizedClass, level)
+		SendChatMessage(messageString, "GUILD", nil, nil)
+	end
 end
 
 function Hardcore:TIME_PLAYED_MSG(...)

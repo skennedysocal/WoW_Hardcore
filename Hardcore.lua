@@ -116,7 +116,9 @@ local PLAYER_NAME, _ = nil
 local PLAYER_GUID = nil
 local PLAYER_FACTION = nil
 local GENDER_GREETING = {"guildmate", "brother", "sister"}
+local GENDER_POSSESSIVE_PRONOUN = {"Their", "His", "Her"}
 local recent_levelup = nil
+local recent_msg = {}
 local Last_Attack_Source = nil
 local PICTURE_DELAY = .65
 local HIDE_RTP_CHAT_MSG_BUFFER = 0 -- number of messages in queue
@@ -406,6 +408,9 @@ function Hardcore:PLAYER_LOGIN()
 	self:RegisterEvent("AUCTION_HOUSE_SHOW")
 	self:RegisterEvent("PLAYER_LEVEL_UP")
 	self:RegisterEvent("TIME_PLAYED_MSG")
+	self:RegisterEvent("CHAT_MSG_PARTY")
+	self:RegisterEvent("CHAT_MSG_SAY")
+	self:RegisterEvent("CHAT_MSG_GUILD")
 
 	-- Register spell cast events for paladin for checking bubble hearth
 	self:RegisterEvent("UNIT_SPELLCAST_START")
@@ -421,6 +426,7 @@ function Hardcore:PLAYER_LOGIN()
 
 	-- cache player name
 	PLAYER_NAME, _ = UnitName("player")
+  PLAYERGUID = UnitGUID("player")
 
 	-- Show recording reminder
 	Hardcore:RecordReminder()
@@ -558,6 +564,12 @@ function Hardcore:PLAYER_DEAD()
 		messageString = string.format("%s to a %s", messageString, Last_Attack_Source)
 		Last_Attack_Source = nil
 	end
+  
+  if not (recent_msg["text"] == nil) then
+    local playerPronoun = GENDER_POSSESSIVE_PRONOUN[UnitSex("player")]
+		messageString = string.format("%s. %s last words were \"%s\"", messageString, playerPronoun, recent_msg["text"])
+  end
+  
 	SendChatMessage(messageString, "GUILD")
 
 	-- Send addon message
@@ -796,6 +808,37 @@ function Hardcore:COMBAT_LOG_EVENT_UNFILTERED(...)
 			end
 		end
 	end
+end
+
+function Hardcore:CHAT_MSG_SAY(...)
+  if self:SetRecentMsg(...) then
+    recent_msg["type"] = 0
+  end
+end
+
+function Hardcore:CHAT_MSG_GUILD(...)
+  if self:SetRecentMsg(...) then
+    recent_msg["type"] = 2
+  end
+end
+
+function Hardcore:CHAT_MSG_PARTY(...)
+  if self:SetRecentMsg(...) then
+    recent_msg["type"] = 1
+  end
+end
+
+function Hardcore:SetRecentMsg(...)
+  local text, sn, LN, CN, p2, sF, zcI, cI, cB, unu, lI, senderGUID = ...
+  if PLAYERGUID == nil then
+    PLAYERGUID = UnitGUID("player")
+  end
+
+  if senderGUID == PLAYERGUID then
+    recent_msg["text"] = text
+    return true
+  end
+  return false
 end
 
 function Hardcore:GUILD_ROSTER_UPDATE(...)
@@ -1372,7 +1415,7 @@ end
 function Hardcore:InitiatePulsePlayed()
 	--init time played
 	Hardcore:RequestTimePlayed()
-
+  
 	--time accumulator
 	C_Timer.NewTicker(TIME_TRACK_PULSE, function()
 		Hardcore_Character.time_tracked = Hardcore_Character.time_tracked + TIME_TRACK_PULSE

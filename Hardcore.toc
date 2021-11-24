@@ -1,14 +1,16 @@
-## Interface: 11400
-## Version: 0.3.0-fix
+## Interface: 11401
+## Version: 0.6.0
 ## Title: Hardcore
-## Notes: Notify the guild on players death or ressurection
-## Author: Molikar (Sean Kennedy)
+## Notes: Supports Classic Hardcore / Road to Ragnaros play
+## Author: The Classic Hardcore team, Molikar (Sean Kennedy)
 ## X-License: All Rights Reserved
 ## X-Category: Leveling
 
 ## SavedVariables: Hardcore_Settings
 ## SavedVariablesPerCharacter: Hardcore_Character
 
-ChatThrottleLib.lua
+embeds.xml
+
+utils.lua
 Hardcore.xml
 Hardcore.lua

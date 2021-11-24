@@ -33,8 +33,6 @@ local CLASSES = {
 	[8] = "Mage",
 	[9] = "Warlock",
 	[11] = "Druid",
-	-- WotLK:
-	[6] = "Death Knight"
 }
 
 --[[ Global saved variables ]]--
@@ -557,7 +555,13 @@ function Hardcore:PLAYER_DEAD()
 	local _, _, classID = UnitClass("player")
 	local class = CLASSES[classID]
 	local level = UnitLevel("player")
-	local zone = C_Map.GetMapInfo(C_Map.GetBestMapForUnit("player")).name
+    local zone, mapID
+    if IsInInstance() then
+        zone = GetInstanceInfo()
+    else
+        mapID = C_Map.GetBestMapForUnit("player")
+        zone = C_Map.GetMapInfo(mapID).name
+    end
 	local messageFormat = "Our brave %s, %s the %s, has died at level %d in %s"
 	local messageString = messageFormat:format(playerGreet, name, class, level, zone)
 	if not (Last_Attack_Source == nil) then
@@ -573,7 +577,8 @@ function Hardcore:PLAYER_DEAD()
 	SendChatMessage(messageString, "GUILD")
 
 	-- Send addon message
-	local commMessage = COMM_COMMANDS[3]
+    local deathData = string.format("%s%s%s", level, COMM_FIELD_DELIM, mapID and mapID or "")
+	local commMessage = COMM_COMMANDS[3] .. COMM_COMMAND_DELIM .. deathData
 	if CTL then
 		CTL:SendAddonMessage("ALERT", COMM_NAME, commMessage, "GUILD")
 	end
@@ -823,7 +828,7 @@ function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
 		-- Determine what command was sent
 		-- COMM_COMMANDS[2] is deprecated, but its backwards compatible so we still can handle
 		if command == COMM_COMMANDS[2] or command == COMM_COMMANDS[3] then
-			Hardcore:Add(sender)
+			Hardcore:Add(data, sender)
 		elseif command == COMM_COMMANDS[1] then
 			Hardcore:ReceivePulse(data, sender)
 		else
@@ -947,18 +952,31 @@ function Hardcore:ShowAlertFrame(styleConfig, message)
 	end)
 end
 
-function Hardcore:Add(sender)
-		-- Display the death locally if alerts are not toggled off.
-		if Hardcore_Settings.notify then
-			local name, class, level, zone
-			for i = 1, GetNumGuildMembers() do
-				name, _, _, level, _, zone, _, _, _, _, class = GetGuildRosterInfo(i)
-				if name == sender then
-					local messageFormat = "%s the %s%s|r has died at level %d in %s"
-					local messageString = messageFormat:format(name:gsub("%-.*", ""), "|c" .. RAID_CLASS_COLORS[class].colorStr, class, level, zone)
-					Hardcore:ShowAlertFrame(ALERT_STYLES.death, messageString)
-				end
-			end
+function Hardcore:Add(data, sender)
+    -- Display the death locally if alerts are not toggled off.
+    if Hardcore_Settings.notify then
+        local level = 0
+        local mapID
+        if data then
+            level, mapID = string.split(COMM_FIELD_DELIM, data)
+            level = tonumber(level)
+            mapID = tonumber(mapID)
+        end
+        if type(level) == "number" then
+            for i = 1, GetNumGuildMembers() do
+                local name, _, _, guildLevel, _, zone, _, _, _, _, class = GetGuildRosterInfo(i)
+                if name == sender then
+                    if mapID then
+                        local mapData = C_Map.GetMapInfo(mapID) -- In case some idiot sends an invalid map ID, it won't cause mass lua errors.
+                        zone = mapData and mapData.name or zone -- If player is in an instance, will have to get zone from guild roster.
+                    end
+                    level = level > 0 and level < 61 and level or guildLevel -- If player is using an older version of the addon, will have to get level from guild roster.
+                    local messageFormat = "%s the %s%s|r has died at level %d in %s"
+                    local messageString = messageFormat:format(name:gsub("%-.*", ""), "|c" .. RAID_CLASS_COLORS[class].colorStr, class, level, zone)
+                    Hardcore:ShowAlertFrame(ALERT_STYLES.death, messageString)
+                end
+            end
+        end
 	end
 end
 

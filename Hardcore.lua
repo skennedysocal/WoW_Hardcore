@@ -33,8 +33,6 @@ local CLASSES = {
 	[8] = "Mage",
 	[9] = "Warlock",
 	[11] = "Druid",
-	-- WotLK:
-	[6] = "Death Knight"
 }
 
 --[[ Global saved variables ]]--
@@ -116,7 +114,9 @@ local PLAYER_NAME, _ = nil
 local PLAYER_GUID = nil
 local PLAYER_FACTION = nil
 local GENDER_GREETING = {"guildmate", "brother", "sister"}
+local GENDER_POSSESSIVE_PRONOUN = {"Their", "His", "Her"}
 local recent_levelup = nil
+local recent_msg = {}
 local Last_Attack_Source = nil
 local PICTURE_DELAY = .65
 local HIDE_RTP_CHAT_MSG_BUFFER = 0 -- number of messages in queue
@@ -416,6 +416,9 @@ function Hardcore:PLAYER_LOGIN()
 	self:RegisterEvent("TIME_PLAYED_MSG")
 	self:RegisterEvent("QUEST_ACCEPTED") -- For Videre Elixir quest.
 	self:RegisterEvent("QUEST_TURNED_IN") -- For Videre Elixir quest.
+	self:RegisterEvent("CHAT_MSG_PARTY")
+	self:RegisterEvent("CHAT_MSG_SAY")
+	self:RegisterEvent("CHAT_MSG_GUILD")
 
 	-- Register spell cast events for paladin for checking bubble hearth
 	self:RegisterEvent("UNIT_SPELLCAST_START")
@@ -431,6 +434,7 @@ function Hardcore:PLAYER_LOGIN()
 
 	-- cache player name
 	PLAYER_NAME, _ = UnitName("player")
+  PLAYERGUID = UnitGUID("player")
 
 	-- Show recording reminder
 	Hardcore:RecordReminder()
@@ -578,17 +582,30 @@ function Hardcore:PLAYER_DEAD()
 	local _, _, classID = UnitClass("player")
 	local class = CLASSES[classID]
 	local level = UnitLevel("player")
-	local zone = C_Map.GetMapInfo(C_Map.GetBestMapForUnit("player")).name
+    local zone, mapID
+    if IsInInstance() then
+        zone = GetInstanceInfo()
+    else
+        mapID = C_Map.GetBestMapForUnit("player")
+        zone = C_Map.GetMapInfo(mapID).name
+    end
 	local messageFormat = "Our brave %s, %s the %s, has died at level %d in %s"
 	local messageString = messageFormat:format(playerGreet, name, class, level, zone)
 	if not (Last_Attack_Source == nil) then
 		messageString = string.format("%s to a %s", messageString, Last_Attack_Source)
 		Last_Attack_Source = nil
 	end
+  
+  if not (recent_msg["text"] == nil) then
+    local playerPronoun = GENDER_POSSESSIVE_PRONOUN[UnitSex("player")]
+		messageString = string.format("%s. %s last words were \"%s\"", messageString, playerPronoun, recent_msg["text"])
+  end
+  
 	SendChatMessage(messageString, "GUILD")
 
 	-- Send addon message
-	local commMessage = COMM_COMMANDS[3]
+    local deathData = string.format("%s%s%s", level, COMM_FIELD_DELIM, mapID and mapID or "")
+	local commMessage = COMM_COMMANDS[3] .. COMM_COMMAND_DELIM .. deathData
 	if CTL then
 		CTL:SendAddonMessage("ALERT", COMM_NAME, commMessage, "GUILD")
 	end
@@ -657,32 +674,38 @@ function Hardcore:PLAYER_LEVEL_UP(...)
 	-- take screenshot (got this idea from DingPics addon)
 	-- wait a bit so the yellow animation appears
 	C_Timer.After(PICTURE_DELAY, Screenshot)
+
+	-- send a message to the guild if the player's level is divisible by 10
+	local landmarkLevel = (level % 10) == 0
+	if (landmarkLevel) then
+		local playerName = UnitName("player")
+		local localizedClass = UnitClass("player")
+		
+		local messageFormat = "%s the %s has reached level %s!"
+		local messageString = string.format(messageFormat, playerName, localizedClass, level)
+		SendChatMessage(messageString, "GUILD", nil, nil)
+	end
 end
 
 function Hardcore:TIME_PLAYED_MSG(...)
 	local totalTimePlayed, _ = ...
-	Hardcore_Character.time_played = totalTimePlayed
+	Hardcore_Character.time_played = totalTimePlayed or 1
+	-- Check playtime gap percentage
+	Hardcore_Character.tracked_played_percentage = Hardcore_Character.time_tracked / Hardcore_Character.time_played * 100.0
+
+	Hardcore:Debug(Hardcore_Character.tracked_played_percentage)
 
 	-- Check to see if the gap since the last recording is too long.  When receiving played time for the first time.
 	if RECEIVED_FIRST_PLAYED_TIME_MSG == false and Hardcore_Character.accumulated_time_diff ~= nil then
-
-		-- Check playtime gap percentage
-		if Hardcore_Character.time_played ~= 0 then
-			Hardcore_Character.tracked_played_percentage = Hardcore_Character.time_tracked /
-																 Hardcore_Character.time_played * 100.0
-		else
-			Hardcore_Character.tracked_played_percentage = 100.0
-		end
 
 		local debug_message = "Playtime gap percentage: " .. Hardcore_Character.tracked_played_percentage .. "%."
 		Hardcore:Debug(debug_message)
 
 		-- Only warn user about playtime percentage if percentage is low enough and enough playtime is logged.
-		if Hardcore_Character.tracked_played_percentage < PLAYED_TIME_PERC_THRESH and Hardcore_Character.time_played >
-			PLAYED_TIME_MIN_PLAYED_THRESH then
-			local message =
-				"\124cffFF0000Detected that the player's addon active time is much lower than played time. Please record the rest of your run."
-			Hardcore:Print(message)
+		local level = UnitLevel("player")
+		local percentage = Hardcore_Character.tracked_played_percentage
+		if Hardcore:ShouldShowPlaytimeWarning(level, percentage) then
+			Hardcore:DisplayPlaytimeWarning(level)
 		end
 
 		-- Check playtime gap since last session
@@ -781,6 +804,35 @@ function Hardcore:RequestTimePlayed()
 	RequestTimePlayed()
 end
 
+function Hardcore:ShouldShowPlaytimeWarning(level, percentage)
+	if level <= 5 then
+		return false
+	elseif level <= 15 then
+		return percentage <= 40
+	elseif level <= 20 then
+		return percentage <= 70
+	elseif level <= 25 then
+		return percentage <= 80
+	elseif level <= 30 then
+		return percentage <= 90
+	elseif level <= 35 then
+		return percentage <= 93
+	else
+		return percentage <= 95
+	end
+end
+
+function Hardcore:DisplayPlaytimeWarning(level)
+	local messageprefix = "\124cffFF0000"
+
+	if level <= 20 then
+		Hardcore:Print(messageprefix.."Detected that the player's addon active time is much lower than played time. If you have just installed the addon, start a new character.")
+	else
+		Hardcore:Print(messageprefix.."Detected that the player's addon active time is much lower than played time. If you have just installed the addon: consider starting a new character. Continuing on means you risk your lv 60, HC Verified Status.")
+		Hardcore:Print(messageprefix.."If you have had Hardcore 0.5.0 or greater installed since level 1, contact a mod and record the rest of your run.")
+	end
+end
+
 function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
 	-- Ignore messages that are not ours
 	if COMM_NAME == prefix then
@@ -803,7 +855,7 @@ function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
 		-- Determine what command was sent
 		-- COMM_COMMANDS[2] is deprecated, but its backwards compatible so we still can handle
 		if command == COMM_COMMANDS[2] or command == COMM_COMMANDS[3] then
-			Hardcore:Add(sender)
+			Hardcore:Add(data, sender)
 		elseif command == COMM_COMMANDS[1] then
 			Hardcore:ReceivePulse(data, sender)
 		else
@@ -823,6 +875,37 @@ function Hardcore:COMBAT_LOG_EVENT_UNFILTERED(...)
 			end
 		end
 	end
+end
+
+function Hardcore:CHAT_MSG_SAY(...)
+  if self:SetRecentMsg(...) then
+    recent_msg["type"] = 0
+  end
+end
+
+function Hardcore:CHAT_MSG_GUILD(...)
+  if self:SetRecentMsg(...) then
+    recent_msg["type"] = 2
+  end
+end
+
+function Hardcore:CHAT_MSG_PARTY(...)
+  if self:SetRecentMsg(...) then
+    recent_msg["type"] = 1
+  end
+end
+
+function Hardcore:SetRecentMsg(...)
+  local text, sn, LN, CN, p2, sF, zcI, cI, cB, unu, lI, senderGUID = ...
+  if PLAYERGUID == nil then
+    PLAYERGUID = UnitGUID("player")
+  end
+
+  if senderGUID == PLAYERGUID then
+    recent_msg["text"] = text
+    return true
+  end
+  return false
 end
 
 function Hardcore:GUILD_ROSTER_UPDATE(...)
@@ -908,6 +991,34 @@ function Hardcore:Add(sender)
 				Hardcore:ShowAlertFrame(ALERT_STYLES.death, messageString)
 			end
 		end
+	end
+end
+
+function Hardcore:Add(data, sender)
+    -- Display the death locally if alerts are not toggled off.
+    if Hardcore_Settings.notify then
+        local level = 0
+        local mapID
+        if data then
+            level, mapID = string.split(COMM_FIELD_DELIM, data)
+            level = tonumber(level)
+            mapID = tonumber(mapID)
+        end
+        if type(level) == "number" then
+            for i = 1, GetNumGuildMembers() do
+                local name, _, _, guildLevel, _, zone, _, _, _, _, class = GetGuildRosterInfo(i)
+                if name == sender then
+                    if mapID then
+                        local mapData = C_Map.GetMapInfo(mapID) -- In case some idiot sends an invalid map ID, it won't cause mass lua errors.
+                        zone = mapData and mapData.name or zone -- If player is in an instance, will have to get zone from guild roster.
+                    end
+                    level = level > 0 and level < 61 and level or guildLevel -- If player is using an older version of the addon, will have to get level from guild roster.
+                    local messageFormat = "%s the %s%s|r has died at level %d in %s"
+                    local messageString = messageFormat:format(name:gsub("%-.*", ""), "|c" .. RAID_CLASS_COLORS[class].colorStr, class, level, zone)
+                    Hardcore:ShowAlertFrame(ALERT_STYLES.death, messageString)
+                end
+            end
+        end
 	end
 end
 
@@ -1290,7 +1401,7 @@ function Hardcore:initMinimapButton()
 			if not tooltip or not tooltip.AddLine then
 				return
 			end
-			tooltip:AddLine("Hardcore")
+			tooltip:AddLine("Hardcore ("..GetAddOnMetadata("Hardcore", "Version")..")")
 			tooltip:AddLine("|cFFCFCFCFclick|r show window")
 			tooltip:AddLine("|cFFCFCFCFctrl click|r toggle minimap button")
 		end
@@ -1399,7 +1510,7 @@ end
 function Hardcore:InitiatePulsePlayed()
 	--init time played
 	Hardcore:RequestTimePlayed()
-
+  
 	--time accumulator
 	C_Timer.NewTicker(TIME_TRACK_PULSE, function()
 		Hardcore_Character.time_tracked = Hardcore_Character.time_tracked + TIME_TRACK_PULSE

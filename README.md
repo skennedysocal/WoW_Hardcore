@@ -15,7 +15,7 @@ World of Warcraft addon for the Hardcore community
 The addon tracks a certain percentage of your addon uptime compared to total /played. If it is about seconds or minutes - no problem. If it is about hours - consider rerolling before level 20. After level 20, record the run as instructed by the error message.
 
 this can happen due to: 
-- Disconnect or Game crash. Character remains in the online server while the locally stored addon is severed from tracking it. 
+- Disconnect or Game crash. This happens due to WoW's WTF folder not updating due to the unexpected end of the game process.
 - the Game is killed with alt+f4 or otherwise WITHOUT logging out first (exit game IS NOT THE SAME as logout) 
 - the character has been played on two or more computers. Refer to the Multi-pc workaround below
 

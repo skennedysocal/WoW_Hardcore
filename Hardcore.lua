@@ -979,21 +979,6 @@ function Hardcore:ShowAlertFrame(styleConfig, message)
 	end)
 end
 
-function Hardcore:Add(sender)
-	-- Display the death locally if alerts are not toggled off.
-	if Hardcore_Settings.notify then
-		local name, class, level, zone
-		for i = 1, GetNumGuildMembers() do
-			name, _, _, level, _, zone, _, _, _, _, class = GetGuildRosterInfo(i)
-			if name == sender then
-				local messageFormat = "%s the %s%s|r has died at level %d in %s"
-				local messageString = messageFormat:format(name:gsub("%-.*", ""), "|c" .. RAID_CLASS_COLORS[class].colorStr, class, level, zone)
-				Hardcore:ShowAlertFrame(ALERT_STYLES.death, messageString)
-			end
-		end
-	end
-end
-
 function Hardcore:Add(data, sender)
     -- Display the death locally if alerts are not toggled off.
     if Hardcore_Settings.notify then

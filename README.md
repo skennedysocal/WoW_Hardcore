@@ -9,6 +9,29 @@ World of Warcraft addon for the Hardcore community
 - (Hardcore Rules) Prevents Mailbox and Auction House Access
 - (Bubble Hearth) Warns the player while Bubble hearthing. Also reports to guild
 
+## FAQ
+### Addon says active time is much lower than played time
+
+The addon tracks a certain percentage of your addon uptime compared to total /played. If it is about seconds or minutes - no problem. If it is about hours - consider rerolling before level 20. After level 20, record the run as instructed by the error message.
+
+this can happen due to: 
+- Disconnect or Game crash. This happens due to WoW's WTF folder not updating due to the unexpected end of the game process.
+- the Game is killed with alt+f4 or otherwise WITHOUT logging out first (exit game IS NOT THE SAME as logout) 
+- the character has been played on two or more computers. Refer to the Multi-pc workaround below
+
+### The addon is missing recorded levels after a DC / Crash
+
+This happens due to WoW's WTF folder not updating due to the unexpected end of the game process. If you happen to have crashes every now and then consider typing /reload every 15min or so when safely out of combat's harm. It will save the process for the addon.
+
+### I checked the accountability tab and there are people A LOT of in red, what do I do?
+
+Close the addon tab and open it again after a minute or so. They should be green now. It takes time to sync at times.
+
+### How can I see how much has been recorded on my character?
+
+```
+/dump Hardcore_Character.time_tracked..', '..Hardcore_Character.time_played..', '..Hardcore_Character.tracked_played_percentage
+```
 ## WARNING - MULTIPLE PCs SUPPORT - WARNING!!!!!
 This addon DOES NOT support one character across multiple PCs! The consequence of this is potentially losing a VERIFIED run!
 

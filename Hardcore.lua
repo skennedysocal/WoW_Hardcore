@@ -1001,6 +1001,11 @@ function Hardcore:Add(data, sender)
                     local messageFormat = "%s the %s%s|r has died at level %d in %s"
                     local messageString = messageFormat:format(name:gsub("%-.*", ""), "|c" .. RAID_CLASS_COLORS[class].colorStr, class, level, zone)
                     Hardcore:ShowAlertFrame(ALERT_STYLES.death, messageString)
+
+                    -- If player is in a raid, then only show alerts for other players in the same raid
+                    if UnitInRaid("player") == nil or UnitInRaid(name:gsub("%-.*", "")) then
+                        Hardcore:ShowAlertFrame(ALERT_STYLES.death, messageString)
+                    end
                 end
             end
         end

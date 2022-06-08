@@ -1000,7 +1000,11 @@ function Hardcore:Add(data, sender)
                     level = level > 0 and level < 61 and level or guildLevel -- If player is using an older version of the addon, will have to get level from guild roster.
                     local messageFormat = "%s the %s%s|r has died at level %d in %s"
                     local messageString = messageFormat:format(name:gsub("%-.*", ""), "|c" .. RAID_CLASS_COLORS[class].colorStr, class, level, zone)
-                    Hardcore:ShowAlertFrame(ALERT_STYLES.death, messageString)
+
+                    -- If player is in a raid, then only show alerts for other players in the same raid
+                    if UnitInRaid("player") == nil or UnitInRaid(name:gsub("%-.*", "")) then
+                        Hardcore:ShowAlertFrame(ALERT_STYLES.death, messageString)
+                    end
                 end
             end
         end

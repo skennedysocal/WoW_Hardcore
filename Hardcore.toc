@@ -14,9 +14,18 @@ embeds.xml
 utils.lua
 Hardcore.xml
 
-#Begin achievement modules
 Achievements/AchievementG.lua
+#Begin achievement modules
+Achievements/Beserker.lua
+Achievements/Ephemeral.lua
+Achievements/Grounded.lua
+Achievements/Homebound.lua
+Achievements/MortalPet.lua
+Achievements/NobodyGotTimeForThat.lua
 Achievements/Nudist.lua
+Achievements/PowerFromWithin.lua
+Achievements/TunnelVision.lua
+Achievements/WhiteKnight.lua
 #End achievement modules
 
 Hardcore.lua

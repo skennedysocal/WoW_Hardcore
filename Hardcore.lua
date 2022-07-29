@@ -585,6 +585,9 @@ function Hardcore:PLAYER_LOGIN()
 	local PLAYER_LEVEL = UnitLevel("player")
 
 	-- Register achievements
+	if Hardcore_Character.achievements == nil then
+	  Hardcore_Character.achievements = {}
+	end
 	for i,v in ipairs(Hardcore_Character.achievements) do
 		_G.achievements[v]:Register(failure_function_executor)
 	end

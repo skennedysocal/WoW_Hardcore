@@ -370,6 +370,19 @@ function Hardcore:ForceResetSavedVariables()
 	end
 end
 
+function FailureFunction(achievement_name)
+  for i,v in ipairs(Hardcore_Character.achievements) do
+    if  (v == achievement_name) then
+      table.remove(Hardcore_Character.achievements, i)
+      _G.achievements[achievement_name]:Unregister()
+      Hardcore:Print("Failed " .. achievement_name)
+    end
+  end
+
+end
+
+local failure_function_executor = {Fail = FailureFunction}
+
 local function ShowFirstMenu()
   local AceGUI = LibStub("AceGUI-3.0")
   local f = AceGUI:Create("Frame")
@@ -506,20 +519,6 @@ TradeFrameTradeButton:SetScript("OnClick", function()
 	Hardcore_Character.trade_partners = Hardcore_FilterUnique(Hardcore_Character.trade_partners)
 	AcceptTrade()
 end)
-
-
-function FailureFunction(achievement_name)
-  for i,v in ipairs(Hardcore_Character.achievements) do
-    if  (v == achievement_name) then
-      table.remove(Hardcore_Character.achievements, i)
-      _G.achievements[achievement_name]:Unregister()
-      Hardcore:Print("Failed " .. achievement_name)
-    end
-  end
-
-end
-
-local failure_function_executor = {Fail = FailureFunction}
 
 --[[ Startup ]]--
 

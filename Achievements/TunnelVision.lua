@@ -4,6 +4,8 @@ _G.achievements.TunnelVision = tunnel_vision_achievement
 
 -- General info
 tunnel_vision_achievement.name = "TunnelVision"
+tunnel_vision_achievement.title = "Tunnel Vision"
+tunnel_vision_achievement.class = "All"
 tunnel_vision_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_tunnel_vision.blp"
 tunnel_vision_achievement.description = "Complete the Hardcore challenge entirely in first person view. Upon logging in, zoom your camera into first person and never zoom out again."
 

@@ -4,6 +4,8 @@ _G.achievements.MortalPet = mortal_pet_achievement
 
 -- General info
 mortal_pet_achievement.name = "MortalPet"
+mortal_pet_achievement.title = "Mortal Pet"
+mortal_pet_achievement.class = "Hunter"
 mortal_pet_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_default.blp"
 mortal_pet_achievement.description = "Complete the Hardcore challenge without at any point resurrecting your pet. If your pet dies for any reason, you have to release it and tame another one."
 

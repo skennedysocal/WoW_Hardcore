@@ -395,7 +395,7 @@ local function ShowFirstMenu()
   local function DrawAchievementRow(achievement, _scroll_frame)
     local btn_container = AceGUI:Create("SimpleGroup")
     btn_container:SetWidth(800)
-    btn_container:SetHeight(20)
+    btn_container:SetHeight(60)
     btn_container:SetLayout("Flow")
     _scroll_frame:AddChild(btn_container)
 
@@ -430,10 +430,15 @@ local function ShowFirstMenu()
       end
 
       if (activate) then
-        table.insert(Hardcore_Character.achievements, achievement.name)
-        achievement_icon.image:SetVertexColor(1,1,1) 
-        achievement:Register(failure_function_executor)
-        Hardcore:Print("Added " .. achievement.name .. " challenge!")
+	local _, _, _class_id = UnitClass("player")
+	if (CLASSES[_class_id] ~= achievement.class and achievement.class ~= "All") then 
+	  Hardcore:Print("Cannot start achievement " .. achievement.title .. " as class " .. CLASSES[_class_id])
+	else
+	  table.insert(Hardcore_Character.achievements, achievement.name)
+	  achievement_icon.image:SetVertexColor(1,1,1) 
+	  achievement:Register(failure_function_executor)
+	  Hardcore:Print("Added " .. achievement.name .. " challenge!")
+	end
       end
     end)
     btn_container:AddChild(achievement_icon)
@@ -450,7 +455,7 @@ local function ShowFirstMenu()
 
     local title = AceGUI:Create("Label")
     title:SetWidth(550)
-    title:SetText(achievement.name)
+    title:SetText(achievement.title)
     title:SetPoint("TOP", 2,5)
     title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 20)
     btn_container_frame:AddChild(title)
@@ -472,9 +477,38 @@ local function ShowFirstMenu()
     tabcontainer:AddChild(first_menu_description)
   end
 
+  local function DrawClassTitleRow(_scroll_frame, _title)
+    local row_container = AceGUI:Create("SimpleGroup")
+    row_container:SetWidth(800)
+    row_container:SetHeight(60)
+    row_container:SetLayout("Flow")
+    _scroll_frame:AddChild(row_container)
+
+    local title = AceGUI:Create("Label")
+    title:SetWidth(450)
+    title:SetHeight(60)
+    title:SetText(_title .. " Achievements")
+    title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 20)
+    row_container:AddChild(title)
+  end
+
   local function DrawAchievementsTab(container, _scroll_frame)
+    DrawClassTitleRow(_scroll_frame, "General")
     for k, achievement in pairs(_G.achievements) do
-      DrawAchievementRow(achievement, _scroll_frame)
+      if achievement.class == "All" then
+	DrawAchievementRow(achievement, _scroll_frame)
+      end
+    end
+
+    local class_list = {"Paladin", "Priest", "Rogue", "Shaman", "Druid", "Mage", "Hunter", "Warlock", "Warrior"}
+
+    for i, class in ipairs(class_list) do
+      DrawClassTitleRow(_scroll_frame, class)
+      for k, achievement in pairs(_G.achievements) do
+	if achievement.class == class then
+	  DrawAchievementRow(achievement, _scroll_frame)
+	end
+      end
     end
   end
 

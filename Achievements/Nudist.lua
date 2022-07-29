@@ -4,6 +4,8 @@ _G.achievements.Nudist = nudist_achievement
 
 -- General info
 nudist_achievement.name = "Nudist"
+nudist_achievement.title = "Nudist"
+nudist_achievement.class = "All"
 nudist_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_nudist.blp"
 nudist_achievement.description = "Complete the Hardcore challenge naked (no armor, no amulets, no rings, and no trinkets). Weapons, shields, and bags are allowed. Upon logging in, unequip every armor piece."
 

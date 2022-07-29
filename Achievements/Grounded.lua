@@ -4,6 +4,8 @@ _G.achievements.Grounded = grounded_achievement
 
 -- General info
 grounded_achievement.name = "Grounded"
+grounded_achievement.title = "Grounded"
+grounded_achievement.class = "All"
 grounded_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_grounded.blp"
 grounded_achievement.description = "Complete the Hardcore challenge without at any point using a mount, flight path, or portal. Zeppelins and ships can be used."
 

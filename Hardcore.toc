@@ -13,4 +13,10 @@ embeds.xml
 
 utils.lua
 Hardcore.xml
+
+#Begin achievement modules
+Achievements/AchievementG.lua
+Achievements/Nudist.lua
+#End achievement modules
+
 Hardcore.lua

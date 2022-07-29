@@ -55,6 +55,7 @@ Hardcore_Character = {
 	played_time_gap_warnings = {},
 	trade_partners = {},
 	grief_warning_conditions = GRIEF_WARNING_BOTH_FACTIONS,
+	achievements = {},
 }
 
 --[[ Local variables ]]--
@@ -349,6 +350,8 @@ local saved_variable_meta = {
 	{ key = "grief_warning_conditions", initial_data = GRIEF_WARNING_BOTH_FACTIONS }
 }
 
+--[[ Post-utility functions]]--
+
 function Hardcore:InitializeSavedVariables()
 	if Hardcore_Character == nil then
 		Hardcore_Character = {}
@@ -367,6 +370,135 @@ function Hardcore:ForceResetSavedVariables()
 	end
 end
 
+local function ShowFirstMenu()
+  local AceGUI = LibStub("AceGUI-3.0")
+  local f = AceGUI:Create("Frame")
+  f:SetCallback("OnClose",function(widget) AceGUI:Release(widget) end)
+  f:SetTitle("WoW Hardcore")
+  f:SetStatusText("")
+  f:SetLayout("Flow")
+
+  -- function that draws the widgets for the second tab
+  local function DrawAchievementRow(achievement, _scroll_frame)
+    local btn_container = AceGUI:Create("SimpleGroup")
+    btn_container:SetWidth(800)
+    btn_container:SetHeight(20)
+    btn_container:SetLayout("Flow")
+    _scroll_frame:AddChild(btn_container)
+
+    btn_container_frame = AceGUI:Create("SimpleGroup")
+    btn_container_frame:SetLayout("Flow")
+
+    -- Create a button
+    local achievement_icon = AceGUI:Create("Icon")
+    achievement_icon:SetWidth(60)
+    achievement_icon:SetHeight(60)
+    achievement_icon:SetImage(achievement.icon_path)
+    achievement_icon:SetImageSize(60,60)
+    achievement_icon.image:SetVertexColor(.2,.2,.2)
+    if (Hardcore_Character.achievements == nil) then
+      Hardcore_Character.achievements = {}
+    end
+    for i,v in ipairs(Hardcore_Character.achievements) do
+      if  (v == achievement.name) then
+        achievement_icon.image:SetVertexColor(1,1,1)
+      end
+    end
+    achievement_icon:SetCallback("OnClick", function() 
+      local activate = true
+      for i,v in ipairs(Hardcore_Character.achievements) do
+        if  (v == achievement.name) then
+          activate = false
+					table.remove(Hardcore_Character.achievements, i)
+          achievement_icon.image:SetVertexColor(.1,.1,.1)
+          achievement:Unregister()
+          Hardcore:Print("Removed " .. achievement.name .. " challenge!")
+        end
+      end
+
+      if (activate) then
+        table.insert(Hardcore_Character.achievements, achievement.name)
+        achievement_icon.image:SetVertexColor(1,1,1) 
+        achievement:Register(failure_function_executor)
+        Hardcore:Print("Added " .. achievement.name .. " challenge!")
+      end
+    end)
+    btn_container:AddChild(achievement_icon)
+
+    local buffer_frame = AceGUI:Create("SimpleGroup")
+    buffer_frame:SetWidth(30)
+    buffer_frame:SetHeight(30)
+    buffer_frame:SetLayout("Flow")
+    btn_container:AddChild(buffer_frame)
+    
+    local btn_container_frame = AceGUI:Create("SimpleGroup")
+    btn_container_frame:SetLayout("Flow")
+    btn_container:AddChild(btn_container_frame)
+
+    local title = AceGUI:Create("Label")
+    title:SetWidth(550)
+    title:SetText(achievement.name)
+    title:SetPoint("TOP", 2,5)
+    title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 20)
+    btn_container_frame:AddChild(title)
+    
+    local description = AceGUI:Create("InteractiveLabel")
+    description:SetWidth(550)
+    description:SetFont("", 16)
+    description:SetText(achievement.description)
+    description:SetPoint("BOTTOM", 200,5)
+    btn_container_frame:AddChild(description)
+  end
+
+  local function DrawGeneralTab(container)
+    local first_menu_description = AceGUI:Create("Label")
+    first_menu_description:SetWidth(550)
+    first_menu_description:SetText("Welcome to WoW Hardcore!  If playing in a duo or trio, click the `Duos/Trio` tab.  To select an achievement, click on an icon in the achievement tab.")
+    first_menu_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
+    first_menu_description:SetPoint("TOP", 2,5)
+    tabcontainer:AddChild(first_menu_description)
+  end
+
+  local function DrawAchievementsTab(container, _scroll_frame)
+    for k, achievement in pairs(_G.achievements) do
+      DrawAchievementRow(achievement, _scroll_frame)
+    end
+  end
+
+
+  tabcontainer = AceGUI:Create("TabGroup") -- "InlineGroup" is also good
+  tabcontainer:SetTabs({{value="WelcomeTab", text="General"}, {value="PartyTab", text="Duos/Trios"}, {value="AchievementsTab", text="Achievements"}})  -- , 
+  tabcontainer:SetFullWidth(true)
+  tabcontainer:SetFullHeight(true) -- probably?
+  tabcontainer:SetLayout("Fill") -- important!
+
+  -- Callback function for OnGroupSelected
+  local function SelectGroup(container, event, group)
+     container:ReleaseChildren()
+     if group == "WelcomeTab" then
+        DrawGeneralTab(container)
+     elseif group == "AchievementsTab" then
+        local scroll_container = AceGUI:Create("SimpleGroup")
+        scroll_container:SetFullWidth(true)
+        scroll_container:SetFullHeight(true)
+        scroll_container:SetLayout("Fill")
+        tabcontainer:AddChild(scroll_container)
+
+        local scroll_frame = AceGUI:Create("ScrollFrame")
+        scroll_frame:SetLayout("Flow")
+        scroll_container:AddChild(scroll_frame)
+
+        DrawAchievementsTab(container, scroll_frame)
+     end
+  end
+
+  tabcontainer:SetCallback("OnGroupSelected", SelectGroup)
+  tabcontainer:SelectTab("WelcomeTab")
+
+  f:AddChild(tabcontainer)
+end
+
+
 --[[ Override default WoW UI ]]--
 
 TradeFrameTradeButton:SetScript("OnClick", function()
@@ -374,6 +506,20 @@ TradeFrameTradeButton:SetScript("OnClick", function()
 	Hardcore_Character.trade_partners = Hardcore_FilterUnique(Hardcore_Character.trade_partners)
 	AcceptTrade()
 end)
+
+
+function FailureFunction(achievement_name)
+  for i,v in ipairs(Hardcore_Character.achievements) do
+    if  (v == achievement_name) then
+      table.remove(Hardcore_Character.achievements, i)
+      _G.achievements[achievement_name]:Unregister()
+      Hardcore:Print("Failed " .. achievement_name)
+    end
+  end
+
+end
+
+local failure_function_executor = {Fail = FailureFunction}
 
 --[[ Startup ]]--
 
@@ -395,12 +541,20 @@ end
 function Hardcore:PLAYER_LOGIN()
 	Hardcore:HandleLegacyDeaths()
 
+	if (UnitLevel("player") < 2) then
+		ShowFirstMenu()
+	end
 	-- cache player data
 	_, class, _ = UnitClass("player")
 	PLAYER_NAME, _ = UnitName("player")
 	PLAYER_GUID = UnitGUID("player")
 	PLAYER_FACTION, _ = UnitFactionGroup("player")
 	local PLAYER_LEVEL = UnitLevel("player")
+
+	-- Register achievements
+	for i,v in ipairs(Hardcore_Character.achievements) do
+		_G.achievements[v]:Register(failure_function_executor)
+	end
 
 	-- fires on first loading
 	self:RegisterEvent("PLAYER_UNGHOST")

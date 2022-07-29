@@ -11,10 +11,14 @@ tunnel_vision_achievement.description = "Complete the Hardcore challenge entirel
 
 -- Registers
 function tunnel_vision_achievement:Register(fail_function_executor)
+	tunnel_vision_achievement.timer_handle = C_Timer.NewTicker(1.0, function()
+		CameraZoomIn(50)
+	end)
 	tunnel_vision_achievement.fail_function_executor = fail_function_executor 
 end
 
 function tunnel_vision_achievement:Unregister()
+	tunnel_vision_achievement.timer_handle:Cancel()
 	tunnel_vision_achievement.fail_function_executor = nil 
 end
 

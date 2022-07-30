@@ -35,7 +35,7 @@ grounded_achievement:SetScript("OnEvent", function(self, event, ...)
 	    end
 	  end)
 	elseif (event == "UNIT_SPELLCAST_SUCCEEDED") then
-	  if isMounted() then
+	  if IsMounted() then
 	      Hardcore:Print("Player is on mount")
 	      grounded_achievement.fail_function_executor.Fail(grounded_achievement.name)
 	  end

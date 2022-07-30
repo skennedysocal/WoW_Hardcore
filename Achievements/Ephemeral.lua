@@ -11,6 +11,16 @@ ephemeral_achievement.description = "Complete the Hardcore challenge without at 
 
 -- Registers
 function ephemeral_achievement:Register(fail_function_executor)
+	ephemeral_achievement:RegisterEvent("UPDATE_INVENTORY_DURABILITY")
+
+	MerchantRepairAllButton:SetScript("OnClick", function()
+	  ephemeral_achievement.fail_function_executor.Fail(ephemeral_achievement.name)
+	end)
+
+	MerchantRepairItemButton:SetScript("OnClick", function()
+	  ephemeral_achievement.fail_function_executor.Fail(ephemeral_achievement.name)
+	end)
+
 	ephemeral_achievement.fail_function_executor = fail_function_executor 
 end
 

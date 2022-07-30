@@ -575,7 +575,7 @@ function Hardcore:PLAYER_LOGIN()
 	Hardcore:HandleLegacyDeaths()
 
 	if (UnitLevel("player") < 2) then
-		ShowFirstMenu()
+	  C_Timer.After(1.0, ShowFirstMenu) -- Sometimes does not show up without delay
 	end
 	-- cache player data
 	_, class, _ = UnitClass("player")

@@ -16,14 +16,19 @@ Hardcore.xml
 
 Achievements/AchievementG.lua
 #Begin achievement modules
+Achievements/Arcanist.lua
 Achievements/Beserker.lua
+Achievements/Cyromancer.lua
 Achievements/Ephemeral.lua
+Achievements/Felfire.lua
 Achievements/Grounded.lua
 Achievements/Homebound.lua
 Achievements/MortalPet.lua
 Achievements/NobodyGotTimeForThat.lua
 Achievements/Nudist.lua
 Achievements/PowerFromWithin.lua
+Achievements/Pyromancer.lua
+Achievements/ShadowEmbrace.lua
 Achievements/TunnelVision.lua
 Achievements/WhiteKnight.lua
 #End achievement modules

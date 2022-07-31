@@ -23,6 +23,7 @@ Achievements/Ephemeral.lua
 Achievements/Felfire.lua
 Achievements/Grounded.lua
 Achievements/Homebound.lua
+Achievements/ImpMaster.lua
 Achievements/MortalPet.lua
 Achievements/NobodyGotTimeForThat.lua
 Achievements/Nudist.lua
@@ -33,4 +34,6 @@ Achievements/TunnelVision.lua
 Achievements/WhiteKnight.lua
 #End achievement modules
 
+CharacterStatusScreen.lua
+FirstMenuScreen.lua
 Hardcore.lua

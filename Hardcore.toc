@@ -29,6 +29,7 @@ Achievements/LoneWolf.lua
 Achievements/MortalPet.lua
 Achievements/NobodyGotTimeForThat.lua
 Achievements/NotSoDeadly.lua
+Achievements/NotTheBlessedRun.lua
 Achievements/Nudist.lua
 Achievements/PowerFromWithin.lua
 Achievements/Pyromancer.lua

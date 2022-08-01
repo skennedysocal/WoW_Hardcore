@@ -22,6 +22,7 @@ Achievements/Cyromancer.lua
 Achievements/Ephemeral.lua
 Achievements/Felfire.lua
 Achievements/Grounded.lua
+Achievements/Hammertime.lua
 Achievements/Homebound.lua
 Achievements/ICanSeeYou.lua
 Achievements/ImpMaster.lua
@@ -30,6 +31,7 @@ Achievements/MortalPet.lua
 Achievements/NobodyGotTimeForThat.lua
 Achievements/NotSoDeadly.lua
 Achievements/NotTheBlessedRun.lua
+Achievements/NoWayOut.lua
 Achievements/Nudist.lua
 Achievements/PowerFromWithin.lua
 Achievements/Pyromancer.lua

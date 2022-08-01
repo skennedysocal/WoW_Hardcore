@@ -48,6 +48,10 @@ f2:SetWidth(280)
 f2:SetHeight(350)
 f2:Hide()
 
+hooksecurefunc(CharacterFrame, "Hide",function(self, button)
+  HideCharacterHC()
+end);
+
 function UpdateCharacterHC(_hardcore_character)
     f2:ReleaseChildren()
     if _hardcore_character == nil then
@@ -105,6 +109,6 @@ end
 function HideCharacterHC()
   Panel:Hide()
   f:Hide()
-  f2:ReleaseChildren()
   f2:Hide()
+  f2:ReleaseChildren()
 end

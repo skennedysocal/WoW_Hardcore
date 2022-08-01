@@ -26,14 +26,16 @@ end
 nudist_achievement:SetScript("OnEvent", function(self, event, ...)
 	local arg = {...}
 	if (event == "PLAYER_EQUIPMENT_CHANGED") then
-		if (arg[2] ~= true) then 
-			nudist_achievement.fail_function_executor.Fail(nudist_achievement.name)
-		end
+	  if (arg[1] > 1 and arg[1] < 16) then -- 1 ammo, 16+ weapons
+	    if (arg[2] ~= true) then 
+	      nudist_achievement.fail_function_executor.Fail(nudist_achievement.name)
+	    end
+	  end
 	elseif (event == "PLAYER_LEVEL_UP") then
-		for i=1,15 do
-			if (GetInventoryItemID("player", i)) then
-				nudist_achievement.fail_function_executor.Fail(nudist_achievement.name)
-			end
-		end
+	  for i=2,15 do
+	    if (GetInventoryItemID("player", i)) then
+	      nudist_achievement.fail_function_executor.Fail(nudist_achievement.name)
+	    end
+	  end
 	end
 end)

@@ -31,7 +31,7 @@ hammertime_achievement:SetScript("OnEvent", function(self, event, ...)
 	    local item_name, _, _, _, _, item_type, item_subtype, _, _, _, _ = GetItemInfo(item_id)
 	    if (arg[1] == 16) then -- Mainhand
 	      if item_type == "Weapon" then
-		if item_subtype ~= "Mace2H" then
+		if item_subtype ~= "Two-Handed Maces" then
 		  Hardcore:Print("Equiped " .. item_name .. ".")
 		  hammertime_achievement.fail_function_executor.Fail(hammertime_achievement.name)
 		end

@@ -33,7 +33,7 @@ sword_and_board_achievement:SetScript("OnEvent", function(self, event, ...)
 	    local item_name, _, _, _, _, item_type, item_subtype, _, _, _, _ = GetItemInfo(item_id)
 	    if (arg[1] == 16) then -- Mainhand
 	      if item_type == "Weapon" then
-		if item_subtype == "Axe2H" or item_subtype == "Mace2H" or item_subtype == "Sword2H" or item_subtype == "Polearm" or item_subtype == "Staff" or item_subtype == "FishingPole" then
+		if item_subtype == "Two-Handed Axes" or item_subtype == "Two-Handed Maces" or item_subtype == "Two-Handed Swords" or item_subtype == "Polearms" or item_subtype == "Staves" or item_subtype == "Fishing Poles" then
 		  Hardcore:Print("Equiped " .. item_name .. ".")
 		  sword_and_board_achievement.fail_function_executor.Fail(sword_and_board_achievement.name)
 		end

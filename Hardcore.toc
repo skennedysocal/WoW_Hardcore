@@ -33,6 +33,7 @@ Achievements/Nudist.lua
 Achievements/PowerFromWithin.lua
 Achievements/Pyromancer.lua
 Achievements/ShadowEmbrace.lua
+Achievements/Shivved.lua
 Achievements/TunnelVision.lua
 Achievements/WhiteKnight.lua
 #End achievement modules

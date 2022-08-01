@@ -11,7 +11,7 @@ local CLASSES = {
 	[11] = "Druid",
 }
 
-function ShowFirstMenu(_hardcore_character)
+function ShowFirstMenu(_hardcore_character, _failure_function_executor)
   local AceGUI = LibStub("AceGUI-3.0")
   local f = AceGUI:Create("HardcoreFrame")
   f:SetCallback("OnClose",function(widget) AceGUI:Release(widget) end)
@@ -64,7 +64,7 @@ function ShowFirstMenu(_hardcore_character)
 	else
 	  table.insert(_hardcore_character.achievements, achievement.name)
 	  achievement_icon.image:SetVertexColor(1,1,1) 
-	  achievement:Register(failure_function_executor)
+	  achievement:Register(_failure_function_executor)
 	  Hardcore:Print("Added " .. achievement.name .. " challenge!")
 	end
       end

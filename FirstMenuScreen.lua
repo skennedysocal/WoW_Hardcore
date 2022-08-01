@@ -1,3 +1,16 @@
+local CLASSES = {
+	-- Classic:
+	[1] = "Warrior",
+	[2] = "Paladin",
+	[3] = "Hunter",
+	[4] = "Rogue",
+	[5] = "Priest",
+	[7] = "Shaman",
+	[8] = "Mage",
+	[9] = "Warlock",
+	[11] = "Druid",
+}
+
 function ShowFirstMenu(_hardcore_character)
   local AceGUI = LibStub("AceGUI-3.0")
   local f = AceGUI:Create("HardcoreFrame")

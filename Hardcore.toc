@@ -24,6 +24,7 @@ Achievements/Felfire.lua
 Achievements/Grounded.lua
 Achievements/Homebound.lua
 Achievements/ImpMaster.lua
+Achievements/LoneWolf.lua
 Achievements/MortalPet.lua
 Achievements/NobodyGotTimeForThat.lua
 Achievements/Nudist.lua

@@ -44,6 +44,9 @@ pyromancer_achievement:SetScript("OnEvent", function(self, event, ...)
 	  pyromancer_achievement:GatherBlackList()
 	elseif (event == "UNIT_SPELLCAST_SUCCEEDED") then
 	  local unit, _, spell_id = ...
+	  if unit ~= "player" then
+	    return
+	  end
 	  local spell_name = GetSpellInfo(spell_id)
 	  for i, blacklist_spell in ipairs(pyromancer_achievement.blacklist) do
 	    if (spell_name == blacklist_spell) then

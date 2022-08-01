@@ -33,6 +33,9 @@ imp_master_achievement:SetScript("OnEvent", function(self, event, ...)
 	local arg = {...}
 	if (event == "UNIT_SPELLCAST_SUCCEEDED") then
 	  local unit, _, spell_id = ...
+	  if unit ~= "player" then
+	    return
+	  end
 	  local spell_name = GetSpellInfo(spell_id)
 	  for i, blacklist_spell in ipairs(blacklist_spells) do
 	    if (spell_name == blacklist_spell) then

@@ -31,7 +31,6 @@ beserker_achievement:SetScript("OnEvent", function(self, event, ...)
 	    end
 	    local item_id = GetInventoryItemID("player", arg[1])
 	    local item_name, _, _, _, _, item_type, item_subtype, _, _, _, _ = GetItemInfo(item_id)
-	    print(GetItemInfo(item_id) .. item_type .. item_subtype)
 	    if item_type == "Armor" then
 	      if item_subtype == "Shields" or item_subtype == "Mail" or item_subtype == "Plate" then
 		Hardcore:Print("Equiped " .. item_name .. ".")

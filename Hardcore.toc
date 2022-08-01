@@ -23,6 +23,7 @@ Achievements/Ephemeral.lua
 Achievements/Felfire.lua
 Achievements/Grounded.lua
 Achievements/Homebound.lua
+Achievements/ICanSeeYou.lua
 Achievements/ImpMaster.lua
 Achievements/LoneWolf.lua
 Achievements/MortalPet.lua

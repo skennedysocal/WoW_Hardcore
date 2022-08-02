@@ -28,6 +28,7 @@ Achievements/Hammertime.lua
 Achievements/Homebound.lua
 Achievements/ICanSeeYou.lua
 Achievements/ImpMaster.lua
+Achievements/KingOfTheJungle.lua
 Achievements/LoneWolf.lua
 Achievements/MortalPet.lua
 Achievements/Naturalist.lua

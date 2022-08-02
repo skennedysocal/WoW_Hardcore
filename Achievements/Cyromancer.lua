@@ -31,7 +31,6 @@ function cyromancer_achievement:GatherBlackList()
 	for j=offset+1,offset+numSlots do
 	  local spell_name = GetSpellInfo(j, "")
 	  table.insert(cyromancer_achievement.blacklist, spell_name)
-	  print(spell_name)
 	end
       end
     end

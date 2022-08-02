@@ -40,13 +40,15 @@ berserker_achievement:SetScript("OnEvent", function(self, event, ...)
 	elseif (event == "PLAYER_LEVEL_UP") then
 	    for i=1,15 do
 	      local item_id = GetInventoryItemID("player", i)
-	      local item_name, _, _, _, _, item_type, item_subtype, _, _, _, _ = GetItemInfo(item_id)
-	    if item_type == "Armor" then
-	      if item_subtype == "Shields" or item_subtype == "Mail" or item_subtype == "Plate" then
-		  Hardcore:Print("Equiped " .. item_name .. ".")
-		  berserker_achievement.fail_function_executor.Fail(berserker_achievement.name)
+	      if item_id ~= nil then
+		local item_name, _, _, _, _, item_type, item_subtype, _, _, _, _ = GetItemInfo(item_id)
+		if item_type == "Armor" then
+		  if item_subtype == "Shields" or item_subtype == "Mail" or item_subtype == "Plate" then
+		      Hardcore:Print("Equiped " .. item_name .. ".")
+		      berserker_achievement.fail_function_executor.Fail(berserker_achievement.name)
+		    end
+		  end
 		end
 	      end
-	    end
 	end
 end)

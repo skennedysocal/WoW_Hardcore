@@ -54,6 +54,7 @@ Achievements/TrueBeliever.lua
 Achievements/TunnelVision.lua
 Achievements/Unrestored.lua
 Achievements/WhiteKnight.lua
+Achievements/Vagrant.lua
 Achievements/VoidServant.lua
 #End achievement modules
 

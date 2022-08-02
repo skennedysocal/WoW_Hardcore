@@ -29,8 +29,9 @@ no_health_potions_achievement:SetScript("OnEvent", function(self, event, ...)
       return
     end
     local spell_name = GetSpellInfo(spell_id)
-    print(string.find(spell_name, "Healing Potion"))
-    Hardcore:Print("Casted healing potion spell." .. spell_name)
-    no_health_potions_achievement.fail_function_executor.Fail(no_health_potions_achievement.name)
+    if (string.find(spell_name, "Healing Potion" ~= nil)) then 
+      Hardcore:Print("Casted healing potion spell." .. spell_name)
+      no_health_potions_achievement.fail_function_executor.Fail(no_health_potions_achievement.name)
+    end
   end
 end)

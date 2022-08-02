@@ -430,7 +430,9 @@ function Hardcore:PLAYER_LOGIN()
 	  Hardcore_Character.achievements = {}
 	end
 	for i,v in ipairs(Hardcore_Character.achievements) do
-		_G.achievements[v]:Register(failure_function_executor)
+	  if (_G.achievements[v] ~= nil) then
+	    _G.achievements[v]:Register(failure_function_executor)
+	  end
 	end
 
 	-- Adds HC character tab functionality 

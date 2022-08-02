@@ -6,7 +6,7 @@ _G.achievements.LoneWolf = lone_wolf_achievement
 lone_wolf_achievement.name = "LoneWolf"
 lone_wolf_achievement.title = "Lone Wolf"
 lone_wolf_achievement.class = "Hunter"
-lone_wolf_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_default.blp"
+lone_wolf_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_lone_wolf.blp"
 lone_wolf_achievement.description = "Complete the Hardcore challenge without at any point taming a Hunter pet. Items and quests that make you spawn companions are allowed."
 
 -- Registers

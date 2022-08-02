@@ -6,7 +6,7 @@ _G.achievements.SwordAndBoard = sword_and_board_achievement
 sword_and_board_achievement.name = "SwordAndBoard"
 sword_and_board_achievement.title = "Sword & Board"
 sword_and_board_achievement.class = "Warrior"
-sword_and_board_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_default.blp"
+sword_and_board_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_sword_and_board.blp"
 sword_and_board_achievement.description = "Complete the Hardcore challenge without at any point equipping Mail or Plate armor or a Shield. Only cloth and leather armor are allowed. If your race starts with a Shield, unequip it upon logging in."
 
 -- Registers

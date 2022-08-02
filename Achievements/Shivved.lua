@@ -6,7 +6,7 @@ _G.achievements.Shivved = shivved_achievement
 shivved_achievement.name = "Shivved"
 shivved_achievement.title = "Shivved"
 shivved_achievement.class = "Rogue"
-shivved_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_default.blp"
+shivved_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_shivved.blp"
 shivved_achievement.description = "Complete the Hardcore challenge without at any point equipping a melee weapon other than Daggers. "
 
 -- Registers

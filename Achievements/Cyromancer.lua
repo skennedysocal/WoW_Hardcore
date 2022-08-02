@@ -6,7 +6,7 @@ _G.achievements.Cyromancer = cyromancer_achievement
 cyromancer_achievement.name = "Cyromancer"
 cyromancer_achievement.title = "Cyromancer"
 cyromancer_achievement.class = "Mage"
-cyromancer_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_default.blp"
+cyromancer_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_cyromancer.blp"
 cyromancer_achievement.description = "Complete the Hardcore challenge using only abilities within the “Frost” (and “General”) tab of your spellbook. No spells outside of those listed under “Frost” or “General” are allowed. You are allowed to put points into all talent trees, but active abilities thus unlocked that are not in the “Frost” tab of your spellbook are not allowed to be used."
 
 -- Registers

@@ -6,7 +6,7 @@ _G.achievements.Pyromancer = pyromancer_achievement
 pyromancer_achievement.name = "Pyromancer"
 pyromancer_achievement.title = "Pyromancer"
 pyromancer_achievement.class = "Mage"
-pyromancer_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_default.blp"
+pyromancer_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_pyromancer.blp"
 pyromancer_achievement.description = "Complete the Hardcore challenge using only abilities within the “Fire” (and “General”) tab of your spellbook. No spells outside of those listed under “Fire” or “General” are allowed. You are allowed to put points into all talent trees, but active abilities thus unlocked that are not in the “Fire” tab of your spellbook are not allowed to be used."
 
 -- Registers

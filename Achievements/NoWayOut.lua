@@ -13,7 +13,7 @@ local blacklist_spells_named = {
 no_way_out_achievement.name = "NoWayOut"
 no_way_out_achievement.title = "No Way Out"
 no_way_out_achievement.class = "Paladin"
-no_way_out_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_default.blp"
+no_way_out_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_no_way_out.blp"
 no_way_out_achievement.description = "Complete the Hardcore challenge without at any point using an immunity spell. Divine Shield, Divine Protection, Blessing of Protection, and Blessing of Freedom are not allowed."
 
 -- Registers

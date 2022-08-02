@@ -6,7 +6,7 @@ _G.achievements.Berserker = berserker_achievement
 berserker_achievement.name = "Berserker"
 berserker_achievement.title = "Berserker"
 berserker_achievement.class = "Warrior"
-berserker_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_default.blp"
+berserker_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_berserker.blp"
 berserker_achievement.description = "Complete the Hardcore challenge without at any point equipping Mail or Plate armor or a Shield. Only cloth and leather armor are allowed. If your race starts with a Shield, unequip it upon logging in."
 
 -- Registers

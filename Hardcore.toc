@@ -19,6 +19,7 @@ Achievements/AchievementG.lua
 Achievements/Arcanist.lua
 Achievements/Berserker.lua
 Achievements/Cyromancer.lua
+Achievements/DruidOfTheClaw.lua
 Achievements/Ephemeral.lua
 Achievements/Felfire.lua
 Achievements/Grounded.lua
@@ -28,6 +29,7 @@ Achievements/ICanSeeYou.lua
 Achievements/ImpMaster.lua
 Achievements/LoneWolf.lua
 Achievements/MortalPet.lua
+Achievements/Naturalist.lua
 Achievements/NobodyGotTimeForThat.lua
 Achievements/NotSoDeadly.lua
 Achievements/NotTheBlessedRun.lua
@@ -38,10 +40,16 @@ Achievements/PowerFromWithin.lua
 Achievements/Pyromancer.lua
 Achievements/ShadowEmbrace.lua
 Achievements/Shivved.lua
+Achievements/Shocked.lua
 Achievements/SwordAndBoard.lua
 Achievements/TiedHands.lua
+Achievements/Thunderstruck.lua
+Achievements/TotemicMisery.lua
+Achievements/TrueBeliever.lua
 Achievements/TunnelVision.lua
+Achievements/Unrestored.lua
 Achievements/WhiteKnight.lua
+Achievements/VoidServant.lua
 #End achievement modules
 
 CharacterStatusScreen.lua

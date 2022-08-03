@@ -2,8 +2,8 @@ local _G = _G
 local trio_rules = CreateFrame("Frame")
 _G.extra_rules.Trio = trio_rules
 
-local max_warn_time = -1 --10*60
-local check_rate = 10 -- 1*60
+local max_warn_time = 10*60
+local check_rate = 1*60
 -- General info
 trio_rules.name = "Trio"
 trio_rules.title = "Trio"
@@ -44,6 +44,7 @@ function trio_rules:Warn()
 	  Hardcore:Print("Warning - HC Trio: Get back to your trio partner. " .. max_warn_time - trio_rules.accumulated_warn_time .. " seconds remaining.")
 	else
 	  trio_rules._hardcore_character_ref.party_mode = "Failed Trio"
+	  Hardcore:Print("Failed Trio")
 	end
 
 end

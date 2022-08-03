@@ -37,6 +37,7 @@ function duo_rules:Warn()
 	  Hardcore:Print("Warning - HC Duo: Get back to your duo partner. " .. max_warn_time - duo_rules.accumulated_warn_time .. " seconds remaining.")
 	else
 	  duo_rules._hardcore_character_ref.party_mode = "Failed Duo"
+	  Hardcore:Print("Failed Duo")
 	end
 
 end

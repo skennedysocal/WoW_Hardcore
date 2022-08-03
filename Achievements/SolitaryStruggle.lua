@@ -11,19 +11,19 @@ solitary_struggle_achievement.description = "Complete the Hardcore challenge wit
 
 -- Registers
 function solitary_struggle_achievement:Register(fail_function_executor)
-	solitary_struggle_achievement:RegisterEvent("PARTY_MEMBERS_CHANGED")
+	solitary_struggle_achievement:RegisterEvent("GROUP_ROSTER_UPDATE")
 	solitary_struggle_achievement.fail_function_executor = fail_function_executor 
 end
 
 function solitary_struggle_achievement:Unregister()
-	solitary_struggle_achievement:UnregisterEvent("PARTY_MEMBERS_CHANGED")
+	solitary_struggle_achievement:UnregisterEvent("GROUP_ROSTER_UPDATE")
 	solitary_struggle_achievement.fail_function_executor = nil 
 end
 
 -- Register Definitions
 solitary_struggle_achievement:SetScript("OnEvent", function(self, event, ...)
 	local arg = {...}
-	if (event == "PARTY_MEMBERS_CHANGED") then
+	if (event == "GROUP_ROSTER_UPDATE") then
 	  if (GetNumGroupMembers() > 1) then
 	      solitary_struggle_achievement.fail_function_executor.Fail(solitary_struggle_achievement.name)
 	  end

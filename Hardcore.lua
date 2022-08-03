@@ -56,6 +56,8 @@ Hardcore_Character = {
 	trade_partners = {},
 	grief_warning_conditions = GRIEF_WARNING_BOTH_FACTIONS,
 	achievements = {},
+	party_mode = "Solo",
+	team = {},
 }
 
 --[[ Local variables ]]--
@@ -349,6 +351,8 @@ local saved_variable_meta = {
 	{ key = "trade_partners", initial_data = {} },
 	{ key = "grief_warning_conditions", initial_data = GRIEF_WARNING_BOTH_FACTIONS },
 	{ key = "achievements", initial_data = {} },
+	{ key = "party_mode", initial_data = "Solo" },
+	{ key = "team", initial_data = {} },
 }
 
 --[[ Post-utility functions]]--
@@ -432,6 +436,12 @@ function Hardcore:PLAYER_LOGIN()
 	for i,v in ipairs(Hardcore_Character.achievements) do
 	  if (_G.achievements[v] ~= nil) then
 	    _G.achievements[v]:Register(failure_function_executor)
+	  end
+	end
+
+	if Hardcore_Character.party_mode ~= nil then
+	  if (_G.extra_rules[Hardcore_Character.party_mode] ~= nil) then
+	    _G.extra_rules[Hardcore_Character.party_mode]:Register(failure_function_executor, Hardcore_Character)
 	  end
 	end
 

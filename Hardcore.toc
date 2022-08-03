@@ -15,6 +15,10 @@ utils.lua
 Hardcore.xml
 
 Achievements/AchievementG.lua
+
+Achievements/Solo.lua
+Achievements/Duo.lua
+Achievements/Trio.lua
 #Begin achievement modules
 Achievements/Arcanist.lua
 Achievements/Berserker.lua

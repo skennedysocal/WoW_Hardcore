@@ -90,7 +90,26 @@ function UpdateCharacterHC(_hardcore_character)
     local team_title = AceGUI:Create("HardcoreClassTitleLabel")
     team_title:SetRelativeWidth(1.0)
     team_title:SetHeight(60)
-    team_title:SetText("Mode: solo")
+    local mode_type_str = "unknown"
+    local teammate_1 = "missing_team"
+    local teammate_2 = "unknown"
+
+    if _hardcore_character.team ~= nil then
+      teammate_1 = _hardcore_character.team[1] or "unknown"
+      teammate_2 = _hardcore_character.team[2] or "unknown"
+    end
+    if _hardcore_character.party_mode ~= nil then
+      if _hardcore_character.party_mode == "Solo" then
+	mode_type_str = "Solo"
+      elseif _hardcore_character.party_mode == "Duo" then
+	mode_type_str = "Duo with " .. teammate_1
+      elseif _hardcore_character.party_mode == "Trio" then
+	mode_type_str = "Trio with " .. teammate_1 .. " and " .. teammate_2
+      else
+	mode_type_str = "|c00FF0000" .. _hardcore_character.party_mode .. "|r"
+      end
+    end
+    team_title:SetText("Mode: " .. mode_type_str)
     version_name:SetFont("Fonts\\FRIZQT__.TTF", 12)
     character_meta_data_container:AddChild(team_title)
 

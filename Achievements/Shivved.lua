@@ -18,7 +18,6 @@ end
 
 function shivved_achievement:Unregister()
 	shivved_achievement:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED")
-	shivved_achievement.fail_function_executor = nil
 end
 
 -- Register Definitions

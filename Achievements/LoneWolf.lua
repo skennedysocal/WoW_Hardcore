@@ -18,7 +18,6 @@ end
 
 function lone_wolf_achievement:Unregister()
 	lone_wolf_achievement:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-	lone_wolf_achievement.fail_function_executor = nil
 end
 
 -- Register Definitions

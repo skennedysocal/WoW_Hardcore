@@ -2,8 +2,8 @@ local _G = _G
 local duo_rules = CreateFrame("Frame")
 _G.extra_rules.Duo = duo_rules
 
-local max_warn_time = 10 * 60
-local check_rate = 1 * 60
+local max_warn_time = 10 * 60 -- Fails after 10 minutes
+local check_rate = 15 -- Checks every 15 seconds
 -- General info
 duo_rules.name = "Duo"
 duo_rules.title = "Duo"
@@ -31,7 +31,6 @@ function duo_rules:Unregister()
 		duo_rules.timer_handle:Cancel()
 	end
 	duo_rules.accumulated_warn_time = 0
-	duo_rules.fail_function_executor = nil
 end
 
 function duo_rules:Warn()
@@ -40,7 +39,7 @@ function duo_rules:Warn()
 		Hardcore:Print(
 			"Warning - HC Duo: Get back to your duo partner. "
 				.. max_warn_time - duo_rules.accumulated_warn_time
-				.. " seconds remaining."
+				.. " seconds remaining before failing the challenge."
 		)
 	else
 		duo_rules._hardcore_character_ref.party_mode = "Failed Duo"
@@ -49,10 +48,10 @@ function duo_rules:Warn()
 end
 
 function duo_rules:ResetWarn()
-	if duo_rules.warning_counter > 1 then
+	if duo_rules.accumulated_warn_time > 1 then
 		Hardcore:Print("Duo group gathered back together.")
 	end
-	duo_rules.warning_counter = 0
+	duo_rules.accumulated_warn_time = 0
 end
 
 function duo_rules:Check()
@@ -89,7 +88,7 @@ function duo_rules:Check()
 
 	local in_follow_range = CheckInteractDistance(member_str, 4)
 	if in_follow_range then
-		duo_rules.warning_counter = 0
+		duo_rules:ResetWarn()
 		return
 	end
 
@@ -100,7 +99,7 @@ function duo_rules:Check()
 		duo_rules:Warn()
 		return
 	end
-	duo_rules.warning_counter = 0
+	duo_rules:ResetWarn()
 end
 
 -- Register Definitions

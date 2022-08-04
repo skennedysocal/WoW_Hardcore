@@ -21,7 +21,6 @@ end
 function true_believer_achievement:Unregister()
 	true_believer_achievement:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 	true_believer_achievement:UnregisterEvent("SPELLS_CHANGED")
-	true_believer_achievement.fail_function_executor = nil
 end
 
 function true_believer_achievement:GatherBlackList()

@@ -18,7 +18,6 @@ end
 
 function pacifist_achievement:Unregister()
 	pacifist_achievement:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED")
-	pacifist_achievement.fail_function_executor = nil
 end
 
 -- Register Definitions

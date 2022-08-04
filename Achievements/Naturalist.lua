@@ -26,7 +26,6 @@ end
 
 function naturalist_achievement:Unregister()
 	naturalist_achievement:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-	naturalist_achievement.fail_function_executor = nil
 end
 
 -- Register Definitions

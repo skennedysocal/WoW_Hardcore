@@ -18,7 +18,6 @@ end
 
 function white_knight_achievement:Unregister()
 	white_knight_achievement:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED")
-	white_knight_achievement.fail_function_executor = nil
 end
 
 -- Register Definitions

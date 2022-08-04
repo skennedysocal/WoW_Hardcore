@@ -11,6 +11,13 @@ local CLASSES = {
 	[11] = "Druid",
 }
 
+local function FormatStrForParty(input_str)
+  local ouput_str = string.lower(input_str)
+  output_str = ouput_str:gsub("^%l", string.upper)
+  return output_str
+
+end
+
 function ShowFirstMenu(_hardcore_character, _failure_function_executor)
 	local AceGUI = LibStub("AceGUI-3.0")
 	local f = AceGUI:Create("HardcoreFrame")
@@ -241,14 +248,14 @@ function ShowFirstMenu(_hardcore_character, _failure_function_executor)
 		end)
 		tm1:SetCallback("OnTextChanged", function()
 			_hardcore_character.team = {}
-			table.insert(_hardcore_character.team, tm1:GetText())
-			table.insert(_hardcore_character.team, tm2:GetText())
+			table.insert(_hardcore_character.team, FormatStrForParty(tm1:GetText()))
+			table.insert(_hardcore_character.team, FormatStrForParty(tm2:GetText()))
 		end)
 
 		tm2:SetCallback("OnTextChanged", function()
 			_hardcore_character.team = {}
-			table.insert(_hardcore_character.team, tm1:GetText())
-			table.insert(_hardcore_character.team, tm2:GetText())
+			table.insert(_hardcore_character.team, FormatStrForParty(tm1:GetText()))
+			table.insert(_hardcore_character.team, FormatStrForParty(tm2:GetText()))
 		end)
 	end
 

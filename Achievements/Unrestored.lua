@@ -21,7 +21,6 @@ end
 function unrestored_achievement:Unregister()
 	unrestored_achievement:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 	unrestored_achievement:UnregisterEvent("SPELLS_CHANGED")
-	unrestored_achievement.fail_function_executor = nil
 end
 
 function unrestored_achievement:GatherBlackList()

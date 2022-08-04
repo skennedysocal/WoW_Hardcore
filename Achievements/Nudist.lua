@@ -20,7 +20,6 @@ end
 function nudist_achievement:Unregister()
 	nudist_achievement:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED")
 	nudist_achievement:UnregisterEvent("PLAYER_LEVEL_UP")
-	nudist_achievement.fail_function_executor = nil
 end
 
 -- Register Definitions

@@ -18,7 +18,6 @@ end
 
 function bloodbath_achievement:Unregister()
 	bloodbath_achievement:UnregisterEvent("QUEST_TURNED_IN")
-	bloodbath_achievement.fail_function_executor = nil
 end
 
 -- Register Definitions

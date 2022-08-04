@@ -34,7 +34,6 @@ end
 
 function not_the_blessed_run_achievement:Unregister()
 	not_the_blessed_run_achievement:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-	not_the_blessed_run_achievement.fail_function_executor = nil
 end
 
 -- Register Definitions

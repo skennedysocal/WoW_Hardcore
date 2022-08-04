@@ -2,8 +2,8 @@ local _G = _G
 local trio_rules = CreateFrame("Frame")
 _G.extra_rules.Trio = trio_rules
 
-local max_warn_time = 10 * 60
-local check_rate = 1 * 60
+local max_warn_time = 10 * 60 -- Fails after 10 minutes
+local check_rate = 15 -- Checks every 15 seconds
 -- General info
 trio_rules.name = "Trio"
 trio_rules.title = "Trio"
@@ -38,7 +38,6 @@ function trio_rules:Unregister()
 		trio_rules.timer_handle:Cancel()
 	end
 	trio_rules.accumulated_warn_time = 0
-	trio_rules.fail_function_executor = nil
 end
 
 function trio_rules:Warn()
@@ -47,7 +46,7 @@ function trio_rules:Warn()
 		Hardcore:Print(
 			"Warning - HC Trio: Get back to your trio partner. "
 				.. max_warn_time - trio_rules.accumulated_warn_time
-				.. " seconds remaining."
+				.. " seconds remaining before failing the challenge."
 		)
 	else
 		trio_rules._hardcore_character_ref.party_mode = "Failed Trio"
@@ -56,10 +55,10 @@ function trio_rules:Warn()
 end
 
 function trio_rules:ResetWarn()
-	if trio_rules.warning_counter > 1 then
+	if trio_rules.accumulated_warn_time > 1 then
 		Hardcore:Print("Trio group gathered back together.")
 	end
-	trio_rules.warning_counter = 0
+	trio_rules.accumulated_warn_time = 0
 end
 
 function trio_rules:Check()

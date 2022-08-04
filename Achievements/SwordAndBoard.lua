@@ -20,7 +20,6 @@ end
 function sword_and_board_achievement:Unregister()
 	sword_and_board_achievement:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED")
 	sword_and_board_achievement:UnregisterEvent("PLAYER_LEVEL_UP")
-	sword_and_board_achievement.fail_function_executor = nil
 end
 
 -- Register Definitions

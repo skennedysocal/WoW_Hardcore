@@ -18,7 +18,6 @@ end
 
 function thunderstruck_achievement:Unregister()
 	thunderstruck_achievement:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-	thunderstruck_achievement.fail_function_executor = nil
 end
 
 -- Register Definitions

@@ -18,7 +18,6 @@ end
 
 function hammertime_achievement:Unregister()
 	hammertime_achievement:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED")
-	hammertime_achievement.fail_function_executor = nil
 end
 
 -- Register Definitions

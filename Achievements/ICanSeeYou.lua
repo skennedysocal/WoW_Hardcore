@@ -28,7 +28,6 @@ end
 
 function i_can_see_you_achievement:Unregister()
 	i_can_see_you_achievement:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-	i_can_see_you_achievement.fail_function_executor = nil
 end
 
 -- Register Definitions

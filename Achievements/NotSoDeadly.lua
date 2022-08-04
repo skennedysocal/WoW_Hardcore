@@ -27,7 +27,6 @@ end
 
 function not_so_deadly_achievement:Unregister()
 	not_so_deadly_achievement:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-	not_so_deadly_achievement.fail_function_executor = nil
 end
 
 -- Register Definitions

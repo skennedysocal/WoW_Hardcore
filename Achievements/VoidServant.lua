@@ -21,7 +21,6 @@ end
 function void_servant_achievement:Unregister()
 	void_servant_achievement:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 	void_servant_achievement:UnregisterEvent("SPELLS_CHANGED")
-	void_servant_achievement.fail_function_executor = nil
 end
 
 function void_servant_achievement:GatherBlackList()

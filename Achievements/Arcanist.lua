@@ -21,7 +21,6 @@ end
 function arcanist_achievement:Unregister()
 	arcanist_achievement:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 	arcanist_achievement:UnregisterEvent("SPELLS_CHANGED")
-	arcanist_achievement.fail_function_executor = nil
 end
 
 function arcanist_achievement:GatherBlackList()

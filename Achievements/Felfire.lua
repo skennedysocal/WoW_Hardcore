@@ -18,7 +18,6 @@ end
 
 function felfire_achievement:Unregister()
 	felfire_achievement:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-	felfire_achievement.fail_function_executor = nil
 end
 
 -- Register Definitions

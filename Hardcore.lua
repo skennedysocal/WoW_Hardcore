@@ -55,6 +55,9 @@ Hardcore_Character = {
 	played_time_gap_warnings = {},
 	trade_partners = {},
 	grief_warning_conditions = GRIEF_WARNING_BOTH_FACTIONS,
+	achievements = {},
+	party_mode = "Solo",
+	team = {},
 }
 
 --[[ Local variables ]]--
@@ -346,8 +349,13 @@ local saved_variable_meta = {
 	{ key = "bubble_hearth_incidents", initial_data = {} },
 	{ key = "played_time_gap_warnings", initial_data = {} },
 	{ key = "trade_partners", initial_data = {} },
-	{ key = "grief_warning_conditions", initial_data = GRIEF_WARNING_BOTH_FACTIONS }
+	{ key = "grief_warning_conditions", initial_data = GRIEF_WARNING_BOTH_FACTIONS },
+	{ key = "achievements", initial_data = {} },
+	{ key = "party_mode", initial_data = "Solo" },
+	{ key = "team", initial_data = {} },
 }
+
+--[[ Post-utility functions]]--
 
 function Hardcore:InitializeSavedVariables()
 	if Hardcore_Character == nil then
@@ -366,6 +374,19 @@ function Hardcore:ForceResetSavedVariables()
 		Hardcore_Character[v.key] = v.initial_data
 	end
 end
+
+function FailureFunction(achievement_name)
+  for i,v in ipairs(Hardcore_Character.achievements) do
+    if  (v == achievement_name) then
+      table.remove(Hardcore_Character.achievements, i)
+      _G.achievements[achievement_name]:Unregister()
+      Hardcore:Print("Failed " .. achievement_name)
+    end
+  end
+
+end
+
+local failure_function_executor = {Fail = FailureFunction}
 
 --[[ Override default WoW UI ]]--
 
@@ -395,12 +416,49 @@ end
 function Hardcore:PLAYER_LOGIN()
 	Hardcore:HandleLegacyDeaths()
 
+	-- Show the first menu screen.  Requires short delay
+	if (UnitLevel("player") < 2) then
+	  C_Timer.After(1.0, function()
+	    ShowFirstMenu(Hardcore_Character, failure_function_executor)
+	  end)
+	end
 	-- cache player data
 	_, class, _ = UnitClass("player")
 	PLAYER_NAME, _ = UnitName("player")
 	PLAYER_GUID = UnitGUID("player")
 	PLAYER_FACTION, _ = UnitFactionGroup("player")
 	local PLAYER_LEVEL = UnitLevel("player")
+
+	-- Register achievements
+	if Hardcore_Character.achievements == nil then
+	  Hardcore_Character.achievements = {}
+	end
+	for i,v in ipairs(Hardcore_Character.achievements) do
+	  if (_G.achievements[v] ~= nil) then
+	    _G.achievements[v]:Register(failure_function_executor)
+	  end
+	end
+
+	if Hardcore_Character.party_mode ~= nil then
+	  if (_G.extra_rules[Hardcore_Character.party_mode] ~= nil) then
+	    _G.extra_rules[Hardcore_Character.party_mode]:Register(failure_function_executor, Hardcore_Character)
+	  end
+	end
+
+	-- Adds HC character tab functionality 
+	hooksecurefunc("CharacterFrameTab_OnClick",function(self, button)
+	    local name = self:GetName()
+	    if (name == "CharacterFrameTab6") then
+	      _G["HonorFrame"]:Hide()
+	      _G["PaperDollFrame"]:Hide()
+	      _G["PetPaperDollFrame"]:Hide()
+	      _G["SkillFrame"]:Hide()
+	      _G["ReputationFrame"]:Hide()
+	      ShowCharacterHC(Hardcore_Character)
+	    else
+	      HideCharacterHC()
+	    end
+	end);
 
 	-- fires on first loading
 	self:RegisterEvent("PLAYER_UNGHOST")

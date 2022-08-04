@@ -109,7 +109,7 @@ function UpdateCharacterHC(_hardcore_character)
 	mode_type_str = "|c00FF0000" .. _hardcore_character.party_mode .. "|r"
       end
     end
-    team_title:SetText("Mode: " .. mode_type_str)
+    team_title:SetText(mode_type_str)
     version_name:SetFont("Fonts\\FRIZQT__.TTF", 12)
     character_meta_data_container:AddChild(team_title)
 

@@ -27,6 +27,9 @@ function duo_rules:Register(fail_function_executor, _hardcore_character)
 end
 
 function duo_rules:Unregister()
+	if duo_rules.timer_handle ~= nil then
+	  duo_rules.timer_handle:Cancel()
+	end
 	duo_rules.accumulated_warn_time = 0
 	duo_rules.fail_function_executor = nil 
 end
@@ -39,7 +42,13 @@ function duo_rules:Warn()
 	  duo_rules._hardcore_character_ref.party_mode = "Failed Duo"
 	  Hardcore:Print("Failed Duo")
 	end
+end
 
+function duo_rules:ResetWarn()
+  if duo_rules.warning_counter > 1 then
+    Hardcore:Print("Duo group gathered back together.")
+  end
+  duo_rules.warning_counter = 0
 end
 
 function duo_rules:Check()
@@ -74,6 +83,12 @@ function duo_rules:Check()
     return
   end
 
+  local in_follow_range = CheckInteractDistance(member_str, 4)
+  if in_follow_range then
+    duo_rules.warning_counter = 0
+    return
+  end
+
   local my_map = C_Map.GetBestMapForUnit("player")
   local teammates_map = C_Map.GetBestMapForUnit(member_str)
   if (my_map ~= teammates_map) then
@@ -81,7 +96,6 @@ function duo_rules:Check()
     duo_rules:Warn()
     return
   end
-
   duo_rules.warning_counter = 0
 end
 

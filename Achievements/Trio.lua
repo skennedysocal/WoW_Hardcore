@@ -34,6 +34,9 @@ function trio_rules:Register(fail_function_executor, _hardcore_character)
 end
 
 function trio_rules:Unregister()
+	if trio_rules.timer_handle ~= nil then
+	  trio_rules.timer_handle:Cancel()
+	end
 	trio_rules.accumulated_warn_time = 0
 	trio_rules.fail_function_executor = nil 
 end
@@ -46,7 +49,13 @@ function trio_rules:Warn()
 	  trio_rules._hardcore_character_ref.party_mode = "Failed Trio"
 	  Hardcore:Print("Failed Trio")
 	end
+end
 
+function trio_rules:ResetWarn()
+  if trio_rules.warning_counter > 1 then
+    Hardcore:Print("Trio group gathered back together.")
+  end
+  trio_rules.warning_counter = 0
 end
 
 function trio_rules:Check()
@@ -88,6 +97,12 @@ function trio_rules:Check()
     return
   end
 
+  local in_follow_range = CheckInteractDistance(member_str, 4)
+  if in_follow_range then
+    trio_rules:ResetWarn()
+    return
+  end
+
   local my_map = C_Map.GetBestMapForUnit("player")
   local teammates_map_1 = C_Map.GetBestMapForUnit(member_str_1)
   local teammates_map_2 = C_Map.GetBestMapForUnit(member_str_2)
@@ -97,7 +112,7 @@ function trio_rules:Check()
     return
   end
 
-  trio_rules.warning_counter = 0
+  trio_rules:ResetWarn()
 end
 
 -- Register Definitions

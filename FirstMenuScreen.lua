@@ -308,4 +308,19 @@ function ShowFirstMenu(_hardcore_character, _failure_function_executor)
   tabcontainer:SelectTab("WelcomeTab")
 
   f:AddChild(tabcontainer)
+  f:SetCallback("OnClose", function()
+      local party_modes = {
+	"Solo",
+	"Duo",
+	"Trio"
+      }
+      for i, mode in ipairs(party_modes) do
+	if (_G.extra_rules[mode] ~= nil) then
+	  _G.extra_rules[mode]:Unregister()
+	end
+      end
+      if (_G.extra_rules[_hardcore_character.party_mode] ~= nil) then
+	_G.extra_rules[_hardcore_character.party_mode]:Register(_, _hardcore_character)
+      end
+    end)
 end

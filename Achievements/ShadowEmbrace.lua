@@ -18,7 +18,6 @@ end
 
 function shadow_embrace_achievement:Unregister()
 	shadow_embrace_achievement:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
-	shadow_embrace_achievement.fail_function_executor = nil
 end
 
 -- Register Definitions

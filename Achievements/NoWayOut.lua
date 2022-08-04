@@ -25,7 +25,6 @@ end
 
 function no_way_out_achievement:Unregister()
 	no_way_out_achievement:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-	no_way_out_achievement.fail_function_executor = nil
 end
 
 -- Register Definitions

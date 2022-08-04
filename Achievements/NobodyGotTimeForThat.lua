@@ -34,7 +34,6 @@ end
 
 function nobody_got_time_for_that_achievement:Unregister()
 	nobody_got_time_for_that_achievement:UnregisterEvent("SKILL_LINES_CHANGED")
-	nobody_got_time_for_that_achievement.fail_function_executor = nil
 end
 
 -- Register Definitions

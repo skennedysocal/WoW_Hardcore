@@ -67,7 +67,6 @@ end
 
 function homebound_achievement:Unregister()
 	homebound_achievement:UnregisterEvent("ZONE_CHANGED")
-	homebound_achievement.fail_function_executor = nil
 end
 
 -- Register Definitions

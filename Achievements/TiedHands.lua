@@ -23,7 +23,6 @@ end
 
 function tied_hands_achievement:Unregister()
 	tied_hands_achievement:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-	tied_hands_achievement.fail_function_executor = nil
 end
 
 -- Register Definitions

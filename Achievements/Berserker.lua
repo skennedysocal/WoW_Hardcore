@@ -20,7 +20,6 @@ end
 function berserker_achievement:Unregister()
 	berserker_achievement:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED")
 	berserker_achievement:UnregisterEvent("PLAYER_LEVEL_UP")
-	berserker_achievement.fail_function_executor = nil
 end
 
 -- Register Definitions

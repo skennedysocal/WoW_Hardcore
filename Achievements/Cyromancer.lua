@@ -21,7 +21,6 @@ end
 function cyromancer_achievement:Unregister()
 	cyromancer_achievement:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 	cyromancer_achievement:UnregisterEvent("SPELLS_CHANGED")
-	cyromancer_achievement.fail_function_executor = nil
 end
 
 function cyromancer_achievement:GatherBlackList()

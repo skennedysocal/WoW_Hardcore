@@ -20,7 +20,6 @@ end
 function vagrant_achievement:Unregister()
 	vagrant_achievement:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 	vagrant_achievement:UnregisterEvent("BANKFRAME_OPENED")
-	vagrant_achievement.fail_function_executor = nil
 end
 
 -- Register Definitions

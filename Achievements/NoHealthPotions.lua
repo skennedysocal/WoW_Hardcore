@@ -18,7 +18,6 @@ end
 
 function no_health_potions_achievement:Unregister()
 	no_health_potions_achievement:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-	no_health_potions_achievement.fail_function_executor = nil
 end
 
 -- Register Definitions

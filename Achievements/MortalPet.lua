@@ -18,7 +18,6 @@ end
 
 function mortal_pet_achievement:Unregister()
 	mortal_pet_achievement:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-	mortal_pet_achievement.fail_function_executor = nil
 end
 
 -- Register Definitions

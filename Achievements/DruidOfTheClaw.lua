@@ -21,7 +21,6 @@ end
 function druid_of_the_claw_achievement:Unregister()
 	druid_of_the_claw_achievement:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 	druid_of_the_claw_achievement:UnregisterEvent("SPELLS_CHANGED")
-	druid_of_the_claw_achievement.fail_function_executor = nil
 end
 
 function druid_of_the_claw_achievement:GatherBlackList()

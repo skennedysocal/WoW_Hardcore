@@ -31,7 +31,6 @@ function duo_rules:Unregister()
 		duo_rules.timer_handle:Cancel()
 	end
 	duo_rules.accumulated_warn_time = 0
-	duo_rules.fail_function_executor = nil
 end
 
 function duo_rules:Warn()

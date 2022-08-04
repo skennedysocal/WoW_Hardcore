@@ -22,7 +22,6 @@ end
 function grounded_achievement:Unregister()
 	grounded_achievement:UnregisterEvent("PLAYER_CONTROL_LOST")
 	grounded_achievement:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-	grounded_achievement.fail_function_executor = nil
 end
 
 -- Register Definitions

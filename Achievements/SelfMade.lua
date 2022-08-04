@@ -18,7 +18,6 @@ end
 
 function self_made_achievement:Unregister()
 	self_made_achievement:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED")
-	self_made_achievement.fail_function_executor = nil
 end
 local function isSelfCreated(...)
 	for i = 1, select("#", ...) do

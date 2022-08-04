@@ -18,7 +18,6 @@ end
 
 function solitary_struggle_achievement:Unregister()
 	solitary_struggle_achievement:UnregisterEvent("GROUP_ROSTER_UPDATE")
-	solitary_struggle_achievement.fail_function_executor = nil
 end
 
 -- Register Definitions

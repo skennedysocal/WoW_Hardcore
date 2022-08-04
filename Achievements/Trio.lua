@@ -38,7 +38,6 @@ function trio_rules:Unregister()
 		trio_rules.timer_handle:Cancel()
 	end
 	trio_rules.accumulated_warn_time = 0
-	trio_rules.fail_function_executor = nil
 end
 
 function trio_rules:Warn()

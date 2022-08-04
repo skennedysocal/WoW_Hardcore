@@ -26,7 +26,6 @@ end
 
 function imp_master_achievement:Unregister()
 	imp_master_achievement:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-	imp_master_achievement.fail_function_executor = nil
 end
 
 -- Register Definitions

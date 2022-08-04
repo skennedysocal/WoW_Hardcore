@@ -26,7 +26,6 @@ function ephemeral_achievement:Register(fail_function_executor)
 end
 
 function ephemeral_achievement:Unregister()
-	ephemeral_achievement.fail_function_executor = nil
 end
 
 -- Register Definitions

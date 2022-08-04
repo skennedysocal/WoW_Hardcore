@@ -18,7 +18,6 @@ end
 
 function power_from_within_achievement:Unregister()
 	power_from_within_achievement:UnregisterEvent("UNIT_AURA")
-	power_from_within_achievement.fail_function_executor = nil
 end
 
 -- Register Definitions

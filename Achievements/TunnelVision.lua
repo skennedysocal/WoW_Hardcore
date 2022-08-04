@@ -20,7 +20,6 @@ end
 
 function tunnel_vision_achievement:Unregister()
 	tunnel_vision_achievement.timer_handle:Cancel()
-	tunnel_vision_achievement.fail_function_executor = nil
 end
 
 -- Register Definitions

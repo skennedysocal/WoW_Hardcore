@@ -42,7 +42,6 @@ end
 
 function totemic_misery_achievement:Unregister()
 	totemic_misery_achievement:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-	totemic_misery_achievement.fail_function_executor = nil
 end
 
 -- Register Definitions

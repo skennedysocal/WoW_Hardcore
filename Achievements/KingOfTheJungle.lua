@@ -18,7 +18,6 @@ end
 
 function king_of_the_jungle_achievement:Unregister()
 	king_of_the_jungle_achievement:UnregisterEvent("PLAYER_LEVEL_UP")
-	king_of_the_jungle_achievement.fail_function_executor = nil
 end
 
 -- Register Definitions

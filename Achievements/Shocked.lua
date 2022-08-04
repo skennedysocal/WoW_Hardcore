@@ -19,7 +19,6 @@ end
 
 function shocked_achievement:Unregister()
 	shocked_achievement:UnregisterEvent("UNIT_SPELLCAST_START")
-	shocked_achievement.fail_function_executor = nil
 end
 
 function shocked_achievement:GatherBlackList()

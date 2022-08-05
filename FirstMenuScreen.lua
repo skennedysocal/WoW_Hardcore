@@ -100,7 +100,7 @@ function ShowFirstMenu(_hardcore_character, _failure_function_executor)
 		btn_container_frame:AddChild(title)
 
 		local description = AceGUI:Create("InteractiveLabel")
-		description:SetWidth(550)
+		description:SetWidth(520)
 		description:SetFont("", 16)
 		description:SetText(achievement.description)
 		description:SetPoint("BOTTOM", 200, 5)
@@ -171,9 +171,9 @@ function ShowFirstMenu(_hardcore_character, _failure_function_executor)
 		_scroll_frame:AddChild(title)
 
 		local first_menu_description = AceGUI:Create("Label")
-		first_menu_description:SetWidth(700)
+		first_menu_description:SetWidth(620)
 		first_menu_description:SetText(
-			"1. For new runs, all players need to start with the new Hardcore addon. Otherwise one of you needs to record.\n2. You must choose a combo that spawns in the same starting location (unless you can find a way to travel to other players at level 1).\n3. You must stay in the same zone together eg Darkshore (unless you are a Druid going to Moonglade to complete essential class quests). \n4. You must be logged on together at the same time even if not questing.\n5. You are Soulbound and share one life. If one of you dies, the other/s must fall on the sword and the run is over.\n6. You can trade any solo self found items or crafted items to each other including conjurables and gold.\n\n\n\n\n"
+			"1. For new runs, all players need to start with the new Hardcore addon.\n2. You must choose a combo that spawns in the same starting location (unless you can find a way to travel to other players at level 1).\n3. You must stay in the same zone together eg Darkshore (unless you are a Druid going to Moonglade to complete essential class quests). \n4. You must be logged on together at the same time even if not questing.\n5. You are Soulbound and share one life. If one of you dies, the other/s must fall on the sword and the run is over.\n6. You can trade any solo self found items or crafted items to each other including conjurables and gold.\n\n\n\n\n"
 		)
 		first_menu_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
 		first_menu_description:SetPoint("TOP", 2, 5)
@@ -277,6 +277,11 @@ function ShowFirstMenu(_hardcore_character, _failure_function_executor)
 				end
 			end
 		end
+		local bottom_buffer = AceGUI:Create("SimpleGroup")
+		bottom_buffer:SetWidth(1)
+		bottom_buffer:SetHeight(5)
+		bottom_buffer:SetLayout("Flow")
+		_scroll_frame:AddChild(bottom_buffer)
 	end
 
 	tabcontainer = AceGUI:Create("TabGroup") -- "InlineGroup" is also good

@@ -21,6 +21,7 @@ Achievements/Duo.lua
 Achievements/Trio.lua
 #Begin achievement modules
 Achievements/Arcanist.lua
+Achievements/AnimalFriend.lua
 Achievements/Berserker.lua
 Achievements/Bloodbath.lua
 Achievements/Cyromancer.lua
@@ -30,6 +31,7 @@ Achievements/Felfire.lua
 Achievements/Grounded.lua
 Achievements/Hammertime.lua
 Achievements/Homebound.lua
+Achievements/Humanist.lua
 Achievements/ICanSeeYou.lua
 Achievements/ImpMaster.lua
 Achievements/KingOfTheJungle.lua

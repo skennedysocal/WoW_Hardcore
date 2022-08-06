@@ -25,8 +25,7 @@ function ephemeral_achievement:Register(fail_function_executor)
 	ephemeral_achievement.fail_function_executor = fail_function_executor
 end
 
-function ephemeral_achievement:Unregister()
-end
+function ephemeral_achievement:Unregister() end
 
 -- Register Definitions
 ephemeral_achievement:SetScript("OnEvent", function(self, event, ...)

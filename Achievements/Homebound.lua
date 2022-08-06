@@ -2,54 +2,23 @@ local _G = _G
 local homebound_achievement = CreateFrame("Frame")
 _G.achievements.Homebound = homebound_achievement
 
-local kalimdor_zones = {
-	"Ashenvale",
-	"Desolace",
-	"Azshara",
-	"The Barrens",
-	"Dustwallow Marsh",
-	"Un'Goro Crater",
-	"Feralas",
-	"Tanaris",
-	"Onyxia's Lair",
-	"Winterspring",
-	"Felwood",
-	"Stonetalon Mountains",
-	"Moonglade",
-	"Thousand Needles",
-	"Silithus",
-	"Darkshore",
-	"Mulgore",
-	"Durotar",
-	"Teldrassil",
-	"The Veiled Sea",
-	"Caverns of Time",
-}
-local eastern_kingdoms_zones = {
-	"Alterac Mountains",
-	"Strangethorn Vale",
-	"Hillsbrad Foothills",
-	"The Hinterlands",
-	"Searing Gorge",
-	"Badlands",
-	"Arathi Highlands",
-	"Blasted Lands",
-	"Duskwood",
-	"Swamp of Sorrows",
-	"Western Plaguelands",
-	"Eastern Plaguelands",
-	"Wetlands",
-	"Burning Steppes",
-	"Wetlands",
-	"Redridge Mountains",
-	"Silverpine Forest",
-	"Loch Modan",
-	"Tirisfal Glades",
-	"Blackrock Mountain",
-	"Deadwind Pass",
-	"Dun Morogh",
-	"Elwynn Forest",
-}
+local function getContinent()
+	local mapID = C_Map.GetBestMapForUnit("player")
+	if mapID then
+		local info = C_Map.GetMapInfo(mapID)
+		if info then
+			while info["mapType"] and info["mapType"] > 2 do
+				info = C_Map.GetMapInfo(info["parentMapID"])
+			end
+			if info["mapType"] == 2 then
+				return info["mapID"]
+			end
+		end
+	end
+end
+
+local kalimdor_id = 1414
+local eastern_kingdoms_id = 1415
 
 -- General info
 homebound_achievement.name = "Homebound"
@@ -81,11 +50,9 @@ homebound_achievement:SetScript("OnEvent", function(self, event, ...)
 			or race_english == "Dwarf"
 			or race_english == "Gnome"
 		then
-			for i, bad_zone in ipairs(kalimdor_zones) do
-				if bad_zone == current_zone then
-					Hardcore:Print("Detected entering zone " .. current_zone .. ".")
-					homebound_achievement.fail_function_executor.Fail(homebound_achievement.name)
-				end
+			if getContinent() == kalimdor_id then
+				Hardcore:Print("Detected entering zone " .. current_zone .. ".")
+				homebound_achievement.fail_function_executor.Fail(homebound_achievement.name)
 			end
 		end
 
@@ -95,11 +62,9 @@ homebound_achievement:SetScript("OnEvent", function(self, event, ...)
 			or race_english == "Tauren"
 			or race_english == "Troll"
 		then
-			for i, bad_zone in ipairs(eastern_kingdoms_zones) do
-				if bad_zone == current_zone then
-					Hardcore:Print("Detected entering zone " .. current_zone .. ".")
-					homebound_achievement.fail_function_executor.Fail(homebound_achievement.name)
-				end
+			if getContinent() == eastern_kingdoms_id then
+				Hardcore:Print("Detected entering zone " .. current_zone .. ".")
+				homebound_achievement.fail_function_executor.Fail(homebound_achievement.name)
 			end
 		end
 	end

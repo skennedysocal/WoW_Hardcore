@@ -228,6 +228,19 @@ Hardcore.ALERT_STYLES = ALERT_STYLES
 
 Hardcore_Frame:ApplyBackdrop()
 
+function FailureFunction(achievement_name)
+  for i,v in ipairs(Hardcore_Character.achievements) do
+    if  (v == achievement_name) then
+      table.remove(Hardcore_Character.achievements, i)
+      _G.achievements[achievement_name]:Unregister()
+      Hardcore:Print("Failed " .. achievement_name)
+    end
+  end
+
+end
+
+local failure_function_executor = {Fail = FailureFunction}
+
 --[[ Command line handler ]]--
 
 local function SlashHandler(msg, editbox)
@@ -258,6 +271,19 @@ local function SlashHandler(msg, editbox)
 			Hardcore:Monitor("Monitoring malicious users enabled.")
 		else
 			Hardcore:Print("Monitoring malicious users disabled.")
+		end
+	elseif cmd == "quitachievement" then
+		local achievement_to_quit = ""
+		for substring in args:gmatch("%S+") do
+			achievement_to_quit = substring
+		end
+		if _G.achievements ~= nil and _G.achievements[achievement_to_quit] ~= nil  then
+		  for i, achievement in ipairs(Hardcore_Character.achievements) do
+		    if achievement == achievement_to_quit then
+		      Hardcore:Print("Successfuly quit " .. achievement .. ".")
+		      failure_function_executor.Fail(achievement)
+		    end
+		  end
 		end
 	elseif cmd == "griefalert" then
 		local grief_alert_option = ""
@@ -376,19 +402,6 @@ function Hardcore:ForceResetSavedVariables()
 		Hardcore_Character[v.key] = v.initial_data
 	end
 end
-
-function FailureFunction(achievement_name)
-  for i,v in ipairs(Hardcore_Character.achievements) do
-    if  (v == achievement_name) then
-      table.remove(Hardcore_Character.achievements, i)
-      _G.achievements[achievement_name]:Unregister()
-      Hardcore:Print("Failed " .. achievement_name)
-    end
-  end
-
-end
-
-local failure_function_executor = {Fail = FailureFunction}
 
 --[[ Override default WoW UI ]]--
 

@@ -63,6 +63,8 @@ Hardcore_Character = {
 
 --[[ Local variables ]]--
 local debug = false
+local loaded_inspect_frame = false
+local other_hardcore_character_cache = {} -- dict of player name & server to character data
 local pulses = {}
 local alert_msg_time = {
 	PULSE = {},
@@ -97,11 +99,14 @@ local COMM_DELAY = 5
 local COMM_BATCH_SIZE = 4
 local COMM_COMMAND_DELIM = "$"
 local COMM_FIELD_DELIM = "|"
+local COMM_SUBFIELD_DELIM = "~"
 local COMM_RECORD_DELIM = "^"
 local COMM_COMMANDS = {
 	"PULSE",
 	"ADD", -- depreciated, we can only handle receiving
-	"DEAD" -- new death command
+	"DEAD",-- new death command
+	"CHARACTER_INFO",-- new death command
+	"REQUEST_CHARACTER_INFO",-- new death command
 }
 local COMM_SPAM_THRESHOLD = { -- msgs received within durations (s) are flagged as spam
 	PULSE = 3,
@@ -499,6 +504,10 @@ function Hardcore:PLAYER_LOGIN()
 	self:RegisterEvent("UNIT_SPELLCAST_STOP")
 	self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 
+	-- For inspecting other player's status
+	self:RegisterEvent("INSPECT_READY")
+	self:RegisterEvent("UNIT_TARGET")
+
 	Hardcore:InitializeSavedVariables()
 
 	-- different guid means new character with the same name
@@ -508,7 +517,7 @@ function Hardcore:PLAYER_LOGIN()
 
 	-- cache player name
 	PLAYER_NAME, _ = UnitName("player")
-  PLAYERGUID = UnitGUID("player")
+	PLAYERGUID = UnitGUID("player")
 
 	-- Show recording reminder
 	Hardcore:RecordReminder()
@@ -544,6 +553,14 @@ function Hardcore:QUEST_ACCEPTED(_, questID)
 	end
 end
 
+function Hardcore:UNIT_TARGET(unit_id)
+  if UnitIsPlayer("target") then
+    if UnitIsFriend("player","target") then
+      Hardcore:RequestCharacterData(UnitName("target"))
+    end
+  end
+end
+
 function Hardcore:QUEST_TURNED_IN(questID)
 	if questID == 4041 then
 		GiveVidereWarning()
@@ -571,6 +588,46 @@ function Hardcore:UNIT_SPELLCAST_START(...)
 		end
 	end
 end
+
+function Hardcore:INSPECT_READY(...)
+  if loaded_inspect_frame == false then
+    loaded_inspect_frame = true
+    local ITabName = "HC"
+    local ITabID = InspectFrame.numTabs + 1
+    local ITab = CreateFrame("Button", "$parentTab" .. ITabID, InspectFrame, "CharacterFrameTabButtonTemplate", ITabName)
+    PanelTemplates_SetNumTabs(InspectFrame, ITabID)
+    ITab:SetPoint("LEFT", "$parentTab" .. (ITabID - 1), "RIGHT", -16, 0)
+    ITab:SetText(ITabName)
+  end
+
+  hooksecurefunc(_G["InspectHonorFrame"], "Show",function(self)
+    HideInspectHC()
+  end)
+
+  hooksecurefunc(_G["InspectPaperDollFrame"], "Show",function(self)
+    HideInspectHC()
+  end)
+
+  hooksecurefunc("CharacterFrameTab_OnClick",function(self)
+    _G["InspectPaperDollFrame"]:Hide()
+    _G["InspectHonorFrame"]:Hide()
+
+    target_name = UnitName("target")
+    if _other_hardcore_character_cache_[target_name] ~= nil then
+      ShowInspectHC(_other_hardcore_character_cache_[target_name], target_name, _other_hardcore_character_cache_[target_name].version)
+    else
+      local _default_hardcore_character = {
+	  achievements = {},
+	  party_mode = "Solo",
+	  team = {},
+	  first_recorded = -1,
+	  version = "?",
+      }
+      ShowInspectHC(_default_hardcore_character, target_name, _default_hardcore_character.version)
+    end
+  end);
+end
+
 
 function Hardcore:UNIT_SPELLCAST_STOP(...)
 	local unit, _, spell_id, _, _ = ...
@@ -912,6 +969,26 @@ function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
 	if COMM_NAME == prefix then
 		-- Get the command
 		local command, data = string.split(COMM_COMMAND_DELIM, datastr)
+		if command == COMM_COMMANDS[5] then -- Received request for hc character data
+		    local name, _ = string.split("-", sender)
+		    other_hardcore_character_cache[name] = data
+		    Hardcore:SendCharacterData(name)
+		  return
+		end
+		if command == COMM_COMMANDS[4] then -- Received hc character data
+		  local name, _ = string.split("-", sender)
+		  local version_str, creation_time, achievements_str, _, party_mode_str, _, _, team_str = string.split(COMM_FIELD_DELIM, data)
+		  local achievements_l = {string.split(COMM_SUBFIELD_DELIM, achievements_str)}
+		  local team_l = {string.split(COMM_SUBFIELD_DELIM, team_str)}
+		  other_hardcore_character_cache[name] = {
+		    first_recorded = creation_time,
+		    achievements = achievements_l,
+		    party_mode = party_mode_str,
+		    version = version_str,
+		    team = team_l,
+		  }
+		  return
+		end
 		if DEPRECATED_COMMANDS[command] or alert_msg_time[command] == nil then return end
 		if alert_msg_time[command][sender] and (time() - alert_msg_time[command][sender] < COMM_SPAM_THRESHOLD[command]) then
 			local debug_info = {command, data, sender}
@@ -1547,6 +1624,45 @@ function Hardcore:InitiatePulse()
 			CTL:SendAddonMessage("BULK", COMM_NAME, commMessage, "GUILD")
 		end
 	end)
+end
+
+function Hardcore:RequestCharacterData(dest)
+		if CTL then
+			local commMessage = COMM_COMMANDS[5] .. COMM_COMMAND_DELIM .. ""
+			CTL:SendAddonMessage("ALERT", COMM_NAME, commMessage, "WHISPER", dest)
+		end
+end
+
+function Hardcore:SendCharacterData(dest)
+		if CTL then
+			local commMessage = COMM_COMMANDS[4] .. COMM_COMMAND_DELIM
+			commMessage = commMessage .. GetAddOnMetadata("Hardcore", "Version") .. COMM_FIELD_DELIM -- Add Version
+			if Hardcore_Character.first_recorded ~= nil and Hardcore_Character.first_recorded ~= -1 then
+			  commMessage = commMessage .. Hardcore_Character.first_recorded .. COMM_FIELD_DELIM -- Add creation time
+			else
+			  commMessage = commMessage .. "-1" .. COMM_FIELD_DELIM -- Add unknown creation time
+			end
+
+			for i,v in ipairs(Hardcore_Character.achievements) do
+			  commMessage = commMessage .. v .. COMM_SUBFIELD_DELIM -- Add unknown creation time
+			end
+
+			commMessage = commMessage .. COMM_FIELD_DELIM .. COMM_FIELD_DELIM
+
+			if Hardcore_Character.party_mode ~= nil then
+			  commMessage = commMessage .. Hardcore_Character.party_mode .. COMM_FIELD_DELIM -- Add unknown creation time
+			else
+			  commMessage = commMessage .. "?" .. COMM_SUBFIELD_DELIM -- Add unknown creation time
+			end
+
+			commMessage = commMessage .. COMM_FIELD_DELIM
+			commMessage = commMessage .. COMM_FIELD_DELIM
+
+			for i,v in ipairs(Hardcore_Character.team) do
+			  commMessage = commMessage .. v .. COMM_SUBFIELD_DELIM -- Add unknown creation time
+			end
+			CTL:SendAddonMessage("ALERT", COMM_NAME, commMessage, "WHISPER", dest)
+		end
 end
 
 function Hardcore:InitiatePulseCheck()

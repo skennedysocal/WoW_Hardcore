@@ -52,7 +52,7 @@ hooksecurefunc(CharacterFrame, "Hide", function(self, button)
 	HideCharacterHC()
 end)
 
-function UpdateCharacterHC(_hardcore_character)
+function UpdateCharacterHC(_hardcore_character, _player_name, _version)
 	f2:ReleaseChildren()
 	if _hardcore_character == nil then
 		return
@@ -74,15 +74,14 @@ function UpdateCharacterHC(_hardcore_character)
 	local character_name = AceGUI:Create("HardcoreClassTitleLabel")
 	character_name:SetRelativeWidth(1.0)
 	character_name:SetHeight(60)
-	local player_name, _ = UnitName("player")
-	character_name:SetText("Character Name: " .. player_name)
+	character_name:SetText("Character Name: " .. _player_name)
 	character_name:SetFont("Fonts\\FRIZQT__.TTF", 12)
 	character_meta_data_container:AddChild(character_name)
 
 	local version_name = AceGUI:Create("HardcoreClassTitleLabel")
 	version_name:SetRelativeWidth(1.0)
 	version_name:SetHeight(60)
-	local version = GetAddOnMetadata("Hardcore", "Version")
+	local version = _version
 	version_name:SetText("Addon version: " .. version)
 	version_name:SetFont("Fonts\\FRIZQT__.TTF", 12)
 	character_meta_data_container:AddChild(version_name)
@@ -167,13 +166,29 @@ function UpdateCharacterHC(_hardcore_character)
 end
 
 function ShowCharacterHC(_hardcore_character)
-	UpdateCharacterHC(_hardcore_character)
+	Panel:SetParent(CharacterFrame)
+	UpdateCharacterHC(_hardcore_character, UnitName("player"), GetAddOnMetadata("Hardcore", "Version"))
 	Panel:Show()
 	f:Show()
 	f2:Show()
 end
 
 function HideCharacterHC()
+	Panel:Hide()
+	f:Hide()
+	f2:Hide()
+	f2:ReleaseChildren()
+end
+
+function ShowInspectHC(_hardcore_character, other_name, version)
+	Panel:SetParent(InspectFrame)
+	UpdateCharacterHC(_hardcore_character, other_name, version)
+	Panel:Show()
+	f:Show()
+	f2:Show()
+end
+
+function HideInspectHC()
 	Panel:Hide()
 	f:Hide()
 	f2:Hide()

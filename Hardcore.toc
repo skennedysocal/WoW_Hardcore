@@ -24,6 +24,7 @@ Achievements/Arcanist.lua
 Achievements/AnimalFriend.lua
 Achievements/Berserker.lua
 Achievements/Bloodbath.lua
+Achievements/CloseCombat.lua
 Achievements/Cyromancer.lua
 Achievements/DruidOfTheClaw.lua
 Achievements/Ephemeral.lua
@@ -48,6 +49,7 @@ Achievements/Nudist.lua
 Achievements/Pacifist.lua
 Achievements/PowerFromWithin.lua
 Achievements/Pyromancer.lua
+Achievements/Speedrunner.lua
 Achievements/SelfMade.lua
 Achievements/ShadowEmbrace.lua
 Achievements/Shivved.lua
@@ -66,5 +68,6 @@ Achievements/VoidServant.lua
 #End achievement modules
 
 CharacterStatusScreen.lua
+InspectStatusScreen.lua
 FirstMenuScreen.lua
 Hardcore.lua

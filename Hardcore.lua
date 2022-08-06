@@ -58,6 +58,7 @@ Hardcore_Character = {
 	achievements = {},
 	party_mode = "Solo",
 	team = {},
+	first_recorded = -1,
 }
 
 --[[ Local variables ]]--
@@ -353,6 +354,7 @@ local saved_variable_meta = {
 	{ key = "achievements", initial_data = {} },
 	{ key = "party_mode", initial_data = "Solo" },
 	{ key = "team", initial_data = {} },
+	{ key = "first_recorded", initial_data = -1 },
 }
 
 --[[ Post-utility functions]]--
@@ -418,6 +420,7 @@ function Hardcore:PLAYER_LOGIN()
 
 	-- Show the first menu screen.  Requires short delay
 	if (UnitLevel("player") < 2) then
+	  Hardcore_Character.first_recorded = GetServerTime()
 	  C_Timer.After(1.0, function()
 	    ShowFirstMenu(Hardcore_Character, failure_function_executor)
 	  end)
@@ -435,7 +438,7 @@ function Hardcore:PLAYER_LOGIN()
 	end
 	for i,v in ipairs(Hardcore_Character.achievements) do
 	  if (_G.achievements[v] ~= nil) then
-	    _G.achievements[v]:Register(failure_function_executor)
+	    _G.achievements[v]:Register(failure_function_executor, Hardcore_Character)
 	  end
 	end
 

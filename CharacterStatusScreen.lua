@@ -113,6 +113,17 @@ function UpdateCharacterHC(_hardcore_character)
 	version_name:SetFont("Fonts\\FRIZQT__.TTF", 12)
 	character_meta_data_container:AddChild(team_title)
 
+	local creation_date_label = AceGUI:Create("HardcoreClassTitleLabel")
+	creation_date_label:SetRelativeWidth(1.0)
+	creation_date_label:SetHeight(60)
+	local start_date = "?"
+	if _hardcore_character.first_recorded ~= nil and _hardcore_character.first_recorded ~= -1 then
+		start_date = date("%m/%d/%y", _hardcore_character.first_recorded)
+	end
+	creation_date_label:SetText("Started on " .. start_date)
+	version_name:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	character_meta_data_container:AddChild(creation_date_label)
+
 	local v_buffer = AceGUI:Create("Label")
 	v_buffer:SetRelativeWidth(1.0)
 	v_buffer:SetHeight(100)

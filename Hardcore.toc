@@ -68,5 +68,6 @@ Achievements/VoidServant.lua
 #End achievement modules
 
 CharacterStatusScreen.lua
+InspectStatusScreen.lua
 FirstMenuScreen.lua
 Hardcore.lua

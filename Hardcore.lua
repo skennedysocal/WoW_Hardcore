@@ -476,6 +476,8 @@ function Hardcore:PLAYER_LOGIN()
 	      _G["SkillFrame"]:Hide()
 	      _G["ReputationFrame"]:Hide()
 	      ShowCharacterHC(Hardcore_Character)
+	    elseif (name == "InspectFrameTab3") then
+	      return
 	    else
 	      HideCharacterHC()
 	    end
@@ -609,6 +611,10 @@ function Hardcore:INSPECT_READY(...)
   end)
 
   hooksecurefunc("CharacterFrameTab_OnClick",function(self)
+    local name = self:GetName()
+    if name ~= "InspectFrameTab3" then
+      return
+    end
     _G["InspectPaperDollFrame"]:Hide()
     _G["InspectHonorFrame"]:Hide()
 
@@ -628,7 +634,7 @@ function Hardcore:INSPECT_READY(...)
   end);
 
   hooksecurefunc(InspectFrame, "Hide", function(self, button)
-	  HideCharacterHC()
+	  HideInspectHC()
   end)
 end
 

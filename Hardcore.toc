@@ -24,6 +24,7 @@ Achievements/Arcanist.lua
 Achievements/AnimalFriend.lua
 Achievements/Berserker.lua
 Achievements/Bloodbath.lua
+Achievements/CloseCombat.lua
 Achievements/Cyromancer.lua
 Achievements/DruidOfTheClaw.lua
 Achievements/Ephemeral.lua

@@ -613,8 +613,8 @@ function Hardcore:INSPECT_READY(...)
     _G["InspectHonorFrame"]:Hide()
 
     target_name = UnitName("target")
-    if _other_hardcore_character_cache_[target_name] ~= nil then
-      ShowInspectHC(_other_hardcore_character_cache_[target_name], target_name, _other_hardcore_character_cache_[target_name].version)
+    if other_hardcore_character_cache[target_name] ~= nil then
+      ShowInspectHC(other_hardcore_character_cache[target_name], target_name, other_hardcore_character_cache[target_name].version)
     else
       local _default_hardcore_character = {
 	  achievements = {},
@@ -626,6 +626,10 @@ function Hardcore:INSPECT_READY(...)
       ShowInspectHC(_default_hardcore_character, target_name, _default_hardcore_character.version)
     end
   end);
+
+  hooksecurefunc(InspectFrame, "Hide", function(self, button)
+	  HideCharacterHC()
+  end)
 end
 
 

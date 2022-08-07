@@ -483,6 +483,12 @@ function Hardcore:PLAYER_LOGIN()
 	    end
 	end);
 
+	hooksecurefunc("CharacterFrame_ShowSubFrame", function(self, frameName)
+	    if name ~= "CharacterFrameTab6" then
+	      HideCharacterHC()
+	    end
+	end);
+
 	-- fires on first loading
 	self:RegisterEvent("PLAYER_UNGHOST")
 	self:RegisterEvent("PLAYER_ALIVE")

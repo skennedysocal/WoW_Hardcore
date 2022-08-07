@@ -617,6 +617,8 @@ function Hardcore:INSPECT_READY(...)
     local ITabID = InspectFrame.numTabs + 1
     local ITab = CreateFrame("Button", "$parentTab" .. ITabID, InspectFrame, "CharacterFrameTabButtonTemplate", ITabName)
     PanelTemplates_SetNumTabs(InspectFrame, ITabID)
+    PanelTemplates_SetTab(InspectFrame, 1);
+
     ITab:SetPoint("LEFT", "$parentTab" .. (ITabID - 1), "RIGHT", -16, 0)
     ITab:SetText(ITabName)
   end

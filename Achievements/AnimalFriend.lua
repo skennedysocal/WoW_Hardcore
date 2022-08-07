@@ -48,7 +48,7 @@ animal_friend_achievement:SetScript("OnEvent", function(self, event, ...)
 		if creature_name ~= nil and creature_type ~= nil then
 			if creature_type == "Beast" then
 				if UnitCanAttack("player", "mouseover") then
-					animal_friend_achievement.cache[UnitName("target")] = 1
+					animal_friend_achievement.cache[UnitName("mouseover")] = 1
 				end
 			end
 		end

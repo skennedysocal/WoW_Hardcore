@@ -640,6 +640,7 @@ function Hardcore:INSPECT_READY(...)
     if name ~= "InspectFrameTab3" then
       return
     end
+    PanelTemplates_SetTab(InspectFrame, 3);
     _G["InspectPaperDollFrame"]:Hide()
     _G["InspectHonorFrame"]:Hide()
 

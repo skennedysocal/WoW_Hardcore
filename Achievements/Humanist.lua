@@ -48,7 +48,7 @@ humanist_achievement:SetScript("OnEvent", function(self, event, ...)
 		if creature_name ~= nil and creature_type ~= nil then
 			if creature_type == "Humanoid" then
 				if UnitCanAttack("player", "mouseover") then
-					humanist_achievement.cache[UnitName("target")] = 1
+					humanist_achievement.cache[UnitName("mouseover")] = 1
 				end
 			end
 		end

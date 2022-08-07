@@ -69,8 +69,11 @@ function UpdateInspectHC(_hardcore_character, _player_name, _version)
 	local version_name = AceGUI:Create("HardcoreClassTitleLabel")
 	version_name:SetRelativeWidth(1.0)
 	version_name:SetHeight(60)
-	local version = _version
-	version_name:SetText("Addon version: " .. version)
+	if _version ~= nil then
+		version_name:SetText("Addon version: " .. _version)
+	else
+		version_name:SetText("Addon version: ?")
+	end
 	version_name:SetFont("Fonts\\FRIZQT__.TTF", 12)
 	character_meta_data_container:AddChild(version_name)
 
@@ -107,7 +110,11 @@ function UpdateInspectHC(_hardcore_character, _player_name, _version)
 	if _hardcore_character.first_recorded ~= nil and _hardcore_character.first_recorded ~= -1 then
 		start_date = date("%m/%d/%y", _hardcore_character.first_recorded)
 	end
-	creation_date_label:SetText("Started on " .. start_date)
+	if start_date ~= nil then
+		creation_date_label:SetText("Started on " .. start_date)
+	else
+		creation_date_label:SetText("Started on ?")
+	end
 	version_name:SetFont("Fonts\\FRIZQT__.TTF", 12)
 	character_meta_data_container:AddChild(creation_date_label)
 
@@ -163,7 +170,7 @@ function ShowInspectHC(_hardcore_character, other_name, version)
 	I_br:SetPoint("TOPLEFT", InspectFrame, "TOPLEFT", 258, -257)
 	I_f2:SetPoint("TOPLEFT", InspectFrame, "TOPLEFT", 40, -60)
 
-	UpdateCharacterHC(_hardcore_character, other_name, version, I_f2)
+	UpdateInspectHC(_hardcore_character, other_name, version, I_f2)
 	IPanel:Show()
 	I_f:Show()
 	I_f2:Show()

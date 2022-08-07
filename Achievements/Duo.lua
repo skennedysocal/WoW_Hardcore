@@ -70,7 +70,7 @@ function duo_rules:Check()
 	local found_member = false
 	member_str = ""
 	for i, id in ipairs(identifiers) do
-		local member_name = UnitName(identifiers)
+		local member_name = UnitName(id)
 		if member_name ~= nil then
 			if member_name == duo_rules.teammate_1 then
 				found_member = true
@@ -94,6 +94,11 @@ function duo_rules:Check()
 
 	local my_map = C_Map.GetBestMapForUnit("player")
 	local teammates_map = C_Map.GetBestMapForUnit(member_str)
+
+	if my_map == 80 or teammates_map == 80 then
+		duo_rules:ResetWarn()
+	end
+
 	if my_map ~= teammates_map then
 		Hardcore:Print("Duo check: Teammate is in another subzone")
 		duo_rules:Warn()

@@ -483,6 +483,12 @@ function Hardcore:PLAYER_LOGIN()
 	    end
 	end);
 
+	hooksecurefunc("CharacterFrame_ShowSubFrame", function(self, frameName)
+	    if name ~= "CharacterFrameTab6" then
+	      HideCharacterHC()
+	    end
+	end);
+
 	-- fires on first loading
 	self:RegisterEvent("PLAYER_UNGHOST")
 	self:RegisterEvent("PLAYER_ALIVE")
@@ -509,6 +515,7 @@ function Hardcore:PLAYER_LOGIN()
 	-- For inspecting other player's status
 	self:RegisterEvent("INSPECT_READY")
 	self:RegisterEvent("UNIT_TARGET")
+	self:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
 
 	Hardcore:InitializeSavedVariables()
 
@@ -555,12 +562,24 @@ function Hardcore:QUEST_ACCEPTED(_, questID)
 	end
 end
 
-function Hardcore:UNIT_TARGET(unit_id)
-  if UnitIsPlayer("target") then
-    if UnitIsFriend("player","target") then
-      Hardcore:RequestCharacterData(UnitName("target"))
+local function RequestHCDataIfValid(unit_id)
+  if UnitName(unit_id) == UnitName("player") then
+    if UnitIsPlayer(unit_id) then
+      if UnitIsFriend("player",unit_id) then
+	if UnitAffectingCombat("player") == false and UnitAffectingCombat(unit_id) == false then
+	  Hardcore:RequestCharacterData(UnitName(unit_id))
+	end
+      end
     end
   end
+end
+
+function Hardcore:UPDATE_MOUSEOVER_UNIT()
+  RequestHCDataIfValid("mouseover")
+end
+
+function Hardcore:UNIT_TARGET()
+  RequestHCDataIfValid("target")
 end
 
 function Hardcore:QUEST_TURNED_IN(questID)
@@ -598,23 +617,30 @@ function Hardcore:INSPECT_READY(...)
     local ITabID = InspectFrame.numTabs + 1
     local ITab = CreateFrame("Button", "$parentTab" .. ITabID, InspectFrame, "CharacterFrameTabButtonTemplate", ITabName)
     PanelTemplates_SetNumTabs(InspectFrame, ITabID)
+    PanelTemplates_SetTab(InspectFrame, 1);
+
     ITab:SetPoint("LEFT", "$parentTab" .. (ITabID - 1), "RIGHT", -16, 0)
     ITab:SetText(ITabName)
   end
 
-  hooksecurefunc(_G["InspectHonorFrame"], "Show",function(self)
-    HideInspectHC()
-  end)
+  if _G["InspectHonorFrame"] ~= nil then
+    hooksecurefunc(_G["InspectHonorFrame"], "Show",function(self)
+      HideInspectHC()
+    end)
+  end
 
-  hooksecurefunc(_G["InspectPaperDollFrame"], "Show",function(self)
-    HideInspectHC()
-  end)
+  if _G["InspectPaperDollFrame"] ~= nil then
+    hooksecurefunc(_G["InspectPaperDollFrame"], "Show",function(self)
+      HideInspectHC()
+    end)
+  end
 
   hooksecurefunc("CharacterFrameTab_OnClick",function(self)
     local name = self:GetName()
     if name ~= "InspectFrameTab3" then
       return
     end
+    PanelTemplates_SetTab(InspectFrame, 3);
     _G["InspectPaperDollFrame"]:Hide()
     _G["InspectHonorFrame"]:Hide()
 
@@ -989,10 +1015,16 @@ function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
 		  local name, _ = string.split("-", sender)
 		  local version_str, creation_time, achievements_str, _, party_mode_str, _, _, team_str = string.split(COMM_FIELD_DELIM, data)
 		  local achievements_l = {string.split(COMM_SUBFIELD_DELIM, achievements_str)}
+		  other_achievements_ds = {}
+		  for i,id in ipairs(achievements_l) do
+		    if _G.id_a[id] ~= nil then
+		      table.insert(other_achievements_ds, _G.id_a[id])
+		    end
+		  end
 		  local team_l = {string.split(COMM_SUBFIELD_DELIM, team_str)}
 		  other_hardcore_character_cache[name] = {
 		    first_recorded = creation_time,
-		    achievements = achievements_l,
+		    achievements = other_achievements_ds,
 		    party_mode = party_mode_str,
 		    version = version_str,
 		    team = team_l,
@@ -1654,7 +1686,7 @@ function Hardcore:SendCharacterData(dest)
 			end
 
 			for i,v in ipairs(Hardcore_Character.achievements) do
-			  commMessage = commMessage .. v .. COMM_SUBFIELD_DELIM -- Add unknown creation time
+			  commMessage = commMessage .. _G.a_id[v] .. COMM_SUBFIELD_DELIM -- Add unknown creation time
 			end
 
 			commMessage = commMessage .. COMM_FIELD_DELIM .. COMM_FIELD_DELIM

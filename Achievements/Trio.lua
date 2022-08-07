@@ -81,7 +81,7 @@ function trio_rules:Check()
 	local member_str_2 = ""
 
 	for i, id in ipairs(identifiers) do
-		local member_name = UnitName(identifiers)
+		local member_name = UnitName(id)
 		if member_name ~= nil then
 			if member_name == trio_rules.teammate_1 then
 				found_member_1 = true
@@ -109,6 +109,11 @@ function trio_rules:Check()
 	local my_map = C_Map.GetBestMapForUnit("player")
 	local teammates_map_1 = C_Map.GetBestMapForUnit(member_str_1)
 	local teammates_map_2 = C_Map.GetBestMapForUnit(member_str_2)
+
+	if my_map == 80 or teammates_map_1 == 80 or teammates_map_2 == 80 then
+		trio_rules:ResetWarn()
+	end
+
 	if my_map ~= teammates_map_1 or teammates_map_1 ~= teammates_map_2 or my_map ~= teammates_map_2 then
 		Hardcore:Print("Trio check: Teammate is in another subzone")
 		trio_rules:Warn()

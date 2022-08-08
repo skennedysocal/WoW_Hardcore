@@ -466,6 +466,16 @@ function Hardcore:PLAYER_LOGIN()
 	  end
 	end
 
+	_G["HardcoreCharacterTab"]:SetScript("OnClick", function(self, arg1)
+	      PanelTemplates_SetTab(CharacterFrame, 6);
+	      _G["HonorFrame"]:Hide()
+	      _G["PaperDollFrame"]:Hide()
+	      _G["PetPaperDollFrame"]:Hide()
+	      _G["SkillFrame"]:Hide()
+	      _G["ReputationFrame"]:Hide()
+	    ShowCharacterHC(Hardcore_Character)
+	end)
+
 	-- Adds HC character tab functionality 
 	hooksecurefunc("CharacterFrameTab_OnClick",function(self, button)
 	    local name = self:GetName()

@@ -16,6 +16,8 @@ local profession_names = {
 	"Leatherworking",
 	"Skinning",
 	"Tailoring",
+	"Jewelcrafting",
+	"Inscription",
 }
 
 -- General info

@@ -41,6 +41,12 @@ Hardcore_Settings = {
 	notify = true,
 	debug_log = {},
 	monitor = false,
+	filter_f_in_chat = false,
+	show_version_in_chat = false,
+	alert_frame_x_offset = 0,
+	alert_frame_y_offset = -150,
+	alert_frame_scale = 0.7,
+	show_minimap_mailbox_icon = false,
 }
 
 --[[ Character saved variables ]]--
@@ -224,6 +230,14 @@ local ALERT_STYLES = {
 		delay = 10,
 		alertSound = 8959
 	},
+	hc_sample = {
+		frame = Hardcore_Alert_Frame,
+		text = Hardcore_Alert_Text,
+		icon = Hardcore_Alert_Icon,
+		file = "alert-hc-red.blp",
+		delay = 30,
+		alertSound = 8959
+	},
 }
 Hardcore_Alert_Frame:SetScale(0.7)
 
@@ -295,50 +309,7 @@ local function SlashHandler(msg, editbox)
 		for substring in args:gmatch("%S+") do
 			grief_alert_option = substring
 		end
-		if grief_alert_option == "off" then
-			Hardcore_Character.grief_warning_conditions = GRIEF_WARNING_OFF
-			Hardcore:Print("Grief alert set to off.")
-		elseif grief_alert_option == "horde" then
-			if PLAYER_FACTION == "Horde" then
-				Hardcore_Character.grief_warning_conditions = GRIEF_WARNING_SAME_FACTION
-				Hardcore:Print("Grief alert set to same faction.")
-			else
-				Hardcore_Character.grief_warning_conditions = GRIEF_WARNING_ENEMY_FACTION
-				Hardcore:Print("Grief alert set to enemy faction.")
-			end
-		elseif grief_alert_option == "alliance" then
-			if PLAYER_FACTION == "Alliance" then
-				Hardcore_Character.grief_warning_conditions = GRIEF_WARNING_SAME_FACTION
-				Hardcore:Print("Grief alert set to same faction.")
-			else
-				Hardcore_Character.grief_warning_conditions = GRIEF_WARNING_ENEMY_FACTION
-				Hardcore:Print("Grief alert set to enemy faction.")
-			end
-		elseif grief_alert_option == "both" then
-			Hardcore_Character.grief_warning_conditions = GRIEF_WARNING_BOTH_FACTIONS
-			Hardcore:Print("Grief alert set to both factions.")
-		else
-			local grief_alert_setting_msg = ""
-			if Hardcore_Character.grief_warning_conditions == GRIEF_WARNING_OFF then
-				grief_alert_setting_msg = "off"
-			elseif Hardcore_Character.grief_warning_conditions == GRIEF_WARNING_SAME_FACTION then
-				if PLAYER_FACTION == "Alliance" then
-					grief_alert_setting_msg = "same faction (alliance)"
-				else
-					grief_alert_setting_msg = "same faction (horde)"
-				end
-			elseif Hardcore_Character.grief_warning_conditions == GRIEF_WARNING_ENEMY_FACTION then
-				if PLAYER_FACTION == "Alliance" then
-					grief_alert_setting_msg = "enemy faction (horde)"
-				else
-					grief_alert_setting_msg = "enemy faction (alliance)"
-				end
-			elseif Hardcore_Character.grief_warning_conditions == GRIEF_WARNING_BOTH_FACTIONS then
-				grief_alert_setting_msg = "both factions"
-			end
-			Hardcore:Print("Grief alert is currently set to: " .. grief_alert_setting_msg)
-			Hardcore:Print("|cff00ff00Grief alert options:|r off horde alliance both")
-		end
+		Hardcore:SetGriefAlertCondition(grief_alert_option)
 	-- Alert debug code
 	elseif cmd == "alert" and debug == true then
 		local head, tail = "", {}
@@ -449,6 +420,7 @@ function Hardcore:PLAYER_LOGIN()
 	PLAYER_GUID = UnitGUID("player")
 	PLAYER_FACTION, _ = UnitFactionGroup("player")
 	local PLAYER_LEVEL = UnitLevel("player")
+	Hardcore:ApplyAlertFrameSettings()
 
 	-- Register achievements
 	if Hardcore_Character.achievements == nil then
@@ -724,6 +696,11 @@ function Hardcore:PLAYER_ENTERING_WORLD()
 	PLAYER_NAME, _ = UnitName("player")
 	Hardcore:PrintBubbleHearthInfractions()
 	Hardcore:Monitor("Monitoring malicious users enabled.")
+
+	if Hardcore_Settings.show_minimap_mailbox_icon == false then
+	      MiniMapMailIcon:Hide()
+	      MiniMapMailBorder:Hide()
+	end
 
 	-- initialize addon communication
 	if (not C_ChatInfo.IsAddonMessagePrefixRegistered(COMM_NAME)) then
@@ -1155,6 +1132,11 @@ function Hardcore:Monitor(msg)
 	if true == Hardcore_Settings.monitor then
 		print("|cff00ffffHCMonitor|r: " .. (msg or ""))
 	end
+end
+
+function Hardcore:ApplyAlertFrameSettings()
+	Hardcore_Alert_Frame:SetScale(Hardcore_Settings.alert_frame_scale)
+	Hardcore_Alert_Frame:SetPoint("TOP", "UIParent", "TOP", Hardcore_Settings.alert_frame_x_offset / Hardcore_Settings.alert_frame_scale, Hardcore_Settings.alert_frame_y_offset / Hardcore_Settings.alert_frame_scale)
 end
 
 -- Alert UI
@@ -1852,6 +1834,290 @@ function Hardcore:HandleLegacyDeaths()
 		end
 	end
 end
+
+function Hardcore:ApplyAlertFrameSettings()
+	Hardcore_Alert_Frame:SetScale(Hardcore_Settings.alert_frame_scale)
+	Hardcore_Alert_Frame:SetPoint(
+		"TOP",
+		"UIParent",
+		"TOP",
+		Hardcore_Settings.alert_frame_x_offset / Hardcore_Settings.alert_frame_scale,
+		Hardcore_Settings.alert_frame_y_offset / Hardcore_Settings.alert_frame_scale
+	)
+end
+
+ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", function(frame, event, message, sender, ...)
+	if Hardcore_Settings.filter_f_in_chat then
+		if message == "f" or message == "F" then
+			return true, message, sender, ...
+		end
+	end
+	if Hardcore_Settings.show_version_in_chat then
+		if guild_versions[sender] then
+			message = "|cfffd9122[" .. guild_versions[sender] .. "]|r " .. message
+		end
+	end
+	return false, message, sender, ... -- don't hide this message
+	-- note that you must return *all* of the values that were passed to your filter, even ones you didn't change
+end)
+
+function Hardcore:SetGriefAlertCondition(grief_alert_option)
+	if grief_alert_option == "off" then
+		Hardcore_Character.grief_warning_conditions = GRIEF_WARNING_OFF
+		Hardcore:Print("Grief alert set to off.")
+	elseif grief_alert_option == "horde" then
+		if PLAYER_FACTION == "Horde" then
+			Hardcore_Character.grief_warning_conditions = GRIEF_WARNING_SAME_FACTION
+			Hardcore:Print("Grief alert set to same faction.")
+		else
+			Hardcore_Character.grief_warning_conditions = GRIEF_WARNING_ENEMY_FACTION
+			Hardcore:Print("Grief alert set to enemy faction.")
+		end
+	elseif grief_alert_option == "alliance" then
+		if PLAYER_FACTION == "Alliance" then
+			Hardcore_Character.grief_warning_conditions = GRIEF_WARNING_SAME_FACTION
+			Hardcore:Print("Grief alert set to same faction.")
+		else
+			Hardcore_Character.grief_warning_conditions = GRIEF_WARNING_ENEMY_FACTION
+			Hardcore:Print("Grief alert set to enemy faction.")
+		end
+	elseif grief_alert_option == "both" then
+		Hardcore_Character.grief_warning_conditions = GRIEF_WARNING_BOTH_FACTIONS
+		Hardcore:Print("Grief alert set to both factions.")
+	else
+		local grief_alert_setting_msg = ""
+		if Hardcore_Character.grief_warning_conditions == GRIEF_WARNING_OFF then
+			grief_alert_setting_msg = "off"
+		elseif Hardcore_Character.grief_warning_conditions == GRIEF_WARNING_SAME_FACTION then
+			if PLAYER_FACTION == "Alliance" then
+				grief_alert_setting_msg = "same faction (alliance)"
+			else
+				grief_alert_setting_msg = "same faction (horde)"
+			end
+		elseif Hardcore_Character.grief_warning_conditions == GRIEF_WARNING_ENEMY_FACTION then
+			if PLAYER_FACTION == "Alliance" then
+				grief_alert_setting_msg = "enemy faction (horde)"
+			else
+				grief_alert_setting_msg = "enemy faction (alliance)"
+			end
+		elseif Hardcore_Character.grief_warning_conditions == GRIEF_WARNING_BOTH_FACTIONS then
+			grief_alert_setting_msg = "both factions"
+		end
+		Hardcore:Print("Grief alert is currently set to: " .. grief_alert_setting_msg)
+		Hardcore:Print("|cff00ff00Grief alert options:|r off horde alliance both")
+	end
+end
+
+local options = {
+	name = "Hardcore",
+	handler = Hardcore,
+	type = "group",
+	args = {
+		alert_options_header = {
+			type = "group",
+			name = "Alerts",
+			order = 1,
+			inline = true,
+			args = {
+				death_alerts = {
+					type = "select",
+					name = "Death alerts",
+					desc = "Type of death alerts.",
+					values = {
+						off = "off",
+						on = "on",
+					},
+					get = function()
+						if Hardcore_Settings.notify then
+							return "on"
+						end
+						return "off"
+					end,
+					set = function(info, value)
+						Hardcore_Settings.notify = (value == "on")
+					end,
+					order = 2,
+				},
+				grief_alerts = {
+					type = "select",
+					name = "Grief alerts",
+					desc = "Type of grief alerts.",
+					values = {
+						off = "off",
+						alliance = "alliance",
+						horde = "horde",
+						both = "both",
+					},
+					get = function(info)
+						if Hardcore_Character.grief_warning_conditions == GRIEF_WARNING_OFF then
+							return "off"
+						elseif Hardcore_Character.grief_warning_conditions == GRIEF_WARNING_SAME_FACTION then
+							if PLAYER_FACTION == "Alliance" then
+								return "alliance"
+							else
+								return "horde"
+							end
+						elseif Hardcore_Character.grief_warning_conditions == GRIEF_WARNING_ENEMY_FACTION then
+							if PLAYER_FACTION == "Horde" then
+								return "alliance"
+							else
+								return "horde"
+							end
+						else
+							return "both"
+						end
+					end,
+					set = function(info, value)
+						Hardcore:SetGriefAlertCondition(value)
+					end,
+					order = 3,
+				},
+			},
+		},
+		alert_pos_group = {
+			type = "group",
+			name = "Alert position and scale",
+			inline = true,
+			order = 4,
+			args = {
+				alerts_x_pos = {
+					type = "range",
+					name = "X-offset",
+					desc = "Modify alert frame's x-offset.",
+					min = -100,
+					max = 100,
+					get = function()
+						return Hardcore_Settings.alert_frame_x_offset / 10
+					end,
+					set = function(info, value)
+						Hardcore_Settings.alert_frame_x_offset = value * 10
+						Hardcore:ApplyAlertFrameSettings()
+					end,
+					order = 4,
+				},
+				alerts_y_pos = {
+					type = "range",
+					name = "Y-offset",
+					desc = "Modify alert frame's y-offset.",
+					min = -100,
+					max = 100,
+					get = function()
+						return Hardcore_Settings.alert_frame_y_offset / 10
+					end,
+					set = function(info, value)
+						Hardcore_Settings.alert_frame_y_offset = value * 10
+						Hardcore:ApplyAlertFrameSettings()
+					end,
+					order = 4,
+				},
+				alerts_scale = {
+					type = "range",
+					name = "Scale",
+					desc = "Modify alert frame's scale.",
+					min = 0,
+					max = 2,
+					get = function()
+						return Hardcore_Settings.alert_frame_scale
+					end,
+					set = function(info, value)
+						Hardcore_Settings.alert_frame_scale = value
+						Hardcore:ApplyAlertFrameSettings()
+					end,
+					order = 4,
+				},
+				alert_sample = {
+					type = "execute",
+					name = "show",
+					desc = "Show sample alert.",
+					func = function(info, value)
+						Hardcore:ShowAlertFrame(Hardcore.ALERT_STYLES.hc_sample, "Sample alert frame text.")
+						Hardcore:ApplyAlertFrameSettings()
+					end,
+					order = 5,
+				},
+			},
+		},
+		chat_filter_header = {
+			type = "group",
+			name = "Chat filters",
+			order = 6,
+			inline = true,
+			args = {
+				f_in_chat_filter = {
+					type = "toggle",
+					name = "Filter F in chat",
+					desc = "Remove Fs in chat.",
+					get = function()
+						return Hardcore_Settings.filter_f_in_chat
+					end,
+					set = function()
+						Hardcore_Settings.filter_f_in_chat = not Hardcore_Settings.filter_f_in_chat
+					end,
+					order = 7,
+				},
+				version_in_chat_filter = {
+					type = "toggle",
+					name = "HC versions in chat",
+					desc = "Show player versions in chat.",
+					get = function()
+						return Hardcore_Settings.show_version_in_chat
+					end,
+					set = function()
+						Hardcore_Settings.show_version_in_chat = not Hardcore_Settings.show_version_in_chat
+					end,
+					order = 8,
+				},
+			},
+		},
+		miscellaneous_header = {
+			type = "group",
+			name = "Miscellaneous",
+			order = 9,
+			inline = true,
+			args = {
+				show_minimap_icon = {
+					type = "toggle",
+					name = "Show minimap mail icon",
+					desc = "Show minimap mail icon",
+					get = function()
+						return Hardcore_Settings.show_minimap_mailbox_icon
+					end,
+					set = function()
+						Hardcore_Settings.show_minimap_mailbox_icon = not Hardcore_Settings.show_minimap_mailbox_icon
+						if Hardcore_Settings.show_minimap_mailbox_icon == true then
+							MiniMapMailIcon:Show()
+							MiniMapMailBorder:Show()
+						else
+							MiniMapMailIcon:Hide()
+							MiniMapMailBorder:Hide()
+						end
+					end,
+					order = 10,
+				},
+			},
+		},
+		apply_defaults = {
+			type = "execute",
+			name = "Defaults",
+			desc = "Change back to default configuration.",
+			func = function()
+				Hardcore_Settings.show_version_in_chat = false
+				Hardcore_Settings.filter_f_in_chat = false
+				Hardcore_Settings.notify = true
+				Hardcore_Character.grief_warning_conditions = GRIEF_WARNING_BOTH_FACTIONS
+				Hardcore_Settings.alert_frame_x_offset = 0
+				Hardcore_Settings.alert_frame_y_offset = -150
+				Hardcore_Settings.alert_frame_scale = 0.7
+				Hardcore_Settings.show_minimap_mailbox_icon = false
+				Hardcore:ApplyAlertFrameSettings()
+			end,
+			order = 11,
+		},
+	},
+}
+
+LibStub("AceConfig-3.0"):RegisterOptionsTable("Hardcore", options)
+optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Hardcore", "Hardcore")
 
 --[[ Start Addon ]]--
 Hardcore:Startup()

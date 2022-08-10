@@ -192,6 +192,9 @@ function UpdateCharacterHC(_hardcore_character, _player_name, _version, frame_to
 	local start_date = "?"
 	if _hardcore_character.first_recorded ~= nil and _hardcore_character.first_recorded ~= -1 then
 		start_date = date("%m/%d/%y", _hardcore_character.first_recorded)
+		if start_date == nil then
+		  start_date = "?"
+		end
 	end
 	creation_date_label:SetText("Started on " .. start_date)
 	version_name:SetFont("Fonts\\FRIZQT__.TTF", 12)

@@ -545,9 +545,9 @@ function Hardcore:QUEST_ACCEPTED(_, questID)
 end
 
 local function RequestHCDataIfValid(unit_id)
-  if UnitName(unit_id) == UnitName("player") then
-    if UnitIsPlayer(unit_id) then
-      if UnitIsFriend("player",unit_id) then
+  if UnitIsPlayer(unit_id) then
+    if UnitIsFriend("player", unit_id) then
+      if other_hardcore_character_cache[UnitName(unit_id)] == nil or time() - other_hardcore_character_cache[UnitName(unit_id)].last_received > 30 then
 	if UnitAffectingCombat("player") == false and UnitAffectingCombat(unit_id) == false then
 	  Hardcore:RequestCharacterData(UnitName(unit_id))
 	end
@@ -994,7 +994,6 @@ function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
 		local command, data = string.split(COMM_COMMAND_DELIM, datastr)
 		if command == COMM_COMMANDS[5] then -- Received request for hc character data
 		    local name, _ = string.split("-", sender)
-		    other_hardcore_character_cache[name] = data
 		    Hardcore:SendCharacterData(name)
 		  return
 		end
@@ -1015,6 +1014,7 @@ function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
 		    party_mode = party_mode_str,
 		    version = version_str,
 		    team = team_l,
+		    last_received = time(),
 		  }
 		  return
 		end

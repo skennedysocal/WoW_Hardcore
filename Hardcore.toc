@@ -49,6 +49,7 @@ Achievements/Nudist.lua
 Achievements/Pacifist.lua
 Achievements/PowerFromWithin.lua
 Achievements/Pyromancer.lua
+Achievements/Scavenger.lua
 Achievements/Speedrunner.lua
 Achievements/SelfMade.lua
 Achievements/ShadowEmbrace.lua

@@ -47,6 +47,7 @@ _G.a_id = {
 	Vagrant = 43,
 	VoidServant = 44,
 	WhiteKnight = 45,
+	Scavenger = 46,
 }
 _G.id_a = {}
 for k, v in pairs(_G.a_id) do

@@ -12,8 +12,7 @@ ephemeral_achievement.description =
 
 -- Registers
 function ephemeral_achievement:Register(fail_function_executor)
-	ephemeral_achievement:RegisterEvent("UPDATE_INVENTORY_DURABILITY")
-
+	ephemeral_achievement:RegisterEvent("MERCHANT_SHOW")
 	MerchantRepairAllButton:SetScript("OnClick", function()
 		ephemeral_achievement.fail_function_executor.Fail(ephemeral_achievement.name)
 	end)
@@ -25,9 +24,15 @@ function ephemeral_achievement:Register(fail_function_executor)
 	ephemeral_achievement.fail_function_executor = fail_function_executor
 end
 
-function ephemeral_achievement:Unregister() end
+function ephemeral_achievement:Unregister()
+	ephemeral_achievement:UnregisterEvent("MERCHANT_SHOW")
+end
 
 -- Register Definitions
 ephemeral_achievement:SetScript("OnEvent", function(self, event, ...)
 	local arg = { ... }
+	if event == "MERCHANT_SHOW" then
+	  MerchantRepairAllButton:Hide()
+	  MerchantRepairItemButton:Hide()
+	end
 end)

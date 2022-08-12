@@ -2,7 +2,7 @@ local _G = _G
 local speedrunner_achievement = CreateFrame("Frame")
 _G.achievements.Speedrunner = speedrunner_achievement
 
-local in_game_limit_minutes = 100 * 60 --minutes
+local in_game_limit_seconds = 100 * 60 * 60 -- seconds
 local irl_time_limit = 8 * 7 * 24 * 60 * 60 -- 4838400 seconds
 local max_num_xp_bars = 1.0 --
 
@@ -47,8 +47,8 @@ speedrunner_achievement:SetScript("OnEvent", function(self, event, ...)
 		end
 		RequestTimePlayed()
 	elseif event == "TIME_PLAYED_MSG" then
-		local minutes_played = arg[1]
-		if minutes_played > in_game_limit_minutes then
+		local seconds_played = arg[1]
+		if seconds_played > in_game_limit_seconds then
 			Hardcore:Print("Exceeded game time limit of 100 hours.")
 			speedrunner_achievement.fail_function_executor.Fail(speedrunner_achievement.name)
 		end

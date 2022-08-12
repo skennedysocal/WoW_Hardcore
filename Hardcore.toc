@@ -35,6 +35,7 @@ Achievements/Homebound.lua
 Achievements/Humanist.lua
 Achievements/ICanSeeYou.lua
 Achievements/ImpMaster.lua
+Achievements/InsaneInTheMembrane.lua
 Achievements/KingOfTheJungle.lua
 Achievements/LoneWolf.lua
 Achievements/MortalPet.lua

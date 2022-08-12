@@ -1,5 +1,17 @@
+local CLASS_COLOR_BY_NAME = {
+	["Druid"] = "FF7C0A",
+	["Warlock"] = "8788EE",
+	["Warrior"] = "C69B6D",
+	["Mage"] = "3FC7EB",
+	["Hunter"] = "AAD372",
+	["Priest"] = "FFFFFF",
+	["Shaman"] = "0070DD",
+	["Paladin"] = "F48CBA",
+	["Rogue"] = "FFF468",
+	["General"] = "FFFFFF",
+}
 local AceGUI = LibStub("AceGUI-3.0")
-local ICON_SIZE = 40
+local ICON_SIZE = 39
 local TabName = "DummyHCTab"
 local TabID = CharacterFrame.numTabs + 1
 local Tab = CreateFrame("Button", "$parentTab" .. TabID, CharacterFrame, "CharacterFrameTabButtonTemplate", TabID)
@@ -45,8 +57,8 @@ Panel:SetPoint("CENTER", 0, 0)
 Panel:Hide()
 
 local f2 = AceGUI:Create("HardcoreFrameEmpty")
-f2:SetPoint("TOPLEFT", CharacterFrame, "TOPLEFT", 40, -60)
-f2:SetWidth(280)
+f2:SetPoint("TOPLEFT", CharacterFrame, "TOPLEFT", 8, -18)
+f2:SetWidth(360)
 f2:SetHeight(350)
 f2:Hide()
 
@@ -126,7 +138,7 @@ hooksecurefunc(CharacterFrame, "Hide", function(self, button)
 	TabGUI:Hide()
 end)
 
-function UpdateCharacterHC(_hardcore_character, _player_name, _version, frame_to_update)
+function UpdateCharacterHC(_hardcore_character, _player_name, _version, frame_to_update, _player_class, _player_level)
 	frame_to_update:ReleaseChildren()
 	if _hardcore_character == nil then
 		return
@@ -135,8 +147,9 @@ function UpdateCharacterHC(_hardcore_character, _player_name, _version, frame_to
 	local title = AceGUI:Create("HardcoreClassTitleLabel")
 	title:SetRelativeWidth(1.0)
 	title:SetHeight(60)
-	title:SetText("Classic Hardcore")
+	title:SetText("Hardcore")
 	title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 22)
+	title:SetColor(1,.82,0)
 	frame_to_update:AddChild(title)
 
 	local character_meta_data_container = AceGUI:Create("SimpleGroup")
@@ -148,17 +161,23 @@ function UpdateCharacterHC(_hardcore_character, _player_name, _version, frame_to
 	local character_name = AceGUI:Create("HardcoreClassTitleLabel")
 	character_name:SetRelativeWidth(1.0)
 	character_name:SetHeight(60)
-	character_name:SetText("Character Name: " .. _player_name)
-	character_name:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	character_name:SetText("\n" .. _player_name .. "\n\n")
+	character_name:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
 	character_meta_data_container:AddChild(character_name)
 
-	local version_name = AceGUI:Create("HardcoreClassTitleLabel")
-	version_name:SetRelativeWidth(1.0)
-	version_name:SetHeight(60)
-	local version = _version
-	version_name:SetText("Addon version: " .. version)
-	version_name:SetFont("Fonts\\FRIZQT__.TTF", 12)
-	character_meta_data_container:AddChild(version_name)
+	local level_title_text = AceGUI:Create("HardcoreClassTitleLabel")
+	level_title_text:SetRelativeWidth(1.0)
+	level_title_text:SetHeight(60)
+	local level_text = _player_level or "?"
+	local class_text
+	if _player_class ~= nil then
+	  class_text = "|c00" .. CLASS_COLOR_BY_NAME[_player_class] .. _player_class .. "|r"
+	else
+	  class_text = "?"
+	end
+	level_title_text:SetText("Level " .. level_text .. " " .. class_text)
+	level_title_text:SetFont("Fonts\\FRIZQT__.TTF", 10)
+	character_meta_data_container:AddChild(level_title_text)
 
 	local team_title = AceGUI:Create("HardcoreClassTitleLabel")
 	team_title:SetRelativeWidth(1.0)
@@ -183,7 +202,7 @@ function UpdateCharacterHC(_hardcore_character, _player_name, _version, frame_to
 		end
 	end
 	team_title:SetText(mode_type_str)
-	version_name:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	team_title:SetFont("Fonts\\FRIZQT__.TTF", 10)
 	character_meta_data_container:AddChild(team_title)
 
 	local creation_date_label = AceGUI:Create("HardcoreClassTitleLabel")
@@ -197,8 +216,17 @@ function UpdateCharacterHC(_hardcore_character, _player_name, _version, frame_to
 		end
 	end
 	creation_date_label:SetText("Started on " .. start_date)
-	version_name:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	creation_date_label:SetFont("Fonts\\FRIZQT__.TTF", 10)
 	character_meta_data_container:AddChild(creation_date_label)
+
+	local version_name = AceGUI:Create("HardcoreClassTitleLabel")
+	version_name:SetRelativeWidth(1.0)
+	version_name:SetHeight(60)
+	local version = _version
+	version_name:SetText("Addon version: " .. version)
+	version_name:SetFont("Fonts\\FRIZQT__.TTF", 10)
+	character_meta_data_container:AddChild(version_name)
+
 
 	local v_buffer = AceGUI:Create("Label")
 	v_buffer:SetRelativeWidth(1.0)
@@ -208,13 +236,13 @@ function UpdateCharacterHC(_hardcore_character, _player_name, _version, frame_to
 
 	local achievements_container = AceGUI:Create("SimpleGroup")
 	achievements_container:SetRelativeWidth(1.0)
-	achievements_container:SetHeight(100)
+	achievements_container:SetHeight(50)
 	achievements_container:SetLayout("Flow")
 	frame_to_update:AddChild(achievements_container)
 
 	local achievements_title = AceGUI:Create("HardcoreClassTitleLabel")
 	achievements_title:SetRelativeWidth(1.0)
-	achievements_title:SetHeight(60)
+	achievements_title:SetHeight(40)
 	achievements_title:SetText("Active Achievements")
 	achievements_title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 16)
 	achievements_container:AddChild(achievements_title)
@@ -275,7 +303,9 @@ function ShowCharacterHC(_hardcore_character)
 	TabGUI:SetFrameStrata("HIGH")
 
 	f2:ReleaseChildren()
-	UpdateCharacterHC(_hardcore_character, UnitName("player"), GetAddOnMetadata("Hardcore", "Version"), f2)
+
+	local class, _, _ = UnitClass("player")
+	UpdateCharacterHC(_hardcore_character, UnitName("player"), GetAddOnMetadata("Hardcore", "Version"), f2, class, UnitLevel("player"))
 	Panel:Show()
 	f:Show()
 	f2:Show()

@@ -253,6 +253,7 @@ function FailureFunction(achievement_name)
       table.remove(Hardcore_Character.achievements, i)
       _G.achievements[achievement_name]:Unregister()
       Hardcore:Print("Failed " .. achievement_name)
+      PlaySoundFile("Interface\\Addons\\Hardcore\\Media\\achievement_failure.ogg")
     end
   end
 

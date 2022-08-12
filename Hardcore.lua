@@ -427,18 +427,6 @@ function Hardcore:PLAYER_LOGIN()
 	if Hardcore_Character.achievements == nil then
 	  Hardcore_Character.achievements = {}
 	end
-	for i,v in ipairs(Hardcore_Character.achievements) do
-	  if (_G.achievements[v] ~= nil) then
-	    _G.achievements[v]:Register(failure_function_executor, Hardcore_Character)
-	  end
-	end
-
-	if Hardcore_Character.party_mode ~= nil then
-	  if (_G.extra_rules[Hardcore_Character.party_mode] ~= nil) then
-	    _G.extra_rules[Hardcore_Character.party_mode]:Register(failure_function_executor, Hardcore_Character)
-	  end
-	end
-
 	_G["HardcoreCharacterTab"]:SetScript("OnClick", function(self, arg1)
 	      PanelTemplates_SetTab(CharacterFrame, 6);
 	      _G["HonorFrame"]:Hide()
@@ -505,6 +493,18 @@ function Hardcore:PLAYER_LOGIN()
 	-- different guid means new character with the same name
 	if Hardcore_Character.guid ~= PLAYER_GUID then
 		Hardcore:ForceResetSavedVariables()
+	end
+
+	for i,v in ipairs(Hardcore_Character.achievements) do
+	  if (_G.achievements[v] ~= nil) then
+	    _G.achievements[v]:Register(failure_function_executor, Hardcore_Character)
+	  end
+	end
+
+	if Hardcore_Character.party_mode ~= nil then
+	  if (_G.extra_rules[Hardcore_Character.party_mode] ~= nil) then
+	    _G.extra_rules[Hardcore_Character.party_mode]:Register(failure_function_executor, Hardcore_Character)
+	  end
 	end
 
 	-- cache player name

@@ -9,6 +9,9 @@ felfire_achievement.class = "Warlock"
 felfire_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_felfire.blp"
 felfire_achievement.description =
 	"Complete the Hardcore challenge without at any point using an ability that deals damage other than Fire. Spells and Demon abilities that deal Shadow damage are not allowed. All items and consumables that deal damage other than Fire are allowed."
+felfire_achievement.forces = {
+  "ImpMaster",
+}
 
 -- Registers
 function felfire_achievement:Register(fail_function_executor)

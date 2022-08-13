@@ -9,6 +9,20 @@ bloodbath_achievement.class = "All"
 bloodbath_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_bloodbath.blp"
 bloodbath_achievement.description =
 	"Complete the Hardcore challenge without at any point completing a quest. No exceptions."
+local class_eng, _, _ = UnitClass("player")
+if class_eng == "Hunter" then
+  bloodbath_achievement.forces = {
+    "LoneWolf",
+  }
+elseif class_eng == "Warrior" then
+  bloodbath_achievement.forces = {
+    "TiedHands",
+  }
+elseif class_eng == "Shaman" then
+  bloodbath_achievement.forces = {
+    "TotemicMisery",
+  }
+end
 
 -- Registers
 function bloodbath_achievement:Register(fail_function_executor)

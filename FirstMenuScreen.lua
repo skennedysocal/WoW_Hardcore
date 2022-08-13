@@ -1,3 +1,4 @@
+local achievement_icons = {}
 local CLASSES = {
 	-- Classic:
 	[1] = "Warrior",
@@ -41,6 +42,7 @@ function ShowFirstMenu(_hardcore_character, _failure_function_executor)
 
 		-- Create a button
 		local achievement_icon = AceGUI:Create("Icon")
+		achievement_icons[achievement.name] = achievement_icon
 		achievement_icon:SetWidth(60)
 		achievement_icon:SetHeight(60)
 		achievement_icon:SetImage(achievement.icon_path)
@@ -77,6 +79,15 @@ function ShowFirstMenu(_hardcore_character, _failure_function_executor)
 					achievement_icon.image:SetVertexColor(1, 1, 1)
 					achievement:Register(_failure_function_executor, _hardcore_character)
 					Hardcore:Print("Added " .. achievement.name .. " challenge!")
+
+					if achievement.forces ~= nil then
+					  for i, other_a in ipairs(achievement.forces) do
+					    table.insert(_hardcore_character.achievements, _G.achievements[other_a].name)
+					    achievement_icons[other_a].image:SetVertexColor(1, 1, 1)
+					    _G.achievements[other_a]:Register(_failure_function_executor, _hardcore_character)
+					    Hardcore:Print("Added " .. _G.achievements[other_a].name .. " challenge!")
+					  end
+					end
 				end
 			end
 		end)
@@ -102,7 +113,22 @@ function ShowFirstMenu(_hardcore_character, _failure_function_executor)
 		local description = AceGUI:Create("InteractiveLabel")
 		description:SetWidth(520)
 		description:SetFont("", 16)
-		description:SetText(achievement.description)
+		local description_text = achievement.description
+		if achievement.forces ~= nil then
+		  description_text = description_text .. "\n |c00FFFF00Selecting ".. achievement.title .. " forces "
+		  for i=1,#achievement.forces do
+
+		    if i == #achievement.forces and #achievement.forces > 1 then
+		      description_text = description_text .. "and "
+		    end
+		    description_text = description_text .. _G.achievements[achievement.forces[i]].title
+		    if i~= #achievement.forces then
+		      description_text = description_text .. ", "
+		    end
+		  end
+		  description_text = description_text .. ".|r"
+		end
+		description:SetText(description_text)
 		description:SetPoint("BOTTOM", 200, 5)
 		btn_container_frame:AddChild(description)
 	end

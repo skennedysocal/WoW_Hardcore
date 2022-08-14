@@ -429,11 +429,12 @@ function Hardcore:PLAYER_LOGIN()
 	end
 	_G["HardcoreCharacterTab"]:SetScript("OnClick", function(self, arg1)
 	      PanelTemplates_SetTab(CharacterFrame, 6);
-	      _G["HonorFrame"]:Hide()
-	      _G["PaperDollFrame"]:Hide()
-	      _G["PetPaperDollFrame"]:Hide()
-	      _G["SkillFrame"]:Hide()
-	      _G["ReputationFrame"]:Hide()
+	      if _G["HonorFrame"] ~= nil then _G["HonorFrame"]:Hide() end
+	      if _G["PaperDollFrame"] ~= nil then _G["PaperDollFrame"]:Hide() end
+	      if _G["PetPaperDollFrame"] ~= nil then _G["PetPaperDollFrame"]:Hide() end
+	      if _G["HonorFrame"] ~= nil then _G["HonorFrame"]:Hide() end
+	      if _G["SkillFrame"] ~= nil then _G["SkillFrame"]:Hide() end
+	      if _G["ReputationFrame"] ~= nil then _G["ReputationFrame"]:Hide() end
 	    ShowCharacterHC(Hardcore_Character)
 	end)
 
@@ -441,13 +442,14 @@ function Hardcore:PLAYER_LOGIN()
 	hooksecurefunc("CharacterFrameTab_OnClick",function(self, button)
 	    local name = self:GetName()
 	    if (name == "CharacterFrameTab6") then
-	      _G["HonorFrame"]:Hide()
-	      _G["PaperDollFrame"]:Hide()
-	      _G["PetPaperDollFrame"]:Hide()
-	      _G["SkillFrame"]:Hide()
-	      _G["ReputationFrame"]:Hide()
+	      if _G["HonorFrame"] ~= nil then _G["HonorFrame"]:Hide() end
+	      if _G["PaperDollFrame"] ~= nil then _G["PaperDollFrame"]:Hide() end
+	      if _G["PetPaperDollFrame"] ~= nil then _G["PetPaperDollFrame"]:Hide() end
+	      if _G["HonorFrame"] ~= nil then _G["HonorFrame"]:Hide() end
+	      if _G["SkillFrame"] ~= nil then _G["SkillFrame"]:Hide() end
+	      if _G["ReputationFrame"] ~= nil then _G["ReputationFrame"]:Hide() end
 	      ShowCharacterHC(Hardcore_Character)
-	    elseif (name == "InspectFrameTab3") then
+	    elseif name == "InspectFrameTab3" or name == "InspectFrameTab4" then -- 3: era, 4:wotlk
 	      return
 	    else
 	      HideCharacterHC()
@@ -620,12 +622,12 @@ function Hardcore:INSPECT_READY(...)
 
   hooksecurefunc("CharacterFrameTab_OnClick",function(self)
     local name = self:GetName()
-    if name ~= "InspectFrameTab3" then
+    if name ~= "InspectFrameTab3" and name ~= "InspectFrameTab4" then  -- 3:era, 4:wotlk
       return
     end
     PanelTemplates_SetTab(InspectFrame, 3);
-    _G["InspectPaperDollFrame"]:Hide()
-    _G["InspectHonorFrame"]:Hide()
+    if _G["InspectPaperDollFrame"] ~= nil then _G["InspectPaperDollFrame"]:Hide() end
+    if _G["InspectHonorFrame"] ~= nil then _G["InspectHonorFrame"]:Hide() end
 
     target_name = UnitName("target")
     if other_hardcore_character_cache[target_name] ~= nil then

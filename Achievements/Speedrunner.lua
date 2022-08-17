@@ -16,15 +16,26 @@ speedrunner_achievement.description =
 
 -- Registers
 function speedrunner_achievement:Register(fail_function_executor, _hardcore_character)
+	speedrunner_achievement.fail_function_executor = fail_function_executor
 	if _hardcore_character.first_recorded == nil or _hardcore_character.first_recorded == -1 then
 		Hardcore:Print("Could not register for Speedrunner achievement; invalid creation time")
 		speedrunner_achievement.fail_function_executor = fail_function_executor
 		return
+	elseif GetServerTime() - _hardcore_character.first_recorded > irl_time_limit then
+		Hardcore:Print("Exceeded IRL time limit of 8 weeks.")
+		speedrunner_achievement.fail_function_executor.Fail(speedrunner_achievement.name)
+	end
+
+	if GetXPExhaustion() ~= nil then 
+	  local num_xp_bars = (GetXPExhaustion() / UnitXPMax("player")) * 20
+	  if num_xp_bars > max_num_xp_bars then
+		  Hardcore:Print("Exceeded max rested xp bubble limit of 1.")
+		  speedrunner_achievement.fail_function_executor.Fail(speedrunner_achievement.name)
+	  end
 	end
 	RequestTimePlayed()
 	speedrunner_achievement:RegisterEvent("PLAYER_LEVEL_UP")
 	speedrunner_achievement:RegisterEvent("TIME_PLAYED_MSG")
-	speedrunner_achievement.fail_function_executor = fail_function_executor
 end
 
 function speedrunner_achievement:Unregister()
@@ -36,15 +47,6 @@ end
 speedrunner_achievement:SetScript("OnEvent", function(self, event, ...)
 	local arg = { ... }
 	if event == "PLAYER_LEVEL_UP" then
-		local num_xp_bars = (GetXPExhaustion() / UnitXPMax("player")) * 20
-		if num_xp_bars > max_num_xp_bars then
-			Hardcore:Print("Exceeded max rested xp bar limit of 1.")
-			speedrunner_achievement.fail_function_executor.Fail(speedrunner_achievement.name)
-		end
-		if GetServerTime() - _hardcore_character.first_recorded > irl_time_limit then
-			Hardcore:Print("Exceeded IRL time limit of 8 weeks.")
-			speedrunner_achievement.fail_function_executor.Fail(speedrunner_achievement.name)
-		end
 		RequestTimePlayed()
 	elseif event == "TIME_PLAYED_MSG" then
 		local seconds_played = arg[1]

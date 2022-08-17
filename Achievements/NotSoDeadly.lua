@@ -17,7 +17,7 @@ not_so_deadly_achievement.title = "Not So Deadly"
 not_so_deadly_achievement.class = "Rogue"
 not_so_deadly_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_not_so_deadly.blp"
 not_so_deadly_achievement.description =
-	"Complete the Hardcore challenge without at any point using Poisons. Sharpening stones, weapon oils, enchants, and other weapon enhancements are allowed. Create Blinding Powder is a Poisons ability and as such not allowed. Blinding Powder acquired through other means (e.g. Pick Pocket) can be used."
+	"Complete the Hardcore challenge without at any point using Poisons. Sharpening stones, weapon oils, enchants, and other weapon enhancements are allowed. (Era only note: Create Blinding Powder is a Poisons ability and as such not allowed. Blinding Powder acquired through other means e.g. Pick Pocket can be used."
 
 -- Registers
 function not_so_deadly_achievement:Register(fail_function_executor)

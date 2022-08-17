@@ -3,6 +3,10 @@ local not_the_blessed_run_achievement = CreateFrame("Frame")
 _G.achievements.NotTheBlessedRun = not_the_blessed_run_achievement
 
 local blacklist_spells_named = {
+	"Hand of Freedom",
+	"Hand of Salvation",
+	"Hand of Protection",
+	"Hand of Sacrifice",
 	"Blessing of Kings",
 	"Blessing of Salvation",
 	"Blessing of Wisdom",
@@ -11,11 +15,21 @@ local blacklist_spells_named = {
 	"Blessing of Sacrifice",
 	"Blessing of Protection",
 	"Blessing of Sanctuary",
+	"Greater Blessing of Kings",
+	"Greater Blessing of Salvation",
+	"Greater Blessing of Wisdom",
+	"Greater Blessing of Might",
+	"Greater Blessing of Freedom",
+	"Greater Blessing of Sacrifice",
+	"Greater Blessing of Protection",
+	"Greater Blessing of Sanctuary",
 	"Concentration Aura",
 	"Devotion Aura",
 	"Fire Resistance Aura",
 	"Shadow Resistance Aura",
+	"Frost Resistance Aura",
 	"Retribution Aura",
+	"Crusader Aura",
 }
 
 -- General info
@@ -24,7 +38,7 @@ not_the_blessed_run_achievement.title = "Not the Blessed Run"
 not_the_blessed_run_achievement.class = "Paladin"
 not_the_blessed_run_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_not_the_blessed_run.blp"
 not_the_blessed_run_achievement.description =
-	"Complete the Hardcore challenge without at any point using a Blessing or Aura spell."
+	"Complete the Hardcore challenge without at any point using a Blessing/Hand, or Aura spell. Hand of Reckoning is ALLOWED to be used."
 
 -- Registers
 function not_the_blessed_run_achievement:Register(fail_function_executor)

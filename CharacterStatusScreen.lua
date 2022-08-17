@@ -53,11 +53,17 @@ br:SetPoint("TOPLEFT", CharacterFrame, "TOPLEFT", 258, -257)
 br:SetWidth(128)
 br:SetHeight(256)
 
+local title_text = f:CreateFontString(nil,"ARTWORK")
+title_text:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 22)
+title_text:SetPoint("TOPLEFT", CharacterFrame, "TOPLEFT", 150, -45)
+title_text:SetTextColor(1,.82,0)
+title_text:SetText("Hardcore")
+
 Panel:SetPoint("CENTER", 0, 0)
 Panel:Hide()
 
 local f2 = AceGUI:Create("HardcoreFrameEmpty")
-f2:SetPoint("TOPLEFT", CharacterFrame, "TOPLEFT", 8, -18)
+f2:SetPoint("TOPLEFT", CharacterFrame, "TOPLEFT", 8, -38)
 f2:SetWidth(360)
 f2:SetHeight(350)
 f2:Hide()
@@ -143,14 +149,6 @@ function UpdateCharacterHC(_hardcore_character, _player_name, _version, frame_to
 	if _hardcore_character == nil then
 		return
 	end
-
-	local title = AceGUI:Create("HardcoreClassTitleLabel")
-	title:SetRelativeWidth(1.0)
-	title:SetHeight(60)
-	title:SetText("Hardcore")
-	title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 22)
-	title:SetColor(1,.82,0)
-	frame_to_update:AddChild(title)
 
 	local character_meta_data_container = AceGUI:Create("SimpleGroup")
 	character_meta_data_container:SetRelativeWidth(1.0)

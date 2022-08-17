@@ -311,6 +311,7 @@ local function SlashHandler(msg, editbox)
 		      failure_function_executor.Fail(achievement)
 		    end
 		  end
+		end
 	elseif cmd == "dk" then
 		-- sacrifice your current lvl 55 char to allow for making DK
 		local dk_convert_option = ""

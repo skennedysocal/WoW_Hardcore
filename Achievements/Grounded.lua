@@ -11,6 +11,12 @@ grounded_achievement.class = "All"
 grounded_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_grounded.blp"
 grounded_achievement.description =
 	"Complete the Hardcore challenge without at any point using a mount, flight path, or portal. Zeppelins and ships can be used."
+local class_eng, _, _ = UnitClass("player")
+if class_eng == "Druid" then
+  grounded_achievement.forces = {
+    "Naturalist",
+  }
+end
 
 -- Registers
 function grounded_achievement:Register(fail_function_executor)

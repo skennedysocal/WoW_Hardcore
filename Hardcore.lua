@@ -1497,6 +1497,8 @@ function Hardcore:GetClassColorText(classname)
 		return "|c008787ed"
 	elseif "Warrior" == classname then
 		return "|c00c79c6e"
+	elseif "Death Knight" == classname then
+		return "|c00C41E3A"
 	end
 
 	Hardcore:Debug("ERROR: classname not found")

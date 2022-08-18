@@ -988,7 +988,11 @@ function Hardcore:TIME_PLAYED_MSG(...)
 	local totalTimePlayed, _ = ...
 	Hardcore_Character.time_played = totalTimePlayed or 1
 	-- Check playtime gap percentage
-	Hardcore_Character.tracked_played_percentage = Hardcore_Character.time_tracked / Hardcore_Character.time_played * 100.0
+	if  Hardcore_Character.time_played > 0 then
+	  Hardcore_Character.tracked_played_percentage = Hardcore_Character.time_tracked / Hardcore_Character.time_played * 100.0
+	else
+	  Hardcore_Character.tracked_played_percentage = 100.0
+	end
 
 	Hardcore:Debug(Hardcore_Character.tracked_played_percentage)
 
@@ -1493,6 +1497,8 @@ function Hardcore:GetClassColorText(classname)
 		return "|c008787ed"
 	elseif "Warrior" == classname then
 		return "|c00c79c6e"
+	elseif "Death Knight" == classname then
+		return "|c00C41E3A"
 	end
 
 	Hardcore:Debug("ERROR: classname not found")

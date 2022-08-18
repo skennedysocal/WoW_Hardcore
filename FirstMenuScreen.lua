@@ -6,6 +6,7 @@ local CLASSES = {
 	[3] = "Hunter",
 	[4] = "Rogue",
 	[5] = "Priest",
+	[6] = "Death Knight",
 	[7] = "Shaman",
 	[8] = "Mage",
 	[9] = "Warlock",
@@ -181,6 +182,7 @@ function ShowFirstMenu(_hardcore_character, _failure_function_executor)
 			["Shaman"] = "0070DD",
 			["Paladin"] = "F48CBA",
 			["Rogue"] = "FFF468",
+			["Death Knight"] = "C41E3A",
 			["General"] = "FFFFFF",
 		}
 		title:SetText("|c00" .. CLASS_COLOR_BY_NAME[_title] .. _title .. "|r Achievements")

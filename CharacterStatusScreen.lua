@@ -8,6 +8,7 @@ local CLASS_COLOR_BY_NAME = {
 	["Shaman"] = "0070DD",
 	["Paladin"] = "F48CBA",
 	["Rogue"] = "FFF468",
+	["Death Knight"] = "C41E3A",
 	["General"] = "FFFFFF",
 }
 local AceGUI = LibStub("AceGUI-3.0")

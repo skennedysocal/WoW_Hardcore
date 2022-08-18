@@ -471,7 +471,10 @@ local saved_variable_meta = {
 	{ key = "party_mode", initial_data = "Solo" },
 	{ key = "team", initial_data = {} },
 	{ key = "first_recorded", initial_data = -1 },
-	{ key = "grief_warning_conditions", initial_data = GRIEF_WARNING_BOTH_FACTIONS }
+	{ key = "grief_warning_conditions", initial_data = GRIEF_WARNING_BOTH_FACTIONS },
+	{ key = "sacrificed_at", initial_data = ""},
+	{ key = "converted_successfully", initial_data = false},
+	{ key = "converted_time", initial_data = ""}
 }
 
 --[[ Post-utility functions]]--

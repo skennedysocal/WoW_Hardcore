@@ -904,7 +904,7 @@ function Hardcore:PLAYER_DEAD()
     local deathData = string.format("%s%s%s", level, COMM_FIELD_DELIM, mapID and mapID or "")
 	local commMessage = COMM_COMMANDS[3] .. COMM_COMMAND_DELIM .. deathData
 	if isSacrifice then
-		commMessage = COMM_COMMANDS[4] .. COMM_COMMAND_DELIM .. deathData
+		commMessage = COMM_COMMANDS[6] .. COMM_COMMAND_DELIM .. deathData
 	end
 	if CTL then
 		CTL:SendAddonMessage("ALERT", COMM_NAME, commMessage, "GUILD")
@@ -1330,7 +1330,7 @@ function Hardcore:Add(data, sender, command)
                     end
                     level = level > 0 and level < 61 and level or guildLevel -- If player is using an older version of the addon, will have to get level from guild roster.
                     local messageFormat = "%s the %s%s|r has died at level %d in %s"
-					if command == COMM_COMMANDS[4] then
+					if command == COMM_COMMANDS[6] then
 						messageFormat = "%s the %s%s|r is choosing to follow the Path of the Ebon Blade at level %d in %s"
 					end
                     local messageString = messageFormat:format(name:gsub("%-.*", ""), "|c" .. RAID_CLASS_COLORS[class].colorStr, class, level, zone)

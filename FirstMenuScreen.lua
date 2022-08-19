@@ -287,9 +287,12 @@ function ShowFirstMenu(_hardcore_character, _failure_function_executor)
 
 	local function DrawAchievementsTab(container, _scroll_frame)
 		DrawClassTitleRow(_scroll_frame, "General")
-		for k, achievement in pairs(_G.achievements) do
-			if achievement.class == "All" then
-				DrawAchievementRow(achievement, _scroll_frame)
+		for k, achievement_name in pairs(_G.achievements_order) do
+			local achievement = _G.achievements[achievement_name]
+			if achievement ~= nil then
+				if achievement.class == "All" then
+					DrawAchievementRow(achievement, _scroll_frame)
+				end
 			end
 		end
 

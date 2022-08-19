@@ -26,12 +26,12 @@ function speedrunner_achievement:Register(fail_function_executor, _hardcore_char
 		speedrunner_achievement.fail_function_executor.Fail(speedrunner_achievement.name)
 	end
 
-	if GetXPExhaustion() ~= nil then 
-	  local num_xp_bars = (GetXPExhaustion() / UnitXPMax("player")) * 20
-	  if num_xp_bars > max_num_xp_bars then
-		  Hardcore:Print("Exceeded max rested xp bubble limit of 1.")
-		  speedrunner_achievement.fail_function_executor.Fail(speedrunner_achievement.name)
-	  end
+	if GetXPExhaustion() ~= nil then
+		local num_xp_bars = (GetXPExhaustion() / UnitXPMax("player")) * 20
+		if num_xp_bars > max_num_xp_bars then
+			Hardcore:Print("Exceeded max rested xp bubble limit of 1.")
+			speedrunner_achievement.fail_function_executor.Fail(speedrunner_achievement.name)
+		end
 	end
 	RequestTimePlayed()
 	speedrunner_achievement:RegisterEvent("PLAYER_LEVEL_UP")

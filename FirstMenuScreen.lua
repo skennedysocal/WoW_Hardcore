@@ -14,10 +14,9 @@ local CLASSES = {
 }
 
 local function FormatStrForParty(input_str)
-  local ouput_str = string.lower(input_str)
-  output_str = ouput_str:gsub("^%l", string.upper)
-  return output_str
-
+	local ouput_str = string.lower(input_str)
+	output_str = ouput_str:gsub("^%l", string.upper)
+	return output_str
 end
 
 function ShowFirstMenu(_hardcore_character, _failure_function_executor)
@@ -82,12 +81,12 @@ function ShowFirstMenu(_hardcore_character, _failure_function_executor)
 					Hardcore:Print("Added " .. achievement.name .. " challenge!")
 
 					if achievement.forces ~= nil then
-					  for i, other_a in ipairs(achievement.forces) do
-					    table.insert(_hardcore_character.achievements, _G.achievements[other_a].name)
-					    achievement_icons[other_a].image:SetVertexColor(1, 1, 1)
-					    _G.achievements[other_a]:Register(_failure_function_executor, _hardcore_character)
-					    Hardcore:Print("Added " .. _G.achievements[other_a].name .. " challenge!")
-					  end
+						for i, other_a in ipairs(achievement.forces) do
+							table.insert(_hardcore_character.achievements, _G.achievements[other_a].name)
+							achievement_icons[other_a].image:SetVertexColor(1, 1, 1)
+							_G.achievements[other_a]:Register(_failure_function_executor, _hardcore_character)
+							Hardcore:Print("Added " .. _G.achievements[other_a].name .. " challenge!")
+						end
 					end
 				end
 			end
@@ -116,18 +115,17 @@ function ShowFirstMenu(_hardcore_character, _failure_function_executor)
 		description:SetFont("", 16)
 		local description_text = achievement.description
 		if achievement.forces ~= nil then
-		  description_text = description_text .. "\n |c00FFFF00Selecting ".. achievement.title .. " forces "
-		  for i=1,#achievement.forces do
-
-		    if i == #achievement.forces and #achievement.forces > 1 then
-		      description_text = description_text .. "and "
-		    end
-		    description_text = description_text .. _G.achievements[achievement.forces[i]].title
-		    if i~= #achievement.forces then
-		      description_text = description_text .. ", "
-		    end
-		  end
-		  description_text = description_text .. ".|r"
+			description_text = description_text .. "\n |c00FFFF00Selecting " .. achievement.title .. " forces "
+			for i = 1, #achievement.forces do
+				if i == #achievement.forces and #achievement.forces > 1 then
+					description_text = description_text .. "and "
+				end
+				description_text = description_text .. _G.achievements[achievement.forces[i]].title
+				if i ~= #achievement.forces then
+					description_text = description_text .. ", "
+				end
+			end
+			description_text = description_text .. ".|r"
 		end
 		description:SetText(description_text)
 		description:SetPoint("BOTTOM", 200, 5)

@@ -54,10 +54,10 @@ br:SetPoint("TOPLEFT", CharacterFrame, "TOPLEFT", 258, -257)
 br:SetWidth(128)
 br:SetHeight(256)
 
-local title_text = f:CreateFontString(nil,"ARTWORK")
+local title_text = f:CreateFontString(nil, "ARTWORK")
 title_text:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 22)
 title_text:SetPoint("TOPLEFT", CharacterFrame, "TOPLEFT", 150, -45)
-title_text:SetTextColor(1,.82,0)
+title_text:SetTextColor(1, 0.82, 0)
 title_text:SetText("Hardcore")
 
 Panel:SetPoint("CENTER", 0, 0)
@@ -170,9 +170,9 @@ function UpdateCharacterHC(_hardcore_character, _player_name, _version, frame_to
 	local level_text = _player_level or "?"
 	local class_text
 	if _player_class ~= nil then
-	  class_text = "|c00" .. CLASS_COLOR_BY_NAME[_player_class] .. _player_class .. "|r"
+		class_text = "|c00" .. CLASS_COLOR_BY_NAME[_player_class] .. _player_class .. "|r"
 	else
-	  class_text = "?"
+		class_text = "?"
 	end
 	level_title_text:SetText("Level " .. level_text .. " " .. class_text)
 	level_title_text:SetFont("Fonts\\FRIZQT__.TTF", 10)
@@ -211,7 +211,7 @@ function UpdateCharacterHC(_hardcore_character, _player_name, _version, frame_to
 	if _hardcore_character.first_recorded ~= nil and _hardcore_character.first_recorded ~= -1 then
 		start_date = date("%m/%d/%y", _hardcore_character.first_recorded)
 		if start_date == nil then
-		  start_date = "?"
+			start_date = "?"
 		end
 	end
 	creation_date_label:SetText("Started on " .. start_date)
@@ -225,7 +225,6 @@ function UpdateCharacterHC(_hardcore_character, _player_name, _version, frame_to
 	version_name:SetText("Addon version: " .. version)
 	version_name:SetFont("Fonts\\FRIZQT__.TTF", 10)
 	character_meta_data_container:AddChild(version_name)
-
 
 	local v_buffer = AceGUI:Create("Label")
 	v_buffer:SetRelativeWidth(1.0)
@@ -277,10 +276,16 @@ function UpdateCharacterHC(_hardcore_character, _player_name, _version, frame_to
 			achievement_icon:SetImageSize(ICON_SIZE, ICON_SIZE)
 			achievement_icon.image:SetVertexColor(1, 1, 1)
 			achievement_icon:SetCallback("OnEnter", function(widget)
-			GameTooltip:SetOwner(WorldFrame, "ANCHOR_CURSOR")
-			GameTooltip:AddLine("Partner Up!")
-			GameTooltip:AddLine("Complete the Hardcore challenge in a group of two. Read the rules, if you want to know more about Hardcore Duos. For all Achievements within the General category, your duo is considered one character (i.e. the achievement’s rules apply to both of you as if you were one character).", 1, 1, 1, true)
-			GameTooltip:Show()
+				GameTooltip:SetOwner(WorldFrame, "ANCHOR_CURSOR")
+				GameTooltip:AddLine("Partner Up!")
+				GameTooltip:AddLine(
+					"Complete the Hardcore challenge in a group of two. Read the rules, if you want to know more about Hardcore Duos. For all Achievements within the General category, your duo is considered one character (i.e. the achievement’s rules apply to both of you as if you were one character).",
+					1,
+					1,
+					1,
+					true
+				)
+				GameTooltip:Show()
 			end)
 			achievement_icon:SetCallback("OnLeave", function(widget)
 				GameTooltip:Hide()
@@ -304,7 +309,14 @@ function ShowCharacterHC(_hardcore_character)
 	f2:ReleaseChildren()
 
 	local class, _, _ = UnitClass("player")
-	UpdateCharacterHC(_hardcore_character, UnitName("player"), GetAddOnMetadata("Hardcore", "Version"), f2, class, UnitLevel("player"))
+	UpdateCharacterHC(
+		_hardcore_character,
+		UnitName("player"),
+		GetAddOnMetadata("Hardcore", "Version"),
+		f2,
+		class,
+		UnitLevel("player")
+	)
 	Panel:Show()
 	f:Show()
 	f2:Show()

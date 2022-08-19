@@ -619,7 +619,7 @@ function Hardcore:PLAYER_LOGIN()
 	    any_acheivement_registered = true
 	  end
 	end
-	if any_acheivement_registered then Hardcore:Print("You currently have active Hardcore achievements!  You may quite an achievement at any time using the quitachievement command using Pascal case format (e.g. \"\/hardcore quitachievement TunnelVision\")") end
+	if any_acheivement_registered then Hardcore:Print("You currently have active Hardcore achievements!  You may quit an achievement at any time using the quitachievement command using Pascal case format (e.g. \"\/hardcore quitachievement TunnelVision\")") end
 
 	if Hardcore_Character.party_mode ~= nil then
 	  if (_G.extra_rules[Hardcore_Character.party_mode] ~= nil) then

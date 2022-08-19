@@ -48,7 +48,6 @@ Achievements/NotTheBlessedRun.lua
 Achievements/NoWayOut.lua
 Achievements/Nudist.lua
 Achievements/Pacifist.lua
-Achievements/PowerFromWithin.lua
 Achievements/Pyromancer.lua
 Achievements/Scavenger.lua
 Achievements/Speedrunner.lua

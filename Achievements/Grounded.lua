@@ -13,9 +13,9 @@ grounded_achievement.description =
 	"Complete the Hardcore challenge without at any point using a mount, flight path, or portal. Zeppelins and ships can be used."
 local class_eng, _, _ = UnitClass("player")
 if class_eng == "Druid" then
-  grounded_achievement.forces = {
-    "Naturalist",
-  }
+	grounded_achievement.forces = {
+		"Naturalist",
+	}
 end
 
 -- Registers

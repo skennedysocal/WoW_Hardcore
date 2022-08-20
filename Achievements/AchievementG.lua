@@ -60,3 +60,5 @@ for k in pairs(_G.a_id) do
 	table.insert(_G.achievements_order, k)
 end
 table.sort(_G.achievements_order)
+
+other_hardcore_character_cache = {} -- dict of player name & server to character data

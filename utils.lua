@@ -3,9 +3,9 @@ local build_num = select(4, GetBuildInfo())
 if build_num > 29999 then
   _G["HardcoreBuildLabel"] = "WotLK"
 elseif build_num > 19999 then
-  _G["HardcoreBuildLabel"] = "Era"
+  _G["HardcoreBuildLabel"] = "TBC"
 else
-  _G["HardcoreBuildLabel"] = "SoM"
+  _G["HardcoreBuildLabel"] = "Classic"
 end
 function Hardcore_stringOrNumberToUnicode(val)
 	local str

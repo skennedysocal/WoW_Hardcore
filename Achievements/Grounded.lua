@@ -27,7 +27,7 @@ function grounded_achievement:Register(fail_function_executor)
 	grounded_achievement:RegisterEvent("GLOBAL_MOUSE_DOWN")
 	grounded_achievement.fail_function_executor = fail_function_executor
 	hooksecurefunc(StaticPopupDialogs["CONFIRM_SUMMON"], "OnAccept", function(self, button)
-	      grounded_achievement.fail_function_executor.Fail(grounded_achievement.name)
+		grounded_achievement.fail_function_executor.Fail(grounded_achievement.name)
 	end)
 end
 
@@ -70,18 +70,18 @@ grounded_achievement:SetScript("OnEvent", function(self, event, ...)
 			grounded_achievement.fail_function_executor.Fail(grounded_achievement.name)
 		end
 	elseif event == "CURSOR_UPDATE" then
-		C_Timer.After(.01, function()
-		  if isMagePortal(GameTooltip:GetRegions()) then
-		    grounded_achievement.mouse_over_portal = not grounded_achievement.mouse_over_portal
-		  else
-		    grounded_achievement.mouse_over_portal = false
-		  end
+		C_Timer.After(0.01, function()
+			if isMagePortal(GameTooltip:GetRegions()) then
+				grounded_achievement.mouse_over_portal = not grounded_achievement.mouse_over_portal
+			else
+				grounded_achievement.mouse_over_portal = false
+			end
 		end)
 	elseif event == "GLOBAL_MOUSE_DOWN" then
-	  if arg[1] == "RightButton" then
-	    if grounded_achievement.mouse_over_portal then
-			grounded_achievement.fail_function_executor.Fail(grounded_achievement.name)
-	    end
-	  end
+		if arg[1] == "RightButton" then
+			if grounded_achievement.mouse_over_portal then
+				grounded_achievement.fail_function_executor.Fail(grounded_achievement.name)
+			end
+		end
 	end
 end)

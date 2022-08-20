@@ -13,6 +13,7 @@ duo_rules.description = ""
 
 -- Registers
 function duo_rules:Register(fail_function_executor, _hardcore_character)
+	initMinimapButton()
 	duo_rules.accumulated_warn_time = 0
 	duo_rules._hardcore_character_ref = _hardcore_character
 	if _hardcore_character.team ~= nil and _hardcore_character.team[1] then
@@ -52,6 +53,26 @@ function duo_rules:ResetWarn()
 		Hardcore:Print("Duo group gathered back together.")
 	end
 	duo_rules.accumulated_warn_time = 0
+end
+
+local function initMinimapButton()
+	-- Create minimap button using LibDBIcon
+	local miniButton = LibStub("LibDataBroker-1.1"):NewDataObject("Hardcore", {
+		type = "data source",
+		text = "Hardcore",
+		icon = duo_rules.icon_path,
+		OnTooltipShow = function(tooltip)
+			if not tooltip or not tooltip.AddLine then
+				return
+			end
+			tooltip:AddLine("Duo status: " .. GetAddOnMetadata("Hardcore", "Version") .. ")")
+			tooltip:AddLine("|cFFCFCFCFclick|r show window")
+			tooltip:AddLine("|cFFCFCFCFctrl click|r toggle minimap button")
+		end,
+	})
+
+	icon = LibStub("LibDBIcon-1.0", true)
+	icon:Register("Hardcore", miniButton, Hardcore_Settings)
 end
 
 function duo_rules:Check()

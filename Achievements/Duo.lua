@@ -97,23 +97,6 @@ local function checkHardcoreStatus()
 				duo_rules:Warn()
 				return false
 			end
-
-			-- Check that achievements match
-			for _, achievement_check in ipairs(other_hardcore_character_cache[player_name].achievements) do
-				local has_achievement = false
-				for i, other_achievement in ipairs(other_hardcore_character_cache[duo_rules.teammate_1].achievements) do
-					if other_achievement == achievement_check then
-						has_achievement = true
-						break
-					end
-				end
-				if has_achievement == false then
-					Hardcore:Print("Duo check: Partner is missing achievement " .. achievement_check)
-					duo_rules.warning_reason = "Warning - Partner is missing achievement " .. achievement_check .. "."
-					duo_rules:Warn()
-					return false
-				end
-			end
 		end
 	end
 

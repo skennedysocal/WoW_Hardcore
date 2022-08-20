@@ -131,47 +131,6 @@ local function checkHardcoreStatus()
 					trio_rules:Warn()
 					return false
 				end
-
-				-- Check that achievements match
-				for _, achievement_check in ipairs(other_hardcore_character_cache[player_name].achievements) do
-					-- check partner 1
-					local has_achievement = false
-					for i, other_achievement in
-						ipairs(other_hardcore_character_cache[trio_rules.teammate_1].achievements)
-					do
-						if other_achievement == achievement_check then
-							has_achievement = true
-							break
-						end
-					end
-					if has_achievement == false then
-						Hardcore:Print("Trio check: Partner is missing achievement " .. achievement_check)
-						trio_rules.warning_reason = "Warning - Partner is missing achievement "
-							.. achievement_check
-							.. "."
-						trio_rules:Warn()
-						return false
-					end
-
-					-- check partner 2
-					has_achievement = false
-					for i, other_achievement in
-						ipairs(other_hardcore_character_cache[trio_rules.teammate_2].achievements)
-					do
-						if other_achievement == achievement_check then
-							has_achievement = true
-							break
-						end
-					end
-					if has_achievement == false then
-						Hardcore:Print("Trio check: Partner is missing achievement " .. achievement_check)
-						trio_rules.warning_reason = "Warning - Partner is missing achievement "
-							.. achievement_check
-							.. "."
-						trio_rules:Warn()
-						return false
-					end
-				end
 			end
 		end
 	end

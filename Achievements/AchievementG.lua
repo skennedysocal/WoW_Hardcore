@@ -50,6 +50,7 @@ _G.a_id = {
 	WhiteKnight = 45,
 	Scavenger = 46,
 	InsaneInTheMembrane = 47,
+	PartnerUp = 48,
 }
 _G.id_a = {}
 for k, v in pairs(_G.a_id) do

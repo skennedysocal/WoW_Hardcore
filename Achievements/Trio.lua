@@ -78,11 +78,11 @@ local function checkHardcoreStatus()
 	-- other_hardcore_character_cache[trio_rules.teammate_1].team = {UnitName("player")}
 	------------------------
 	-- Uninitialized
-	other_hardcore_character_cache[UnitName("player")] = {}
-	other_hardcore_character_cache[UnitName("player")].achievements = { "Nudist", "Power From Within" }
-	other_hardcore_character_cache[UnitName("player")].party_mode = "Trio"
-	other_hardcore_character_cache[UnitName("player")].team = {}
-	other_hardcore_character_cache[trio_rules.teammate_1] = nil
+	-- other_hardcore_character_cache[UnitName("player")] = {}
+	-- other_hardcore_character_cache[UnitName("player")].achievements = { "Nudist", "Power From Within" }
+	-- other_hardcore_character_cache[UnitName("player")].party_mode = "Trio"
+	-- other_hardcore_character_cache[UnitName("player")].team = {}
+	-- other_hardcore_character_cache[trio_rules.teammate_1] = nil
 
 	local player_name = UnitName("player")
 	if other_hardcore_character_cache[player_name] ~= nil then

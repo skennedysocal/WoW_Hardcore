@@ -9,6 +9,9 @@ king_of_the_jungle_achievement.class = "All"
 king_of_the_jungle_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_king_of_the_jungle.blp"
 king_of_the_jungle_achievement.description =
 	"Complete the Hardcore challenge after killing King Bangalash and having completed the Big Game Hunter quest before reaching level 40."
+king_of_the_jungle_achievement.restricted_game_versions = {
+	["WotLK"] = 1,
+}
 
 -- Registers
 function king_of_the_jungle_achievement:Register(fail_function_executor)

@@ -23,7 +23,11 @@ grounded_achievement.mouse_over_portal = false
 function grounded_achievement:Register(fail_function_executor)
 	grounded_achievement:RegisterEvent("PLAYER_CONTROL_LOST")
 	grounded_achievement:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-	grounded_achievement:RegisterEvent("CURSOR_UPDATE")
+	if (select(4, GetBuildInfo())) > 29999 then
+	    grounded_achievement:RegisterEvent("CURSOR_CHANGED")
+	else
+	    grounded_achievement:RegisterEvent("CURSOR_UPDATE")
+	end
 	grounded_achievement:RegisterEvent("GLOBAL_MOUSE_DOWN")
 	grounded_achievement.fail_function_executor = fail_function_executor
 	hooksecurefunc(StaticPopupDialogs["CONFIRM_SUMMON"], "OnAccept", function(self, button)
@@ -34,7 +38,11 @@ end
 function grounded_achievement:Unregister()
 	grounded_achievement:UnregisterEvent("PLAYER_CONTROL_LOST")
 	grounded_achievement:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-	grounded_achievement:UnregisterEvent("CURSOR_UPDATE")
+	if (select(4, GetBuildInfo())) > 29999 then
+	    grounded_achievement:UnregisterEvent("CURSOR_CHANGED")
+	else
+	    grounded_achievement:UnregisterEvent("CURSOR_UPDATE")
+	end
 	grounded_achievement:UnregisterEvent("GLOBAL_MOUSE_DOWN")
 end
 
@@ -46,7 +54,6 @@ local function isMagePortal(...)
 			if text ~= nil then
 				if string.find(text, "Portal to") ~= nil then -- e.g. "Portal to Stormwind"
 					return true
-				else
 				end
 			end
 		end
@@ -69,7 +76,7 @@ grounded_achievement:SetScript("OnEvent", function(self, event, ...)
 			Hardcore:Print("Player is on mount")
 			grounded_achievement.fail_function_executor.Fail(grounded_achievement.name)
 		end
-	elseif event == "CURSOR_UPDATE" then
+	elseif event == "CURSOR_CHANGED" or event == "CURSOR_UPDATE" then
 		C_Timer.After(0.01, function()
 			if isMagePortal(GameTooltip:GetRegions()) then
 				grounded_achievement.mouse_over_portal = not grounded_achievement.mouse_over_portal

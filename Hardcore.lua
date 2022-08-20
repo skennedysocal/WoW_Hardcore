@@ -80,7 +80,6 @@ Hardcore_Character = {
 --
 local debug = false
 local loaded_inspect_frame = false
-local other_hardcore_character_cache = {} -- dict of player name & server to character data
 local pulses = {}
 local alert_msg_time = {
 	PULSE = {},

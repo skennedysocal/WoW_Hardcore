@@ -266,33 +266,6 @@ function UpdateCharacterHC(_hardcore_character, _player_name, _version, frame_to
 			end
 		end
 	end
-	if _hardcore_character.party_mode ~= nil then
-		if _hardcore_character.party_mode == "Duo" or _hardcore_character.party_mode == "Trio" then
-			local partner_up_achievement = _G.extra_rules.Duo
-			local achievement_icon = AceGUI:Create("Icon")
-			achievement_icon:SetWidth(ICON_SIZE)
-			achievement_icon:SetHeight(ICON_SIZE)
-			achievement_icon:SetImage(partner_up_achievement.icon_path)
-			achievement_icon:SetImageSize(ICON_SIZE, ICON_SIZE)
-			achievement_icon.image:SetVertexColor(1, 1, 1)
-			achievement_icon:SetCallback("OnEnter", function(widget)
-				GameTooltip:SetOwner(WorldFrame, "ANCHOR_CURSOR")
-				GameTooltip:AddLine("Partner Up!")
-				GameTooltip:AddLine(
-					"Complete the Hardcore challenge in a group of two. Read the rules, if you want to know more about Hardcore Duos. For all Achievements within the General category, your duo is considered one character (i.e. the achievement’s rules apply to both of you as if you were one character).",
-					1,
-					1,
-					1,
-					true
-				)
-				GameTooltip:Show()
-			end)
-			achievement_icon:SetCallback("OnLeave", function(widget)
-				GameTooltip:Hide()
-			end)
-			achievements_container:AddChild(achievement_icon)
-		end
-	end
 end
 
 function ShowCharacterHC(_hardcore_character)

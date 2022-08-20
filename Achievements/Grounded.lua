@@ -24,9 +24,9 @@ function grounded_achievement:Register(fail_function_executor)
 	grounded_achievement:RegisterEvent("PLAYER_CONTROL_LOST")
 	grounded_achievement:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 	if (select(4, GetBuildInfo())) > 29999 then
-	    grounded_achievement:RegisterEvent("CURSOR_CHANGED")
+		grounded_achievement:RegisterEvent("CURSOR_CHANGED")
 	else
-	    grounded_achievement:RegisterEvent("CURSOR_UPDATE")
+		grounded_achievement:RegisterEvent("CURSOR_UPDATE")
 	end
 	grounded_achievement:RegisterEvent("GLOBAL_MOUSE_DOWN")
 	grounded_achievement.fail_function_executor = fail_function_executor
@@ -39,9 +39,9 @@ function grounded_achievement:Unregister()
 	grounded_achievement:UnregisterEvent("PLAYER_CONTROL_LOST")
 	grounded_achievement:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 	if (select(4, GetBuildInfo())) > 29999 then
-	    grounded_achievement:UnregisterEvent("CURSOR_CHANGED")
+		grounded_achievement:UnregisterEvent("CURSOR_CHANGED")
 	else
-	    grounded_achievement:UnregisterEvent("CURSOR_UPDATE")
+		grounded_achievement:UnregisterEvent("CURSOR_UPDATE")
 	end
 	grounded_achievement:UnregisterEvent("GLOBAL_MOUSE_DOWN")
 end

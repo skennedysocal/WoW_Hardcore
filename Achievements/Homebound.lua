@@ -28,6 +28,10 @@ homebound_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_home
 homebound_achievement.description =
 	"Complete the Hardcore challenge without at any point leaving the continent on which your character has started. If you started in Kalimdor, you may at no point enter the Eastern Kingdoms. If you started in the Eastern Kingdoms, you may at no point enter Kalimdor."
 
+homebound_achievement.restricted_game_versions = {
+	["WotLK"] = 1,
+}
+
 -- Registers
 function homebound_achievement:Register(fail_function_executor)
 	homebound_achievement:RegisterEvent("ZONE_CHANGED")

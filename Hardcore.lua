@@ -703,33 +703,33 @@ function Hardcore:PLAYER_LOGIN()
 	-- reset debug log; To view debug log, log out and see saved variables before logging back in
 	Hardcore_Settings.debug_log = {}
 
-	local function inSOM() 
-	    for i = 1, 40 do
-		    local buff_name, _, _, _, _, _, _, _, _, _, _ = UnitBuff("player", i)
-		    if buff_name == nil then
-			    return false
-		    end
-		    if buff_name == "Adventure Awaits" then
-		      return true
-		    end
-	    end
-	    return true
+	local function inSOM()
+		for i = 1, 40 do
+			local buff_name, _, _, _, _, _, _, _, _, _, _ = UnitBuff("player", i)
+			if buff_name == nil then
+				return false
+			end
+			if buff_name == "Adventure Awaits" then
+				return true
+			end
+		end
+		return true
 	end
 
 	if Hardcore_Character.game_version == "" then
-	  if _G["HardcoreBuildLabel"] == nil then
-	    -- pass
-	  elseif _G["HardcoreBuildLabel"] == "Classic" then
-		C_Timer.After(5.0, function()
-		      if inSOM() then
-			Hardcore_Character.game_version = "SoM"
-		      else
-			Hardcore_Character.game_version = "Era"
-		      end
-		end)
-	  else
-	    Hardcore_Character.game_version = _G["HardcoreBuildLabel"]
-	  end
+		if _G["HardcoreBuildLabel"] == nil then
+		-- pass
+		elseif _G["HardcoreBuildLabel"] == "Classic" then
+			C_Timer.After(5.0, function()
+				if inSOM() then
+					Hardcore_Character.game_version = "SoM"
+				else
+					Hardcore_Character.game_version = "Era"
+				end
+			end)
+		else
+			Hardcore_Character.game_version = _G["HardcoreBuildLabel"]
+		end
 	end
 end
 
@@ -1974,18 +1974,15 @@ function Hardcore:GenerateVerificationString()
 	local dkTable = {}
 	table.insert(dkTable, dk_conversion)
 	local deathknightVerificationString = Hardcore_tableToUnicode(dkTable)
-	local game_version_checker = Hardcore_Character.game_version or {_G["HardcoreBuildLabel"]}
-	local game_version_string = Hardcore_join(Hardcore_map({game_version_checker},  Hardcore_stringOrNumberToUnicode))
-	return Hardcore_join(
-		{
-			baseVerificationString,
-			bubbleHearthIncidentsVerificationString,
-			playedtimeGapsVerificationString,
-			deathknightVerificationString,
-			game_version_string,
-		},
-		ATTRIBUTE_SEPARATOR
-	)
+	local game_version_checker = Hardcore_Character.game_version or { _G["HardcoreBuildLabel"] }
+	local game_version_string = Hardcore_join(Hardcore_map({ game_version_checker }, Hardcore_stringOrNumberToUnicode))
+	return Hardcore_join({
+		baseVerificationString,
+		bubbleHearthIncidentsVerificationString,
+		playedtimeGapsVerificationString,
+		deathknightVerificationString,
+		game_version_string,
+	}, ATTRIBUTE_SEPARATOR)
 end
 
 --[[ Timers ]]

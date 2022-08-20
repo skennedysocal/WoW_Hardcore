@@ -74,6 +74,13 @@ function ShowFirstMenu(_hardcore_character, _failure_function_executor)
 					Hardcore:Print(
 						"Cannot start achievement " .. achievement.title .. " as class " .. CLASSES[_class_id]
 					)
+				elseif
+					achievement.restricted_game_versions ~= nil
+					and achievement.restricted_game_versions[_G["HardcoreBuildLabel"]] ~= nil
+				then
+					Hardcore:Print(
+						"Achievement " .. achievement.title .. " is not supported in " .. _G["HardcoreBuildLabel"]
+					)
 				else
 					table.insert(_hardcore_character.achievements, achievement.name)
 					achievement_icon.image:SetVertexColor(1, 1, 1)
@@ -82,10 +89,12 @@ function ShowFirstMenu(_hardcore_character, _failure_function_executor)
 
 					if achievement.forces ~= nil then
 						for i, other_a in ipairs(achievement.forces) do
-							table.insert(_hardcore_character.achievements, _G.achievements[other_a].name)
-							achievement_icons[other_a].image:SetVertexColor(1, 1, 1)
-							_G.achievements[other_a]:Register(_failure_function_executor, _hardcore_character)
-							Hardcore:Print("Added " .. _G.achievements[other_a].name .. " challenge!")
+							if _G.achievements[other_a] ~= nil then
+								table.insert(_hardcore_character.achievements, _G.achievements[other_a].name)
+								achievement_icons[other_a].image:SetVertexColor(1, 1, 1)
+								_G.achievements[other_a]:Register(_failure_function_executor, _hardcore_character)
+								Hardcore:Print("Added " .. _G.achievements[other_a].name .. " challenge!")
+							end
 						end
 					end
 				end
@@ -126,6 +135,16 @@ function ShowFirstMenu(_hardcore_character, _failure_function_executor)
 				end
 			end
 			description_text = description_text .. ".|r"
+		end
+
+		if
+			achievement.restricted_game_versions ~= nil
+			and achievement.restricted_game_versions[_G["HardcoreBuildLabel"]] ~= nil
+		then
+			description_text = description_text
+				.. "\n |c00FF0000This achievement is not available for "
+				.. _G["HardcoreBuildLabel"]
+				.. ".|r"
 		end
 		description:SetText(description_text)
 		description:SetPoint("BOTTOM", 200, 5)

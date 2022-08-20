@@ -1943,12 +1943,14 @@ function Hardcore:GenerateVerificationString()
 	local dkTable = {}
 	table.insert(dkTable, dk_conversion)
 	local deathknightVerificationString = Hardcore_tableToUnicode(dkTable)
+	local game_version_string = Hardcore_join(Hardcore_map({_G["HardcoreBuildLabel"]},  Hardcore_stringOrNumberToUnicode))
 	return Hardcore_join(
 		{
 			baseVerificationString,
 			bubbleHearthIncidentsVerificationString,
 			playedtimeGapsVerificationString,
 			deathknightVerificationString,
+			game_version_string,
 		},
 		ATTRIBUTE_SEPARATOR
 	)

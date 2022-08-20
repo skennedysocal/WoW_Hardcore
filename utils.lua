@@ -1,3 +1,12 @@
+_G["HardcoreBuildLabel"] = nil
+local build_num = select(4, GetBuildInfo())
+if build_num > 29999 then
+  _G["HardcoreBuildLabel"] = "WotLK"
+elseif build_num > 19999 then
+  _G["HardcoreBuildLabel"] = "Era"
+else
+  _G["HardcoreBuildLabel"] = "SoM"
+end
 function Hardcore_stringOrNumberToUnicode(val)
 	local str
 	if Hardcore_IsNumber(val) then

@@ -2,7 +2,14 @@ local _G = _G
 local grounded_achievement = CreateFrame("Frame")
 _G.achievements.Grounded = grounded_achievement
 
--- Todo{Add portal detection}
+local blacklist_spells_named = {
+	["Teleport: Stormwind"] = 1,
+	["Teleport: Ogrimmar"] = 1,
+	["Teleport: Darnassus"] = 1,
+	["Teleport: Undercity"] = 1,
+	["Teleport: Ironforge"] = 1,
+	["Teleport: Thunder Bluff"] = 1,
+}
 
 -- General info
 grounded_achievement.name = "Grounded"
@@ -75,7 +82,19 @@ grounded_achievement:SetScript("OnEvent", function(self, event, ...)
 		if IsMounted() then
 			Hardcore:Print("Player is on mount")
 			grounded_achievement.fail_function_executor.Fail(grounded_achievement.name)
+			return
 		end
+
+		local unit, _, spell_id, _, _ = ...
+		if unit ~= "player" then
+			return
+		end
+		local spell_name = GetSpellInfo(spell_id)
+		if blacklist_spells_named[spell_name] ~= nil then
+			Hardcore:Print("Casted teleport spell" .. spell_name)
+			grounded_achievement.fail_function_executor.Fail(grounded_achievement.name)
+		end
+
 	elseif event == "CURSOR_CHANGED" or event == "CURSOR_UPDATE" then
 		C_Timer.After(0.01, function()
 			if isMagePortal(GameTooltip:GetRegions()) then

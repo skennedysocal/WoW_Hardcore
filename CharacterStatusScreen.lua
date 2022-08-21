@@ -232,7 +232,7 @@ function UpdateCharacterHC(_hardcore_character, _player_name, _version, frame_to
 	version_name:SetFont("Fonts\\FRIZQT__.TTF", 10)
 	character_meta_data_container:AddChild(version_name)
 
-	if _hardcore_character.hardcore_player_name ~= nil or _hardcore_character.hardcore_player_name == "" then
+	if _hardcore_character.hardcore_player_name ~= nil and _hardcore_character.hardcore_player_name ~= "" then
 	  local hc_tag_f = AceGUI:Create("HardcoreClassTitleLabel")
 	  hc_tag_f:SetRelativeWidth(1.0)
 	  hc_tag_f:SetHeight(60)

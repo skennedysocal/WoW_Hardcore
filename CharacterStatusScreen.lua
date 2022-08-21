@@ -73,9 +73,13 @@ hooksecurefunc(CharacterFrame, "Hide", function(self, button)
 	HideCharacterHC()
 end)
 
+local game_version_offset = 0
+if _G["HardcoreBuildLabel"] == "WotLK" then
+	game_version_offset = -72
+end
 local TabGUI = CreateFrame("Button", "nwtab" .. TabID, CharacterFrame)
 _G["HardcoreCharacterTab"] = TabGUI
-TabGUI:SetPoint("LEFT", "CharacterFrameTab5", "RIGHT", -16, 0)
+TabGUI:SetPoint("LEFT", "CharacterFrameTab5", "RIGHT", -16 + game_version_offset, 0)
 TabGUI.text = TabGUI:CreateFontString(nil, "ARTWORK")
 TabGUI.text:SetFontObject(GameFontNormalSmall)
 TabGUI.text:SetPoint("CENTER", 0, 1)
@@ -222,7 +226,8 @@ function UpdateCharacterHC(_hardcore_character, _player_name, _version, frame_to
 	version_name:SetRelativeWidth(1.0)
 	version_name:SetHeight(60)
 	local version = _version
-	version_name:SetText("Addon version: " .. version)
+	local game_version = _hardcore_character.game_version or _G["HardcoreBuildLabel"]
+	version_name:SetText("Addon version: " .. version .. ", " .. game_version)
 	version_name:SetFont("Fonts\\FRIZQT__.TTF", 10)
 	character_meta_data_container:AddChild(version_name)
 

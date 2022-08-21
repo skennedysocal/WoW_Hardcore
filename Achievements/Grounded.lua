@@ -94,7 +94,6 @@ grounded_achievement:SetScript("OnEvent", function(self, event, ...)
 			Hardcore:Print("Casted teleport spell" .. spell_name)
 			grounded_achievement.fail_function_executor.Fail(grounded_achievement.name)
 		end
-
 	elseif event == "CURSOR_CHANGED" or event == "CURSOR_UPDATE" then
 		C_Timer.After(0.01, function()
 			if isMagePortal(GameTooltip:GetRegions()) then

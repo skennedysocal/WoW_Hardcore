@@ -51,6 +51,7 @@ Hardcore_Settings = {
 	alert_frame_scale = 0.7,
 	show_minimap_mailbox_icon = false,
 	sacrifice = {},
+	hardcore_player_name = "",
 }
 
 --[[ Character saved variables ]]
@@ -74,6 +75,7 @@ Hardcore_Character = {
 	converted_successfully = false,
 	converted_time = "",
 	game_version = "",
+	hardcore_player_name = "",
 }
 
 --[[ Local variables ]]
@@ -489,6 +491,7 @@ local saved_variable_meta = {
 	{ key = "first_recorded", initial_data = -1 },
 	{ key = "grief_warning_conditions", initial_data = GRIEF_WARNING_BOTH_FACTIONS },
 	{ key = "game_version", initial_data = "" },
+	{ key = "hardcore_player_name", initial_data = "" },
 }
 
 --[[ Post-utility functions]]
@@ -542,6 +545,7 @@ end
 
 function Hardcore:PLAYER_LOGIN()
 	Hardcore:HandleLegacyDeaths()
+	Hardcore_Character.hardcore_player_name = Hardcore_Settings.hardcore_player_name or ""
 
 	-- Show the first menu screen.  Requires short delay
 	if UnitLevel("player") < 2 then
@@ -1294,7 +1298,7 @@ function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
 		end
 		if command == COMM_COMMANDS[4] then -- Received hc character data
 			local name, _ = string.split("-", sender)
-			local version_str, creation_time, achievements_str, _, party_mode_str, _, _, team_str =
+			local version_str, creation_time, achievements_str, _, party_mode_str, _, _, team_str, hc_tag =
 				string.split(COMM_FIELD_DELIM, data)
 			local achievements_l = { string.split(COMM_SUBFIELD_DELIM, achievements_str) }
 			other_achievements_ds = {}
@@ -1311,6 +1315,7 @@ function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
 				version = version_str,
 				team = team_l,
 				last_received = time(),
+				hardcore_player_name = hc_tag,
 			}
 			return
 		end
@@ -2062,6 +2067,11 @@ function Hardcore:SendCharacterData(dest)
 		for i, v in ipairs(Hardcore_Character.team) do
 			commMessage = commMessage .. v .. COMM_SUBFIELD_DELIM -- Add unknown creation time
 		end
+
+		commMessage = commMessage .. COMM_FIELD_DELIM
+
+		commMessage = commMessage .. (Hardcore_Character.hardcore_player_name or "") .. COMM_FIELD_DELIM -- Add Version
+
 		CTL:SendAddonMessage("ALERT", COMM_NAME, commMessage, "WHISPER", dest)
 	end
 end
@@ -2456,6 +2466,19 @@ local options = {
 						end
 					end,
 					order = 10,
+				},
+				hc_player_name = {
+					type = "input",
+					name = "Hardcore player tag",
+					desc = "Hardcore player tag",
+					get = function()
+						return Hardcore_Settings.hardcore_player_name or ""
+					end,
+					set = function(info, val)
+						Hardcore_Settings.hardcore_player_name = val
+						Hardcore_Character.hardcore_player_name = val
+					end,
+					order = 11,
 				},
 			},
 		},

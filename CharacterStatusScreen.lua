@@ -75,7 +75,7 @@ end)
 
 local game_version_offset = 0
 if _G["HardcoreBuildLabel"] == "WotLK" then
-  game_version_offset = -72
+	game_version_offset = -72
 end
 local TabGUI = CreateFrame("Button", "nwtab" .. TabID, CharacterFrame)
 _G["HardcoreCharacterTab"] = TabGUI

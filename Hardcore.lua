@@ -609,7 +609,10 @@ function Hardcore:PLAYER_LOGIN()
 				_G["ReputationFrame"]:Hide()
 			end
 			ShowCharacterHC(Hardcore_Character)
-		elseif (name == "InspectFrameTab3" and _G["HardcoreBuildLabel"] ~= "WotLK") or (name == "InspectFrameTab4"  and _G["HardcoreBuildLabel"] == "WotLK") then -- 3: era, 4:wotlk
+		elseif
+			(name == "InspectFrameTab3" and _G["HardcoreBuildLabel"] ~= "WotLK")
+			or (name == "InspectFrameTab4" and _G["HardcoreBuildLabel"] == "WotLK")
+		then -- 3: era, 4:wotlk
 			return
 		else
 			HideCharacterHC()
@@ -837,13 +840,16 @@ function Hardcore:INSPECT_READY(...)
 
 	hooksecurefunc("CharacterFrameTab_OnClick", function(self)
 		local name = self:GetName()
-		if (name ~= "InspectFrameTab3" and _G["HardcoreBuildLabel"] ~= "WotLK") or (name ~= "InspectFrameTab4" and _G["HardcoreBuildLabel"] == "WotLK") then -- 3:era, 4:wotlk
+		if
+			(name ~= "InspectFrameTab3" and _G["HardcoreBuildLabel"] ~= "WotLK")
+			or (name ~= "InspectFrameTab4" and _G["HardcoreBuildLabel"] == "WotLK")
+		then -- 3:era, 4:wotlk
 			return
 		end
 		if _G["HardcoreBuildLabel"] == "WotLK" then
-		  PanelTemplates_SetTab(InspectFrame, 4)
+			PanelTemplates_SetTab(InspectFrame, 4)
 		else
-		  PanelTemplates_SetTab(InspectFrame, 3)
+			PanelTemplates_SetTab(InspectFrame, 3)
 		end
 		if _G["InspectPaperDollFrame"] ~= nil then
 			_G["InspectPaperDollFrame"]:Hide()

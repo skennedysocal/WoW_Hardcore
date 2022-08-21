@@ -711,14 +711,14 @@ function Hardcore:PLAYER_LOGIN()
 			if buff_name == nil then
 				return false
 			end
-			if buff_name == "Adventure Awaits" then
+			if buff_name == "Adventure Awaits" or buff_name == "Soul of Iron" then
 				return true
 			end
 		end
 		return true
 	end
 
-	if Hardcore_Character.game_version == "" then
+	if Hardcore_Character.game_version == "" or Hardcore_Character.game_version == "Era" then
 		if _G["HardcoreBuildLabel"] == nil then
 		-- pass
 		elseif _G["HardcoreBuildLabel"] == "Classic" then

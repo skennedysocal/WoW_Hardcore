@@ -168,20 +168,6 @@ function UpdateCharacterHC(_hardcore_character, _player_name, _version, frame_to
 	character_name:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
 	character_meta_data_container:AddChild(character_name)
 
-	local level_title_text = AceGUI:Create("HardcoreClassTitleLabel")
-	level_title_text:SetRelativeWidth(1.0)
-	level_title_text:SetHeight(60)
-	local level_text = _player_level or "?"
-	local class_text
-	if _player_class ~= nil then
-		class_text = "|c00" .. CLASS_COLOR_BY_NAME[_player_class] .. _player_class .. "|r"
-	else
-		class_text = "?"
-	end
-	level_title_text:SetText("Level " .. level_text .. " " .. class_text)
-	level_title_text:SetFont("Fonts\\FRIZQT__.TTF", 10)
-	character_meta_data_container:AddChild(level_title_text)
-
 	local team_title = AceGUI:Create("HardcoreClassTitleLabel")
 	team_title:SetRelativeWidth(1.0)
 	team_title:SetHeight(60)
@@ -208,6 +194,21 @@ function UpdateCharacterHC(_hardcore_character, _player_name, _version, frame_to
 	team_title:SetFont("Fonts\\FRIZQT__.TTF", 10)
 	character_meta_data_container:AddChild(team_title)
 
+	local level_title_text = AceGUI:Create("HardcoreClassTitleLabel")
+	level_title_text:SetRelativeWidth(1.0)
+	level_title_text:SetHeight(60)
+	local level_text = _player_level or "?"
+	local class_text
+	if _player_class ~= nil then
+		class_text = "|c00" .. CLASS_COLOR_BY_NAME[_player_class] .. _player_class .. "|r"
+	else
+		class_text = "?"
+	end
+	level_title_text:SetText("Level " .. level_text .. " " .. class_text)
+	level_title_text:SetFont("Fonts\\FRIZQT__.TTF", 10)
+	character_meta_data_container:AddChild(level_title_text)
+
+
 	local creation_date_label = AceGUI:Create("HardcoreClassTitleLabel")
 	creation_date_label:SetRelativeWidth(1.0)
 	creation_date_label:SetHeight(60)
@@ -230,6 +231,16 @@ function UpdateCharacterHC(_hardcore_character, _player_name, _version, frame_to
 	version_name:SetText("Addon version: " .. version .. ", " .. game_version)
 	version_name:SetFont("Fonts\\FRIZQT__.TTF", 10)
 	character_meta_data_container:AddChild(version_name)
+
+	if _hardcore_character.hardcore_player_name ~= nil or _hardcore_character.hardcore_player_name == "" then
+	  local hc_tag_f = AceGUI:Create("HardcoreClassTitleLabel")
+	  hc_tag_f:SetRelativeWidth(1.0)
+	  hc_tag_f:SetHeight(60)
+	  local hc_tag_string = _hardcore_character.hardcore_player_name
+	  hc_tag_f:SetText("HC Tag: " .. hc_tag_string)
+	  hc_tag_f:SetFont("Fonts\\FRIZQT__.TTF", 10)
+	  character_meta_data_container:AddChild(hc_tag_f)
+	end
 
 	local v_buffer = AceGUI:Create("Label")
 	v_buffer:SetRelativeWidth(1.0)

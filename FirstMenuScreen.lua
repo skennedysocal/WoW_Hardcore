@@ -90,10 +90,18 @@ function ShowFirstMenu(_hardcore_character, _failure_function_executor)
 					if achievement.forces ~= nil then
 						for i, other_a in ipairs(achievement.forces) do
 							if _G.achievements[other_a] ~= nil then
-								table.insert(_hardcore_character.achievements, _G.achievements[other_a].name)
-								achievement_icons[other_a].image:SetVertexColor(1, 1, 1)
-								_G.achievements[other_a]:Register(_failure_function_executor, _hardcore_character)
-								Hardcore:Print("Added " .. _G.achievements[other_a].name .. " challenge!")
+								local already_active = false
+								for _i, _a in ipairs(_hardcore_character.achievements) do
+									if _a == other_a then
+										already_active = true
+									end
+								end
+								if already_active == false then
+									table.insert(_hardcore_character.achievements, _G.achievements[other_a].name)
+									achievement_icons[other_a].image:SetVertexColor(1, 1, 1)
+									_G.achievements[other_a]:Register(_failure_function_executor, _hardcore_character)
+									Hardcore:Print("Added " .. _G.achievements[other_a].name .. " challenge!")
+								end
 							end
 						end
 					end

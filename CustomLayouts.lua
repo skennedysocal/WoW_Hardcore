@@ -141,6 +141,9 @@ AceGUI:RegisterLayout("CenteredFlow", function(content, children)
 		rowstart:SetPoint("TOPLEFT", content, "TOPLEFT", 0, -height)
 	elseif rowstart then
 		local centered_offset = 180 - 180 / 9 * math.min(#children, 9)
+		if #children == 1 then
+		  centered_offset = 0
+		end
 		rowstart:SetPoint("TOPLEFT", content, "TOPLEFT", centered_offset, -(height + (rowoffset - rowstartoffset) + 3))
 	end
 

@@ -251,7 +251,7 @@ function UpdateCharacterHC(_hardcore_character, _player_name, _version, frame_to
 	local achievements_container = AceGUI:Create("SimpleGroup")
 	achievements_container:SetRelativeWidth(1.0)
 	achievements_container:SetHeight(50)
-	achievements_container:SetLayout("Flow")
+	achievements_container:SetLayout("CenteredFlow")
 	frame_to_update:AddChild(achievements_container)
 
 	local achievements_title = AceGUI:Create("HardcoreClassTitleLabel")

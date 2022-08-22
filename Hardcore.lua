@@ -73,7 +73,7 @@ Hardcore_Character = {
 }
 
 --[[ Local variables ]]--
-local debug = true
+local debug = false
 local loaded_inspect_frame = false
 local other_hardcore_character_cache = {} -- dict of player name & server to character data
 local pulses = {}
@@ -318,15 +318,7 @@ local function SlashHandler(msg, editbox)
 		for substring in args:gmatch("%S+") do
 			dk_convert_option = substring
 		end
-		if dk_convert_option == "sacrifice" then
-			Hardcore:DKConvert(dk_convert_option) 
-		elseif dk_convert_option == "activate" then 
-			Hardcore:DKConvert(dk_convert_option) 
-		elseif dk_convert_option == "override" then 
-			Hardcore:DKConvert(dk_convert_option) 
-		else 
-			Hardcore:Print("|cff00ff00Death Knight options:|r sacrifice activate")
-		end
+		Hardcore:DKConvert(dk_convert_option) 
 	elseif cmd == "griefalert" then
 		local grief_alert_option = ""
 		for substring in args:gmatch("%S+") do
@@ -2047,7 +2039,7 @@ function Hardcore:DKConvert(dk_convert_option)
 			return
 		end
 		-- we deaths, bh, played_time_gaps and trade partners
-		if (#Hardcore_Character.deaths > 0 or #Hardcore_Character.bubble_hearth_incidents > 0 or #Hardcore_Character.played_time_gap_warnings > 0 or #Hardcore_Character.trade_partners > 0) then
+		if (#Hardcore_Character.deaths > 0 or #Hardcore_Character.bubble_hearth_incidents > 0 or #Hardcore_Character.trade_partners > 0) then
 			Hardcore:Print("Before proceeding with sacrifice, please contact admins and verify your character as there are some warnings!")
 			return
 		end
@@ -2113,6 +2105,8 @@ function Hardcore:DKConvert(dk_convert_option)
 		for k, v in pairs(Hardcore_Settings.sacrifice) do Hardcore_Settings.sacrifice[k]=nil end
 		table.insert(Hardcore_Settings.sacrifice, sacrifice)
 		Hardcore:Print("Character marked for sacrifice. Die within 5 minutes and then activate it on Death Knight.")
+	else
+		Hardcore:Print("|cff00ff00Death Knight options:|r sacrifice activate")
 	end
 end
 

@@ -1,5 +1,6 @@
 local _G = _G
 _G.achievements = {}
+_G.achievements_order = {}
 _G.extra_rules = {}
 _G.a_id = {
 	AnimalFriend = 1,
@@ -49,8 +50,16 @@ _G.a_id = {
 	WhiteKnight = 45,
 	Scavenger = 46,
 	InsaneInTheMembrane = 47,
+	PartnerUp = 48,
 }
 _G.id_a = {}
 for k, v in pairs(_G.a_id) do
 	_G.id_a[tostring(v)] = k
 end
+
+for k in pairs(_G.a_id) do
+	table.insert(_G.achievements_order, k)
+end
+table.sort(_G.achievements_order)
+
+other_hardcore_character_cache = {} -- dict of player name & server to character data

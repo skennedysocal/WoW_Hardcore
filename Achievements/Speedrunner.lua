@@ -13,6 +13,9 @@ speedrunner_achievement.class = "All"
 speedrunner_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_speedrunner.blp"
 speedrunner_achievement.description =
 	"Complete the Hardcore challenge in less than 100 hours (4 days and 4 hours) of played time. Make sure to show your /played time when you hit 60. The run must be completed within eight weeks of real time. You are NOT allowed to log off in rested areas."
+speedrunner_achievement.restricted_game_versions = {
+	["WotLK"] = 1,
+}
 
 -- Registers
 function speedrunner_achievement:Register(fail_function_executor, _hardcore_character)
@@ -26,12 +29,12 @@ function speedrunner_achievement:Register(fail_function_executor, _hardcore_char
 		speedrunner_achievement.fail_function_executor.Fail(speedrunner_achievement.name)
 	end
 
-	if GetXPExhaustion() ~= nil then 
-	  local num_xp_bars = (GetXPExhaustion() / UnitXPMax("player")) * 20
-	  if num_xp_bars > max_num_xp_bars then
-		  Hardcore:Print("Exceeded max rested xp bubble limit of 1.")
-		  speedrunner_achievement.fail_function_executor.Fail(speedrunner_achievement.name)
-	  end
+	if GetXPExhaustion() ~= nil then
+		local num_xp_bars = (GetXPExhaustion() / UnitXPMax("player")) * 20
+		if num_xp_bars > max_num_xp_bars then
+			Hardcore:Print("Exceeded max rested xp bubble limit of 1.")
+			speedrunner_achievement.fail_function_executor.Fail(speedrunner_achievement.name)
+		end
 	end
 	RequestTimePlayed()
 	speedrunner_achievement:RegisterEvent("PLAYER_LEVEL_UP")

@@ -32,7 +32,7 @@ end
 ephemeral_achievement:SetScript("OnEvent", function(self, event, ...)
 	local arg = { ... }
 	if event == "MERCHANT_SHOW" then
-	  MerchantRepairAllButton:Hide()
-	  MerchantRepairItemButton:Hide()
+		MerchantRepairAllButton:Hide()
+		MerchantRepairItemButton:Hide()
 	end
 end)

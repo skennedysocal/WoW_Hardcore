@@ -8,6 +8,7 @@ local CLASS_COLOR_BY_NAME = {
 	["Shaman"] = "0070DD",
 	["Paladin"] = "F48CBA",
 	["Rogue"] = "FFF468",
+	["Death Knight"] = "C41E3A",
 	["General"] = "FFFFFF",
 }
 local AceGUI = LibStub("AceGUI-3.0")
@@ -53,10 +54,10 @@ br:SetPoint("TOPLEFT", CharacterFrame, "TOPLEFT", 258, -257)
 br:SetWidth(128)
 br:SetHeight(256)
 
-local title_text = f:CreateFontString(nil,"ARTWORK")
+local title_text = f:CreateFontString(nil, "ARTWORK")
 title_text:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 22)
 title_text:SetPoint("TOPLEFT", CharacterFrame, "TOPLEFT", 150, -45)
-title_text:SetTextColor(1,.82,0)
+title_text:SetTextColor(1, 0.82, 0)
 title_text:SetText("Hardcore")
 
 Panel:SetPoint("CENTER", 0, 0)
@@ -72,9 +73,13 @@ hooksecurefunc(CharacterFrame, "Hide", function(self, button)
 	HideCharacterHC()
 end)
 
+local game_version_offset = 0
+if _G["HardcoreBuildLabel"] == "WotLK" then
+	game_version_offset = -72
+end
 local TabGUI = CreateFrame("Button", "nwtab" .. TabID, CharacterFrame)
 _G["HardcoreCharacterTab"] = TabGUI
-TabGUI:SetPoint("LEFT", "CharacterFrameTab5", "RIGHT", -16, 0)
+TabGUI:SetPoint("LEFT", "CharacterFrameTab5", "RIGHT", -16 + game_version_offset, 0)
 TabGUI.text = TabGUI:CreateFontString(nil, "ARTWORK")
 TabGUI.text:SetFontObject(GameFontNormalSmall)
 TabGUI.text:SetPoint("CENTER", 0, 1)
@@ -163,20 +168,6 @@ function UpdateCharacterHC(_hardcore_character, _player_name, _version, frame_to
 	character_name:SetFont("Fonts\\FRIZQT__.TTF", 16, "OUTLINE")
 	character_meta_data_container:AddChild(character_name)
 
-	local level_title_text = AceGUI:Create("HardcoreClassTitleLabel")
-	level_title_text:SetRelativeWidth(1.0)
-	level_title_text:SetHeight(60)
-	local level_text = _player_level or "?"
-	local class_text
-	if _player_class ~= nil then
-	  class_text = "|c00" .. CLASS_COLOR_BY_NAME[_player_class] .. _player_class .. "|r"
-	else
-	  class_text = "?"
-	end
-	level_title_text:SetText("Level " .. level_text .. " " .. class_text)
-	level_title_text:SetFont("Fonts\\FRIZQT__.TTF", 10)
-	character_meta_data_container:AddChild(level_title_text)
-
 	local team_title = AceGUI:Create("HardcoreClassTitleLabel")
 	team_title:SetRelativeWidth(1.0)
 	team_title:SetHeight(60)
@@ -203,6 +194,21 @@ function UpdateCharacterHC(_hardcore_character, _player_name, _version, frame_to
 	team_title:SetFont("Fonts\\FRIZQT__.TTF", 10)
 	character_meta_data_container:AddChild(team_title)
 
+	local level_title_text = AceGUI:Create("HardcoreClassTitleLabel")
+	level_title_text:SetRelativeWidth(1.0)
+	level_title_text:SetHeight(60)
+	local level_text = _player_level or "?"
+	local class_text
+	if _player_class ~= nil then
+		class_text = "|c00" .. CLASS_COLOR_BY_NAME[_player_class] .. _player_class .. "|r"
+	else
+		class_text = "?"
+	end
+	level_title_text:SetText("Level " .. level_text .. " " .. class_text)
+	level_title_text:SetFont("Fonts\\FRIZQT__.TTF", 10)
+	character_meta_data_container:AddChild(level_title_text)
+
+
 	local creation_date_label = AceGUI:Create("HardcoreClassTitleLabel")
 	creation_date_label:SetRelativeWidth(1.0)
 	creation_date_label:SetHeight(60)
@@ -210,7 +216,7 @@ function UpdateCharacterHC(_hardcore_character, _player_name, _version, frame_to
 	if _hardcore_character.first_recorded ~= nil and _hardcore_character.first_recorded ~= -1 then
 		start_date = date("%m/%d/%y", _hardcore_character.first_recorded)
 		if start_date == nil then
-		  start_date = "?"
+			start_date = "?"
 		end
 	end
 	creation_date_label:SetText("Started on " .. start_date)
@@ -221,10 +227,20 @@ function UpdateCharacterHC(_hardcore_character, _player_name, _version, frame_to
 	version_name:SetRelativeWidth(1.0)
 	version_name:SetHeight(60)
 	local version = _version
-	version_name:SetText("Addon version: " .. version)
+	local game_version = _hardcore_character.game_version or _G["HardcoreBuildLabel"]
+	version_name:SetText("Addon version: " .. version .. ", " .. game_version)
 	version_name:SetFont("Fonts\\FRIZQT__.TTF", 10)
 	character_meta_data_container:AddChild(version_name)
 
+	if _hardcore_character.hardcore_player_name ~= nil and _hardcore_character.hardcore_player_name ~= "" then
+	  local hc_tag_f = AceGUI:Create("HardcoreClassTitleLabel")
+	  hc_tag_f:SetRelativeWidth(1.0)
+	  hc_tag_f:SetHeight(60)
+	  local hc_tag_string = _hardcore_character.hardcore_player_name
+	  hc_tag_f:SetText("HC Tag: " .. hc_tag_string)
+	  hc_tag_f:SetFont("Fonts\\FRIZQT__.TTF", 10)
+	  character_meta_data_container:AddChild(hc_tag_f)
+	end
 
 	local v_buffer = AceGUI:Create("Label")
 	v_buffer:SetRelativeWidth(1.0)
@@ -235,7 +251,7 @@ function UpdateCharacterHC(_hardcore_character, _player_name, _version, frame_to
 	local achievements_container = AceGUI:Create("SimpleGroup")
 	achievements_container:SetRelativeWidth(1.0)
 	achievements_container:SetHeight(50)
-	achievements_container:SetLayout("Flow")
+	achievements_container:SetLayout("CenteredFlow")
 	frame_to_update:AddChild(achievements_container)
 
 	local achievements_title = AceGUI:Create("HardcoreClassTitleLabel")
@@ -266,27 +282,6 @@ function UpdateCharacterHC(_hardcore_character, _player_name, _version, frame_to
 			end
 		end
 	end
-	if _hardcore_character.party_mode ~= nil then
-		if _hardcore_character.party_mode == "Duo" or _hardcore_character.party_mode == "Trio" then
-			local partner_up_achievement = _G.extra_rules.Duo
-			local achievement_icon = AceGUI:Create("Icon")
-			achievement_icon:SetWidth(ICON_SIZE)
-			achievement_icon:SetHeight(ICON_SIZE)
-			achievement_icon:SetImage(partner_up_achievement.icon_path)
-			achievement_icon:SetImageSize(ICON_SIZE, ICON_SIZE)
-			achievement_icon.image:SetVertexColor(1, 1, 1)
-			achievement_icon:SetCallback("OnEnter", function(widget)
-			GameTooltip:SetOwner(WorldFrame, "ANCHOR_CURSOR")
-			GameTooltip:AddLine("Partner Up!")
-			GameTooltip:AddLine("Complete the Hardcore challenge in a group of two. Read the rules, if you want to know more about Hardcore Duos. For all Achievements within the General category, your duo is considered one character (i.e. the achievement’s rules apply to both of you as if you were one character).", 1, 1, 1, true)
-			GameTooltip:Show()
-			end)
-			achievement_icon:SetCallback("OnLeave", function(widget)
-				GameTooltip:Hide()
-			end)
-			achievements_container:AddChild(achievement_icon)
-		end
-	end
 end
 
 function ShowCharacterHC(_hardcore_character)
@@ -303,7 +298,14 @@ function ShowCharacterHC(_hardcore_character)
 	f2:ReleaseChildren()
 
 	local class, _, _ = UnitClass("player")
-	UpdateCharacterHC(_hardcore_character, UnitName("player"), GetAddOnMetadata("Hardcore", "Version"), f2, class, UnitLevel("player"))
+	UpdateCharacterHC(
+		_hardcore_character,
+		UnitName("player"),
+		GetAddOnMetadata("Hardcore", "Version"),
+		f2,
+		class,
+		UnitLevel("player")
+	)
 	Panel:Show()
 	f:Show()
 	f2:Show()

@@ -13,10 +13,10 @@ insane_in_the_membrane_achievement.description =
 -- Registers
 function insane_in_the_membrane_achievement:Register(fail_function_executor)
 	insane_in_the_membrane_achievement.timer_handle = C_Timer.NewTicker(1.0, function()
-	    if UnitIsPVP("player") == false then
-		Hardcore:Print("Turning on PVP flag for Insane in the Membrane.")
-		SetPVP(1)
-	    end
+		if UnitIsPVP("player") == false then
+			Hardcore:Print("Turning on PVP flag for Insane in the Membrane.")
+			SetPVP(1)
+		end
 	end)
 	insane_in_the_membrane_achievement.fail_function_executor = fail_function_executor
 end
@@ -26,5 +26,4 @@ function insane_in_the_membrane_achievement:Unregister()
 end
 
 -- Register Definitions
-insane_in_the_membrane_achievement:SetScript("OnEvent", function(self, event, ...)
-end)
+insane_in_the_membrane_achievement:SetScript("OnEvent", function(self, event, ...) end)

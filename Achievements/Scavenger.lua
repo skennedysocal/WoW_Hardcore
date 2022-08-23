@@ -26,11 +26,13 @@ end
 
 function scavenger_achievement:GenerateBlacklist()
 	local completed = GetQuestsCompleted()
-	for i,v in pairs(completed) do
-	  for g=1,10 do
-	   local itemName, itemTexture, numItems, quality, isUsable, itemID = GetQuestLogRewardInfo(g, i)
-	   if itemName then scavenger_achievement.blacklist[itemName] = 1 end
-	  end
+	for i, v in pairs(completed) do
+		for g = 1, 10 do
+			local itemName, itemTexture, numItems, quality, isUsable, itemID = GetQuestLogRewardInfo(g, i)
+			if itemName then
+				scavenger_achievement.blacklist[itemName] = 1
+			end
+		end
 	end
 end
 
@@ -38,18 +40,20 @@ end
 scavenger_achievement:SetScript("OnEvent", function(self, event, ...)
 	local arg = { ... }
 	if event == "MERCHANT_SHOW" then
-	  for i=1,12 do
-	    if _G["MerchantItem"..i] then _G["MerchantItem"..i]:Hide() end
-	  end
+		for i = 1, 12 do
+			if _G["MerchantItem" .. i] then
+				_G["MerchantItem" .. i]:Hide()
+			end
+		end
 	elseif event == "PLAYER_EQUIPMENT_CHANGED" then
-	      if arg[2] == true then
-		      return
-	      end
-	      local item_id = GetInventoryItemID("player", arg[1])
-	      local item_name, _, _, _, _, item_type, item_subtype, _, _, _, _ = GetItemInfo(item_id)
-	      if scavenger_achievement.blacklist[item_name] ~= nil then
-		      Hardcore:Print("Equiped quest reward " .. item_name .. ".")
-		      scavenger_achievement.fail_function_executor.Fail(scavenger_achievement.name)
-	      end
+		if arg[2] == true then
+			return
+		end
+		local item_id = GetInventoryItemID("player", arg[1])
+		local item_name, _, _, _, _, item_type, item_subtype, _, _, _, _ = GetItemInfo(item_id)
+		if scavenger_achievement.blacklist[item_name] ~= nil then
+			Hardcore:Print("Equiped quest reward " .. item_name .. ".")
+			scavenger_achievement.fail_function_executor.Fail(scavenger_achievement.name)
+		end
 	end
 end)

@@ -6,6 +6,7 @@ local CLASSES = {
 	[3] = "Hunter",
 	[4] = "Rogue",
 	[5] = "Priest",
+	[6] = "Death Knight",
 	[7] = "Shaman",
 	[8] = "Mage",
 	[9] = "Warlock",
@@ -13,10 +14,9 @@ local CLASSES = {
 }
 
 local function FormatStrForParty(input_str)
-  local ouput_str = string.lower(input_str)
-  output_str = ouput_str:gsub("^%l", string.upper)
-  return output_str
-
+	local ouput_str = string.lower(input_str)
+	output_str = ouput_str:gsub("^%l", string.upper)
+	return output_str
 end
 
 function ShowFirstMenu(_hardcore_character, _failure_function_executor)
@@ -74,6 +74,13 @@ function ShowFirstMenu(_hardcore_character, _failure_function_executor)
 					Hardcore:Print(
 						"Cannot start achievement " .. achievement.title .. " as class " .. CLASSES[_class_id]
 					)
+				elseif
+					achievement.restricted_game_versions ~= nil
+					and achievement.restricted_game_versions[_G["HardcoreBuildLabel"]] ~= nil
+				then
+					Hardcore:Print(
+						"Achievement " .. achievement.title .. " is not supported in " .. _G["HardcoreBuildLabel"]
+					)
 				else
 					table.insert(_hardcore_character.achievements, achievement.name)
 					achievement_icon.image:SetVertexColor(1, 1, 1)
@@ -81,12 +88,22 @@ function ShowFirstMenu(_hardcore_character, _failure_function_executor)
 					Hardcore:Print("Added " .. achievement.name .. " challenge!")
 
 					if achievement.forces ~= nil then
-					  for i, other_a in ipairs(achievement.forces) do
-					    table.insert(_hardcore_character.achievements, _G.achievements[other_a].name)
-					    achievement_icons[other_a].image:SetVertexColor(1, 1, 1)
-					    _G.achievements[other_a]:Register(_failure_function_executor, _hardcore_character)
-					    Hardcore:Print("Added " .. _G.achievements[other_a].name .. " challenge!")
-					  end
+						for i, other_a in ipairs(achievement.forces) do
+							if _G.achievements[other_a] ~= nil then
+								local already_active = false
+								for _i, _a in ipairs(_hardcore_character.achievements) do
+									if _a == other_a then
+										already_active = true
+									end
+								end
+								if already_active == false then
+									table.insert(_hardcore_character.achievements, _G.achievements[other_a].name)
+									achievement_icons[other_a].image:SetVertexColor(1, 1, 1)
+									_G.achievements[other_a]:Register(_failure_function_executor, _hardcore_character)
+									Hardcore:Print("Added " .. _G.achievements[other_a].name .. " challenge!")
+								end
+							end
+						end
 					end
 				end
 			end
@@ -115,18 +132,27 @@ function ShowFirstMenu(_hardcore_character, _failure_function_executor)
 		description:SetFont("", 16)
 		local description_text = achievement.description
 		if achievement.forces ~= nil then
-		  description_text = description_text .. "\n |c00FFFF00Selecting ".. achievement.title .. " forces "
-		  for i=1,#achievement.forces do
+			description_text = description_text .. "\n |c00FFFF00Selecting " .. achievement.title .. " forces "
+			for i = 1, #achievement.forces do
+				if i == #achievement.forces and #achievement.forces > 1 then
+					description_text = description_text .. "and "
+				end
+				description_text = description_text .. _G.achievements[achievement.forces[i]].title
+				if i ~= #achievement.forces then
+					description_text = description_text .. ", "
+				end
+			end
+			description_text = description_text .. ".|r"
+		end
 
-		    if i == #achievement.forces and #achievement.forces > 1 then
-		      description_text = description_text .. "and "
-		    end
-		    description_text = description_text .. _G.achievements[achievement.forces[i]].title
-		    if i~= #achievement.forces then
-		      description_text = description_text .. ", "
-		    end
-		  end
-		  description_text = description_text .. ".|r"
+		if
+			achievement.restricted_game_versions ~= nil
+			and achievement.restricted_game_versions[_G["HardcoreBuildLabel"]] ~= nil
+		then
+			description_text = description_text
+				.. "\n |c00FF0000This achievement is not available for "
+				.. _G["HardcoreBuildLabel"]
+				.. ".|r"
 		end
 		description:SetText(description_text)
 		description:SetPoint("BOTTOM", 200, 5)
@@ -181,6 +207,7 @@ function ShowFirstMenu(_hardcore_character, _failure_function_executor)
 			["Shaman"] = "0070DD",
 			["Paladin"] = "F48CBA",
 			["Rogue"] = "FFF468",
+			["Death Knight"] = "C41E3A",
 			["General"] = "FFFFFF",
 		}
 		title:SetText("|c00" .. CLASS_COLOR_BY_NAME[_title] .. _title .. "|r Achievements")
@@ -287,9 +314,12 @@ function ShowFirstMenu(_hardcore_character, _failure_function_executor)
 
 	local function DrawAchievementsTab(container, _scroll_frame)
 		DrawClassTitleRow(_scroll_frame, "General")
-		for k, achievement in pairs(_G.achievements) do
-			if achievement.class == "All" then
-				DrawAchievementRow(achievement, _scroll_frame)
+		for k, achievement_name in pairs(_G.achievements_order) do
+			local achievement = _G.achievements[achievement_name]
+			if achievement ~= nil then
+				if achievement.class == "All" then
+					DrawAchievementRow(achievement, _scroll_frame)
+				end
 			end
 		end
 

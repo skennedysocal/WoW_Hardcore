@@ -1,3 +1,12 @@
+_G["HardcoreBuildLabel"] = nil
+local build_num = select(4, GetBuildInfo())
+if build_num > 29999 then
+	_G["HardcoreBuildLabel"] = "WotLK"
+elseif build_num > 19999 then
+	_G["HardcoreBuildLabel"] = "TBC"
+else
+	_G["HardcoreBuildLabel"] = "Classic"
+end
 function Hardcore_stringOrNumberToUnicode(val)
 	local str
 	if Hardcore_IsNumber(val) then
@@ -9,7 +18,9 @@ function Hardcore_stringOrNumberToUnicode(val)
 	local unicode = ""
 	for i = 1, #str do
 		local char = str:sub(i, i)
-		unicode = unicode..string.byte(char)..Hardcore_generateRandomString(Hardcore_generateRandomIntegerInRange(2, 3))
+		unicode = unicode
+			.. string.byte(char)
+			.. Hardcore_generateRandomString(Hardcore_generateRandomIntegerInRange(2, 3))
 	end
 	return unicode
 end
@@ -18,9 +29,9 @@ function Hardcore_tableToUnicode(tbl)
 	local unicode = ""
 	for i, _ in ipairs(tbl) do
 		for k, v in pairs(tbl[i]) do
-			unicode = unicode..Hardcore_stringOrNumberToUnicode(v).."%"
+			unicode = unicode .. Hardcore_stringOrNumberToUnicode(v) .. "%"
 		end
-		unicode = strsub(unicode, 0, #unicode - 1).."?"
+		unicode = strsub(unicode, 0, #unicode - 1) .. "?"
 	end
 	return strsub(unicode, 0, #unicode - 1)
 end
@@ -28,7 +39,7 @@ end
 function Hardcore_generateRandomString(character_count)
 	local str = ""
 	for i = 1, character_count do
-		str = str..Hardcore_generateRandomLetter()
+		str = str .. Hardcore_generateRandomLetter()
 	end
 	return str
 end
@@ -40,15 +51,15 @@ function Hardcore_generateRandomLetter()
 end
 
 function Hardcore_generateRandomIntegerInRange(min, max)
-		return math.floor(math.random() * (max - min + 1)) + min;
+	return math.floor(math.random() * (max - min + 1)) + min
 end
 
 function Hardcore_map(tbl, f)
-		local t = {}
-		for k,v in pairs(tbl) do
-				t[k] = f(v)
-		end
-		return t
+	local t = {}
+	for k, v in pairs(tbl) do
+		t[k] = f(v)
+	end
+	return t
 end
 
 function Hardcore_join(tbl, separator)
@@ -57,9 +68,9 @@ function Hardcore_join(tbl, separator)
 		if str == "" then
 			str = v
 		else
-			str = str..separator..v
+			str = str .. separator .. v
 		end
-		end
+	end
 	return str
 end
 
@@ -98,7 +109,7 @@ function Hardcore_GetVersionParts(version_string)
 	versionToValue[version_string] = {
 		major = tonumber(major),
 		minor = tonumber(minor),
-		patch = tonumber(patch)
+		patch = tonumber(patch),
 	}
 	local thisVersionParts = versionToValue[version_string]
 
@@ -137,7 +148,7 @@ end
 -- Same format as CHAT_MSG_ADDON
 function Hardcore_GetPlayerPlusRealmName()
 	local longName, serverName = UnitFullName("player")
-	local FULL_PLAYER_NAME = longName..'-'..serverName
+	local FULL_PLAYER_NAME = longName .. "-" .. serverName
 
 	return FULL_PLAYER_NAME
 end
@@ -150,11 +161,11 @@ function Hardcore_FilterUnique(tbl)
 	local hash = {}
 	local res = {}
 
-	for _,v in ipairs(tbl) do
-	   if (not hash[v]) then
-		   res[#res+1] = v
-		   hash[v] = true
-	   end
+	for _, v in ipairs(tbl) do
+		if not hash[v] then
+			res[#res + 1] = v
+			hash[v] = true
+		end
 	end
 
 	return res

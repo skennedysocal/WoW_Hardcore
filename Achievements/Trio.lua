@@ -285,6 +285,7 @@ end
 trio_rules:SetScript("OnEvent", function(self, event, ...)
 	local arg = { ... }
 	if event == "PLAYER_DEAD" then
-		trio_rules.fail_function_executor.Fail(trio_rules.name)
+		trio_rules._hardcore_character_ref.party_mode = "Failed Trio"
+		Hardcore:Print("Failed Trio")
 	end
 end)

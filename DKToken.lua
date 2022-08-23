@@ -1,9 +1,4 @@
 function GenerateDKToken(_hardcore_settings, _hardcore_character)
-	if _hardcore_settings.dk_token ~= nil then
-		Hardcore:Print("DK Token already exists; cannot generate another.")
-		return
-	end
-
 	_hardcore_settings.dk_token = {
 		party_mode = _hardcore_character.party_mode or "?",
 		achievements = {},

@@ -1,10 +1,11 @@
-function GenerateDKToken(_hardcore_settings, _hardcore_character)
+function GenerateDKToken(_hardcore_settings, _hardcore_character, _party_change_token_secret)
 	_hardcore_settings.dk_token = {
 		party_mode = _hardcore_character.party_mode or "?",
 		achievements = {},
 		team = {},
 		first_recorded = _hardcore_character.first_recorded,
 		generated_time = GetServerTime(), -- since epoch
+		party_change_token_secret = _party_change_token_secret,
 	}
 
 	for idx, achievement in ipairs(_hardcore_character.achievements) do
@@ -35,7 +36,9 @@ function ApplyDKToken(_hardcore_settings, _hardcore_character)
 		table.insert(_hardcore_character.team, partner)
 	end
 	Hardcore:Print("DK Token applied.")
+	local party_change_token_secret = _hardcore_settings.dk_token.party_change_token_secret
 	_hardcore_settings.dk_token = nil
+	return party_change_token_secret
 end
 
 function CheckForExpiredDKToken(_hardcore_settings)

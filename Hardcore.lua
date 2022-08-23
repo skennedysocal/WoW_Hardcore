@@ -613,6 +613,8 @@ function Hardcore:PLAYER_LOGIN()
 		return true
 	end
 
+	CheckForExpiredDKToken(Hardcore_Settings)
+
 	if Hardcore_Character.game_version == "" or Hardcore_Character.game_version == "Era" then
 		if _G["HardcoreBuildLabel"] == nil then
 		-- pass
@@ -895,6 +897,7 @@ function Hardcore:PLAYER_DEAD()
 		local sacrifice = Hardcore_Settings.sacrifice[1]
 		local timestamp = time(date("*t"))
 		if (timestamp - sacrifice.timestamp) <= 300 then
+			GenerateDKToken(Hardcore_Settings, Hardcore_Character)
 			messageFormat =
 				"Our brave %s, %s the %s, is choosing to follow the Path of the Ebon Blade at level %d in %s"
 			Hardcore_Settings.sacrifice[1].complete = true
@@ -2279,6 +2282,7 @@ function Hardcore:DKConvert(dk_convert_option)
 			Hardcore_Character.converted_time = date("%m/%d/%y %H:%M:%S");
 			for k, v in pairs(Hardcore_Settings.sacrifice) do Hardcore_Settings.sacrifice[k]=nil end
 			Hardcore:Print("Death Knight activated. Happy hunting.")
+			ApplyDKToken(Hardcore_Settings, Hardcore_Character)
 		else
 			Hardcore:Print("There are no sacrificed characters")
 		end

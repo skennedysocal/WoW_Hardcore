@@ -249,6 +249,18 @@
 			</Anchors>
 		  </Button>
 
+			<Button name="Hardcore_DeathKnight_Button" inherits="UIPanelButtonTemplate" text="Death Knight">
+				<Size x="120" y="37" />
+				<Anchors>
+					<Anchor point="TOPLEFT" x="70" y="-20" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Hardcore:SwitchDisplay("DeathKnight")
+					</OnClick>
+				</Scripts>
+			</Button>
+
 			<Button name="Hardcore_Alerts_Button" inherits="UIPanelButtonTemplate" text="Disable alerts">
 				<Size x="120" y="37" />
 				<Anchors>
@@ -395,6 +407,30 @@
 					</OnClick>
 				</Scripts>
 			</Button>
+
+			<Button name="Hardcore_DK_Sacrifice" inherits="UIPanelButtonTemplate" text="Sacrifice">
+				<Size x="100" y="37" />
+				<Anchors>
+					<Anchor point="TOPLEFT" x="240" y="-380" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Hardcore:DKConvert("sacrifice") 
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="Hardcore_DK_Activate" inherits="UIPanelButtonTemplate" text="Activate">
+				<Size x="100" y="37" />
+				<Anchors>
+					<Anchor point="TOPLEFT" x="360" y="-380" />
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						Hardcore:DKConvert("activate")
+					</OnClick>
+				</Scripts>
+			</Button>
+
 			
 			<Button name="Hardcore_Close" inherits="UIPanelButtonTemplate" text="X">
 				<Size x="30" y="30" />

@@ -233,6 +233,7 @@ end
 duo_rules:SetScript("OnEvent", function(self, event, ...)
 	local arg = { ... }
 	if event == "PLAYER_DEAD" then
-		duo_rules.fail_function_executor.Fail(duo_rules.name)
+		duo_rules._hardcore_character_ref.party_mode = "Failed Duo"
+		Hardcore:Print("Failed Duo")
 	end
 end)

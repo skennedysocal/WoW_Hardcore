@@ -324,7 +324,7 @@ local function SlashHandler(msg, editbox)
 		for substring in args:gmatch("%S+") do
 			dk_convert_option = substring
 		end
-		Hardcore:DKConvert(dk_convert_option) 
+		Hardcore:DKConvert(dk_convert_option)
 	elseif cmd == "griefalert" then
 		local grief_alert_option = ""
 		for substring in args:gmatch("%S+") do
@@ -378,9 +378,9 @@ local saved_variable_meta = {
 	{ key = "team", initial_data = {} },
 	{ key = "first_recorded", initial_data = -1 },
 	{ key = "grief_warning_conditions", initial_data = GRIEF_WARNING_BOTH_FACTIONS },
-	{ key = "sacrificed_at", initial_data = ""},
-	{ key = "converted_successfully", initial_data = false},
-	{ key = "converted_time", initial_data = ""}
+	{ key = "sacrificed_at", initial_data = "" },
+	{ key = "converted_successfully", initial_data = false },
+	{ key = "converted_time", initial_data = "" },
 	{ key = "game_version", initial_data = "" },
 	{ key = "hardcore_player_name", initial_data = "" },
 }
@@ -1378,27 +1378,28 @@ function Hardcore:ShowAlertFrame(styleConfig, message)
 end
 
 function Hardcore:Add(data, sender, command)
-    -- Display the death locally if alerts are not toggled off.
-    if Hardcore_Settings.notify then
-        local level = 0
-        local mapID
-        if data then
-            level, mapID = string.split(COMM_FIELD_DELIM, data)
-            level = tonumber(level)
-            mapID = tonumber(mapID)
-        end
-        if type(level) == "number" then
-            for i = 1, GetNumGuildMembers() do
-                local name, _, _, guildLevel, _, zone, _, _, _, _, class = GetGuildRosterInfo(i)
-                if name == sender then
-                    if mapID then
-                        local mapData = C_Map.GetMapInfo(mapID) -- In case some idiot sends an invalid map ID, it won't cause mass lua errors.
-                        zone = mapData and mapData.name or zone -- If player is in an instance, will have to get zone from guild roster.
-                    end
-                    level = level > 0 and level < 61 and level or guildLevel -- If player is using an older version of the addon, will have to get level from guild roster.
-                    local messageFormat = "%s the %s%s|r has died at level %d in %s"
+	-- Display the death locally if alerts are not toggled off.
+	if Hardcore_Settings.notify then
+		local level = 0
+		local mapID
+		if data then
+			level, mapID = string.split(COMM_FIELD_DELIM, data)
+			level = tonumber(level)
+			mapID = tonumber(mapID)
+		end
+		if type(level) == "number" then
+			for i = 1, GetNumGuildMembers() do
+				local name, _, _, guildLevel, _, zone, _, _, _, _, class = GetGuildRosterInfo(i)
+				if name == sender then
+					if mapID then
+						local mapData = C_Map.GetMapInfo(mapID) -- In case some idiot sends an invalid map ID, it won't cause mass lua errors.
+						zone = mapData and mapData.name or zone -- If player is in an instance, will have to get zone from guild roster.
+					end
+					level = level > 0 and level < 61 and level or guildLevel -- If player is using an older version of the addon, will have to get level from guild roster.
+					local messageFormat = "%s the %s%s|r has died at level %d in %s"
 					if command == COMM_COMMANDS[6] then
-						messageFormat = "%s the %s%s|r is choosing to follow the Path of the Ebon Blade at level %d in %s"
+						messageFormat =
+							"%s the %s%s|r is choosing to follow the Path of the Ebon Blade at level %d in %s"
 					end
 					local messageString = messageFormat:format(
 						name:gsub("%-.*", ""),
@@ -1658,7 +1659,6 @@ function Hardcore_Frame_OnShow()
 		Hardcore_TOD_Sort:Hide()
 		Hardcore_DK_Sacrifice:Hide()
 		Hardcore_DK_Activate:Hide()
-		
 
 		-- hard coded rules table lol
 		local f = {}
@@ -1737,8 +1737,14 @@ function Hardcore_Frame_OnShow()
 		table.insert(f, "")
 		table.insert(f, "Step 1: Level a solo character of the “SAME FACTION” to level 55, following the HC rules.")
 		table.insert(f, "(same faction isnt tech true, but it seems odd to let someone level ally to make a horde DK)")
-		table.insert(f, "Step 2: While out of combat, click on the “SACRIFICE” button below. This starts a 5 minute timer.")
-		table.insert(f, "Step 3: During these 5 minutes, you must die on your current character. After dying, you DO NOT")
+		table.insert(
+			f,
+			"Step 2: While out of combat, click on the “SACRIFICE” button below. This starts a 5 minute timer."
+		)
+		table.insert(
+			f,
+			"Step 3: During these 5 minutes, you must die on your current character. After dying, you DO NOT"
+		)
 		table.insert(f, " need to delete, but this toon will no longer be valid for HC.")
 		table.insert(f, "Step 4: Create your Death Knight and log onto them.")
 		table.insert(f, "Step 5: Click on “ACTIVATE” below. You are now good to go. Survive well out there!")
@@ -2217,7 +2223,7 @@ function Hardcore:SetGriefAlertCondition(grief_alert_option)
 	end
 end
 
-function Hardcore:DKConvert(dk_convert_option) 
+function Hardcore:DKConvert(dk_convert_option)
 	local _, _, classID = UnitClass("player")
 	local level = UnitLevel("player")
 	local inCombat = UnitAffectingCombat("player")
@@ -2245,8 +2251,14 @@ function Hardcore:DKConvert(dk_convert_option)
 			return
 		end
 		-- we deaths, bh, played_time_gaps and trade partners
-		if (#Hardcore_Character.deaths > 0 or #Hardcore_Character.bubble_hearth_incidents > 0 or #Hardcore_Character.trade_partners > 0) then
-			Hardcore:Print("Before proceeding with sacrifice, please contact admins and verify your character as there are some warnings!")
+		if
+			#Hardcore_Character.deaths > 0
+			or #Hardcore_Character.bubble_hearth_incidents > 0
+			or #Hardcore_Character.trade_partners > 0
+		then
+			Hardcore:Print(
+				"Before proceeding with sacrifice, please contact admins and verify your character as there are some warnings!"
+			)
 			return
 		end
 		local sacrifice = {}
@@ -2255,14 +2267,16 @@ function Hardcore:DKConvert(dk_convert_option)
 		sacrifice["timestamp"] = time(date("*t"))
 		sacrifice["override"] = false
 		sacrifice["complete"] = false
-		if (Hardcore_Settings.sacrifice == nil) then
+		if Hardcore_Settings.sacrifice == nil then
 			Hardcore_Settings.sacrifice = {}
 		end
-		for k, v in pairs(Hardcore_Settings.sacrifice) do Hardcore_Settings.sacrifice[k]=nil end
+		for k, v in pairs(Hardcore_Settings.sacrifice) do
+			Hardcore_Settings.sacrifice[k] = nil
+		end
 		table.insert(Hardcore_Settings.sacrifice, sacrifice)
 		--Hardcore_Character.sacrificed_at = sacrifice["localtime"]
 		Hardcore:Print("Character marked for sacrifice. Die within 5 minutes and then activate it on Death Knight.")
-	elseif dk_convert_option == "activate" then 
+	elseif dk_convert_option == "activate" then
 		if inCombat == true then
 			Hardcore:Print("Can't use activate in combat")
 			return
@@ -2271,22 +2285,24 @@ function Hardcore:DKConvert(dk_convert_option)
 			Hardcore:Print("You can activate only Death Knight character")
 			return
 		end
-		if (Hardcore_Settings.sacrifice == nil or #Hardcore_Settings.sacrifice == 0) then
+		if Hardcore_Settings.sacrifice == nil or #Hardcore_Settings.sacrifice == 0 then
 			Hardcore:Print("There are no sacrificed characters")
 			return
 		end
 		--Hardcore:Print(Hardcore_Settings.sacrifice[1].guid)
 		--Hardcore:Print(Hardcore_Settings.sacrifice[1].localtime)
 		if Hardcore_Settings.sacrifice[1].complete then
-			Hardcore_Character.converted_successfully = true;
-			Hardcore_Character.converted_time = date("%m/%d/%y %H:%M:%S");
-			for k, v in pairs(Hardcore_Settings.sacrifice) do Hardcore_Settings.sacrifice[k]=nil end
+			Hardcore_Character.converted_successfully = true
+			Hardcore_Character.converted_time = date("%m/%d/%y %H:%M:%S")
+			for k, v in pairs(Hardcore_Settings.sacrifice) do
+				Hardcore_Settings.sacrifice[k] = nil
+			end
 			Hardcore:Print("Death Knight activated. Happy hunting.")
 			ApplyDKToken(Hardcore_Settings, Hardcore_Character)
 		else
 			Hardcore:Print("There are no sacrificed characters")
 		end
-	elseif dk_convert_option == "override" then 
+	elseif dk_convert_option == "override" then
 		if inCombat == true then
 			Hardcore:Print("Can't use sacrifice in combat")
 			return
@@ -2306,10 +2322,12 @@ function Hardcore:DKConvert(dk_convert_option)
 		sacrifice["timestamp"] = time(date("*t"))
 		sacrifice["override"] = true
 		sacrifice["complete"] = false
-		if (Hardcore_Settings.sacrifice == nil) then
+		if Hardcore_Settings.sacrifice == nil then
 			Hardcore_Settings.sacrifice = {}
 		end
-		for k, v in pairs(Hardcore_Settings.sacrifice) do Hardcore_Settings.sacrifice[k]=nil end
+		for k, v in pairs(Hardcore_Settings.sacrifice) do
+			Hardcore_Settings.sacrifice[k] = nil
+		end
 		table.insert(Hardcore_Settings.sacrifice, sacrifice)
 		Hardcore:Print("Character marked for sacrifice. Die within 5 minutes and then activate it on Death Knight.")
 	else

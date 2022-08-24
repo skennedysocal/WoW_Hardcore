@@ -120,3 +120,16 @@ function party_change_token_handler:ReceiveApplyPartyChangeToken(
 	-- GET SECRET
 	ApplyPartyChangeToken(_hardcore_settings, _hardcore_character, _sender, _secret)
 end
+
+function CheckForExpiredPartyChangeToken(_hardcore_settings)
+	if _hardcore_settings.party_change_token == nil then
+		return
+	end
+	local current_time = GetServerTime()
+	print((current_time - _hardcore_settings.party_change_token.generated_time)/(24*60*60))
+
+	if current_time - _hardcore_settings.party_change_token.generated_time > 24 * 60 * 60 then -- one day
+		_hardcore_settings.party_change_token = nil
+		Hardcore:Print("Party Change Token expired.")
+	end
+end

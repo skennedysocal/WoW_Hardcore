@@ -616,6 +616,7 @@ function Hardcore:PLAYER_LOGIN()
 	end
 
 	CheckForExpiredDKToken(Hardcore_Settings)
+	CheckForExpiredPartyChangeToken(Hardcore_Settings)
 
 	if Hardcore_Character.game_version == "" or Hardcore_Character.game_version == "Era" then
 		if _G["HardcoreBuildLabel"] == nil then

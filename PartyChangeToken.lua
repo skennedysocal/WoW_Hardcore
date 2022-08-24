@@ -36,6 +36,7 @@ function ApplyPartyChangeToken(_hardcore_settings, _hardcore_character, sender, 
 		if partner == _hardcore_settings.party_change_token.partner_to_change then
 			_hardcore_character.team[idx] = sender
 			Hardcore:Print("Applied party change token to " .. partner .. ". New partner is " .. sender)
+			_hardcore_settings.party_change_token = nil
 			return
 		end
 	end

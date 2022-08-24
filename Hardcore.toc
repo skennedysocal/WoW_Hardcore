@@ -13,8 +13,11 @@ embeds.xml
 
 CustomLayouts.lua
 utils.lua
-DKToken.lua
 Hardcore.xml
+
+#Tokens
+DKToken.lua
+PartyChangeToken.lua
 
 Achievements/AchievementG.lua
 

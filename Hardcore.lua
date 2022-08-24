@@ -899,7 +899,7 @@ function Hardcore:PLAYER_DEAD()
 		local sacrifice = Hardcore_Settings.sacrifice[1]
 		local timestamp = time(date("*t"))
 		if (timestamp - sacrifice.timestamp) <= 300 then
-			GenerateDKToken(Hardcore_Settings, Hardcore_Character)
+			GenerateDKToken(Hardcore_Settings, Hardcore_Character, party_change_token_handler.generated_secret)
 			messageFormat =
 				"Our brave %s, %s the %s, is choosing to follow the Path of the Ebon Blade at level %d in %s"
 			Hardcore_Settings.sacrifice[1].complete = true

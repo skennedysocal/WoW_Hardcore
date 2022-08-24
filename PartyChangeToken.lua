@@ -22,18 +22,6 @@ function ApplyPartyChangeToken(_hardcore_settings, _hardcore_character, sender, 
 	end
 
 	if
-		_hardcore_settings.party_change_token.character_name == nil
-		or _hardcore_settings.party_change_token.character_name ~= UnitName("player")
-	then
-		Hardcore:Print(
-			"Current party change token is for character "
-				.. _hardcore_settings.party_change_token.character_name(".  Current character is ")
-				.. UnitName("player")
-		)
-		return
-	end
-
-	if
 		_hardcore_settings.party_change_token.secret == nil
 		or _hardcore_settings.party_change_token.secret ~= secret
 	then
@@ -89,6 +77,17 @@ function party_change_token_handler:ReceiveRequestPartyChangeToken(
 	_secret,
 	_sender
 )
+	local is_partner = false
+	for _, partner in ipairs(_hardcore_character.team) do
+		if _sender == partner then
+			is_partner = true
+		end
+	end
+
+	if is_partner == false then
+		return
+	end
+
 	-- GET SECRET
 	GeneratePartyChangeToken(_hardcore_settings, _hardcore_character, _secret, _sender)
 end
@@ -101,6 +100,9 @@ function party_change_token_handler:SendApplyPartyChangeToken(
 	_team,
 	_secret
 )
+	if _secret == nil then
+		Hardcore:Print("Failed to send apply party change to partners; missing secret.")
+	end
 	if _CTL then
 		local commMessage = _comm_command_header .. _comm_command_delim .. _secret
 		for _, partner in ipairs(_team) do

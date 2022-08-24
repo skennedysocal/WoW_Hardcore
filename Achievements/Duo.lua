@@ -72,6 +72,10 @@ local function checkHardcoreStatus()
 	-- other_hardcore_character_cache[UnitName("player")].team = {}
 	-- other_hardcore_character_cache[duo_rules.teammate_1] = nil
 
+	if duo_rules._hardcore_settings_ref.party_change_token ~= nil then -- Ignore others dying from sacrifice
+		return
+	end
+
 	local player_name = UnitName("player")
 	if other_hardcore_character_cache[player_name] ~= nil then
 		if other_hardcore_character_cache[duo_rules.teammate_1] ~= nil then
@@ -104,12 +108,13 @@ local function checkHardcoreStatus()
 end
 
 -- Registers
-function duo_rules:Register(fail_function_executor, _hardcore_character)
+function duo_rules:Register(fail_function_executor, _hardcore_character, _hardcore_settings)
 	if duo_rules.minimap_button == nil then
 		initMinimapButton()
 	end
 	duo_rules.accumulated_warn_time = 0
 	duo_rules._hardcore_character_ref = _hardcore_character
+	duo_rules._hardcore_settings_ref = _hardcore_settings
 	if _hardcore_character.team ~= nil and _hardcore_character.team[1] then
 		duo_rules.teammate_1 = _hardcore_character.team[1]
 	else
@@ -214,7 +219,11 @@ function duo_rules:Check()
 	local my_map = C_Map.GetBestMapForUnit("player")
 	local teammates_map = C_Map.GetBestMapForUnit(member_str)
 
-	if my_map == 80 or teammates_map == 80 then
+	if my_map == 80 or teammates_map == 80 then -- Moonglade
+		duo_rules:ResetWarn()
+	end
+
+	if my_map == 124 or teammates_map == 124 then -- Scarlet enclave
 		duo_rules:ResetWarn()
 	end
 

@@ -19,7 +19,7 @@ local function FormatStrForParty(input_str)
 	return output_str
 end
 
-function ShowFirstMenu(_hardcore_character, _failure_function_executor)
+function ShowFirstMenu(_hardcore_character, _hardcore_settings, _failure_function_executor)
 	local AceGUI = LibStub("AceGUI-3.0")
 	local f = AceGUI:Create("HardcoreFrame")
 	f:SetCallback("OnClose", function(widget)
@@ -398,7 +398,7 @@ function ShowFirstMenu(_hardcore_character, _failure_function_executor)
 			end
 		end
 		if _G.extra_rules[_hardcore_character.party_mode] ~= nil then
-			_G.extra_rules[_hardcore_character.party_mode]:Register(_, _hardcore_character)
+			_G.extra_rules[_hardcore_character.party_mode]:Register(_, _hardcore_character, _hardcore_settings)
 		end
 	end)
 end

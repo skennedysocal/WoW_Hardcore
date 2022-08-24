@@ -84,6 +84,10 @@ local function checkHardcoreStatus()
 	-- other_hardcore_character_cache[UnitName("player")].team = {}
 	-- other_hardcore_character_cache[trio_rules.teammate_1] = nil
 
+	if trio_rules._hardcore_settings_ref.party_change_token ~= nil then -- Ignore others dying from sacrifice
+		return
+	end
+
 	local player_name = UnitName("player")
 	if other_hardcore_character_cache[player_name] ~= nil then
 		if other_hardcore_character_cache[trio_rules.teammate_1] ~= nil then
@@ -139,13 +143,14 @@ local function checkHardcoreStatus()
 end
 
 -- Registers
-function trio_rules:Register(fail_function_executor, _hardcore_character)
+function trio_rules:Register(fail_function_executor, _hardcore_character, _hardcore_settings)
 	if trio_rules.minimap_button == nil then
 		initMinimapButton()
 	end
 
 	trio_rules.accumulated_warn_time = 0
 	trio_rules._hardcore_character_ref = _hardcore_character
+	trio_rules._hardcore_settings_ref = _hardcore_settings
 	if _hardcore_character.team ~= nil and _hardcore_character.team[1] then
 		trio_rules.teammate_1 = _hardcore_character.team[1]
 	else
@@ -265,7 +270,11 @@ function trio_rules:Check()
 	local teammates_map_1 = C_Map.GetBestMapForUnit(member_str_1)
 	local teammates_map_2 = C_Map.GetBestMapForUnit(member_str_2)
 
-	if my_map == 80 or teammates_map_1 == 80 or teammates_map_2 == 80 then
+	if my_map == 80 or teammates_map_1 == 80 or teammates_map_2 == 80 then -- Moonglade
+		trio_rules:ResetWarn()
+	end
+
+	if my_map == 124 or teammates_map_1 == 124 or teammates_map_2 == 124 then -- Scarlet enclave
 		trio_rules:ResetWarn()
 	end
 

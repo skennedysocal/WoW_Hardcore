@@ -125,6 +125,8 @@ local COMM_COMMANDS = {
 	"CHARACTER_INFO", -- new death command
 	"REQUEST_CHARACTER_INFO", -- new death command
 	"SACRIFICE", -- new sacrifice command
+	"REQUEST_PCT", -- request a party change token
+	"APPLY_PCT", -- request a party change
 }
 local COMM_SPAM_THRESHOLD = { -- msgs received within durations (s) are flagged as spam
 	PULSE = 3,
@@ -614,6 +616,7 @@ function Hardcore:PLAYER_LOGIN()
 	end
 
 	CheckForExpiredDKToken(Hardcore_Settings)
+	CheckForExpiredPartyChangeToken(Hardcore_Settings)
 
 	if Hardcore_Character.game_version == "" or Hardcore_Character.game_version == "Era" then
 		if _G["HardcoreBuildLabel"] == nil then
@@ -897,7 +900,7 @@ function Hardcore:PLAYER_DEAD()
 		local sacrifice = Hardcore_Settings.sacrifice[1]
 		local timestamp = time(date("*t"))
 		if (timestamp - sacrifice.timestamp) <= 300 then
-			GenerateDKToken(Hardcore_Settings, Hardcore_Character)
+			GenerateDKToken(Hardcore_Settings, Hardcore_Character, party_change_token_handler.generated_secret)
 			messageFormat =
 				"Our brave %s, %s the %s, is choosing to follow the Path of the Ebon Blade at level %d in %s"
 			Hardcore_Settings.sacrifice[1].complete = true
@@ -1185,6 +1188,28 @@ function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
 	if COMM_NAME == prefix then
 		-- Get the command
 		local command, data = string.split(COMM_COMMAND_DELIM, datastr)
+		if command == COMM_COMMANDS[7] then -- Received request for party change
+			local name, _ = string.split("-", sender)
+			local party_change_token_secret = string.split(COMM_FIELD_DELIM, data)
+			party_change_token_handler:ReceiveRequestPartyChangeToken(
+				Hardcore_Settings,
+				Hardcore_Character,
+				party_change_token_secret,
+				name
+			)
+			return
+		end
+		if command == COMM_COMMANDS[8] then -- Received request for party change
+			local name, _ = string.split("-", sender)
+			local party_change_token_secret = string.split(COMM_FIELD_DELIM, data)
+			party_change_token_handler:ReceiveApplyPartyChangeToken(
+				Hardcore_Settings,
+				Hardcore_Character,
+				party_change_token_secret,
+				name
+			)
+			return
+		end
 		if command == COMM_COMMANDS[5] then -- Received request for hc character data
 			local name, _ = string.split("-", sender)
 			Hardcore:SendCharacterData(name)
@@ -2276,6 +2301,13 @@ function Hardcore:DKConvert(dk_convert_option)
 		table.insert(Hardcore_Settings.sacrifice, sacrifice)
 		--Hardcore_Character.sacrificed_at = sacrifice["localtime"]
 		Hardcore:Print("Character marked for sacrifice. Die within 5 minutes and then activate it on Death Knight.")
+		party_change_token_handler:SendRequestPartyChangeToken(
+			CTL,
+			COMM_COMMANDS[7],
+			COMM_COMMAND_DELIM,
+			COMM_NAME,
+			Hardcore_Character.team
+		)
 	elseif dk_convert_option == "activate" then
 		if inCombat == true then
 			Hardcore:Print("Can't use activate in combat")
@@ -2298,7 +2330,15 @@ function Hardcore:DKConvert(dk_convert_option)
 				Hardcore_Settings.sacrifice[k] = nil
 			end
 			Hardcore:Print("Death Knight activated. Happy hunting.")
-			ApplyDKToken(Hardcore_Settings, Hardcore_Character)
+			local party_change_token_secret = ApplyDKToken(Hardcore_Settings, Hardcore_Character)
+			party_change_token_handler:SendApplyPartyChangeToken(
+				CTL,
+				COMM_COMMANDS[8],
+				COMM_COMMAND_DELIM,
+				COMM_NAME,
+				Hardcore_Character.team,
+				party_change_token_secret
+			)
 		else
 			Hardcore:Print("There are no sacrificed characters")
 		end
@@ -2330,6 +2370,13 @@ function Hardcore:DKConvert(dk_convert_option)
 		end
 		table.insert(Hardcore_Settings.sacrifice, sacrifice)
 		Hardcore:Print("Character marked for sacrifice. Die within 5 minutes and then activate it on Death Knight.")
+		party_change_token_handler:SendRequestPartyChangeToken(
+			CTL,
+			COMM_COMMANDS[7],
+			COMM_COMMAND_DELIM,
+			COMM_NAME,
+			Hardcore_Character.team
+		)
 	else
 		Hardcore:Print("|cff00ff00Death Knight options:|r sacrifice activate")
 	end

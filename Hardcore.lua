@@ -443,7 +443,7 @@ function Hardcore:PLAYER_LOGIN()
 	-- Show the first menu screen.  Requires short delay
 	if UnitLevel("player") < 2 then
 		C_Timer.After(1.0, function()
-			ShowFirstMenu(Hardcore_Character, failure_function_executor)
+			ShowFirstMenu(Hardcore_Character, Hardcore_Settings, failure_function_executor)
 			Hardcore_Character.first_recorded = GetServerTime()
 		end)
 	end
@@ -572,7 +572,7 @@ function Hardcore:PLAYER_LOGIN()
 
 	if Hardcore_Character.party_mode ~= nil then
 		if _G.extra_rules[Hardcore_Character.party_mode] ~= nil then
-			_G.extra_rules[Hardcore_Character.party_mode]:Register(failure_function_executor, Hardcore_Character)
+			_G.extra_rules[Hardcore_Character.party_mode]:Register(failure_function_executor, Hardcore_Character, Hardcore_Settings)
 		end
 	end
 

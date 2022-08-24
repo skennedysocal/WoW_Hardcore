@@ -33,7 +33,7 @@ function ApplyPartyChangeToken(_hardcore_settings, _hardcore_character, sender, 
 	end
 
 	for idx, partner in ipairs(_hardcore_character.team) do
-		if partner == Hardcore_Settings.party_change_token.partner_to_change then
+		if partner == _hardcore_settings.party_change_token.partner_to_change then
 			_hardcore_character.team[idx] = sender
 			Hardcore:Print("Applied party change token to " .. partner .. ". New partner is " .. sender)
 			return
@@ -128,7 +128,6 @@ function CheckForExpiredPartyChangeToken(_hardcore_settings)
 		return
 	end
 	local current_time = GetServerTime()
-	print((current_time - _hardcore_settings.party_change_token.generated_time)/(24*60*60))
 
 	if current_time - _hardcore_settings.party_change_token.generated_time > 24 * 60 * 60 then -- one day
 		_hardcore_settings.party_change_token = nil

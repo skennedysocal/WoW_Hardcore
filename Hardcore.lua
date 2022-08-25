@@ -1020,7 +1020,7 @@ function Hardcore:TIME_PLAYED_MSG(...)
 	local totalTimePlayed, _ = ...
 	Hardcore_Character.time_played = totalTimePlayed or 1
 	-- Check playtime gap percentage
-	if Hardcore_Character.time_played > 0 then
+	if Hardcore_Character.time_played > 60 * 5 then -- at least 5 minutes
 		Hardcore_Character.tracked_played_percentage = Hardcore_Character.time_tracked
 			/ Hardcore_Character.time_played
 			* 100.0
@@ -1174,7 +1174,7 @@ function Hardcore:DisplayPlaytimeWarning(level)
 	else
 		Hardcore:Print(
 			messageprefix
-				.. "Detected that the player's addon active time is much lower than played time. If you have just installed the addon: consider starting a new character. Continuing on means you risk your lv 60, HC Verified Status."
+				.. "Detected that the player's addon active time is much lower than played time. If you have just installed the addon: consider starting a new character. Continuing on means you risk your HC Verified Status."
 		)
 		Hardcore:Print(
 			messageprefix

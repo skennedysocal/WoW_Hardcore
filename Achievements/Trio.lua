@@ -270,15 +270,9 @@ function trio_rules:Check()
 	local teammates_map_1 = C_Map.GetBestMapForUnit(member_str_1)
 	local teammates_map_2 = C_Map.GetBestMapForUnit(member_str_2)
 
-	if my_map == 80 or teammates_map_1 == 80 or teammates_map_2 == 80 then -- Moonglade
+	if my_map == 80 or teammates_map_1 == 80 or teammates_map_2 == 80 or my_map == 124 or teammates_map_1 == 124 or teammates_map_2 == 124  then -- Moonglade / Scarlet enclave
 		trio_rules:ResetWarn()
-	end
-
-	if my_map == 124 or teammates_map_1 == 124 or teammates_map_2 == 124 then -- Scarlet enclave
-		trio_rules:ResetWarn()
-	end
-
-	if my_map ~= teammates_map_1 or teammates_map_1 ~= teammates_map_2 or my_map ~= teammates_map_2 then
+	elseif my_map ~= teammates_map_1 or teammates_map_1 ~= teammates_map_2 or my_map ~= teammates_map_2 then
 		Hardcore:Print("Trio check: Partner(s) is in another subzone")
 		trio_rules.warning_reason = "Warning - Partner(s) is in another subzone."
 		trio_rules:Warn()

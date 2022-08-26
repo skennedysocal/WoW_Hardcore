@@ -2371,8 +2371,8 @@ function Hardcore:DKConvert(dk_convert_option)
 			Hardcore:Print("You can't sacrifice Death Knight character")
 			return
 		end
-		if level ~= SACRIFICE_LEVEL then
-			Hardcore:Print(string.format("You must be level %s to sacrifice", SACRIFICE_LEVEL))
+		if level < SACRIFICE_LEVEL_MIN or level > SACRIFICE_LEVEL_MAX then
+			Hardcore:Print(string.format("You must be level %s - %s to sacrifice", SACRIFICE_LEVEL_MIN, SACRIFICE_LEVEL_MAX))
 			return
 		end
 		local sacrifice = {}

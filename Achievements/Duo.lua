@@ -219,15 +219,9 @@ function duo_rules:Check()
 	local my_map = C_Map.GetBestMapForUnit("player")
 	local teammates_map = C_Map.GetBestMapForUnit(member_str)
 
-	if my_map == 80 or teammates_map == 80 then -- Moonglade
+	if my_map == 80 or teammates_map == 80 or my_map == 124 or teammates_map == 124 then -- Moonglade/Scarlet enclave
 		duo_rules:ResetWarn()
-	end
-
-	if my_map == 124 or teammates_map == 124 then -- Scarlet enclave
-		duo_rules:ResetWarn()
-	end
-
-	if my_map ~= teammates_map then
+	elseif my_map ~= teammates_map then
 		Hardcore:Print("Duo check: Partner is in another subzone")
 		duo_rules.warning_reason = "Warning - Partner is in another subzone."
 		duo_rules:Warn()

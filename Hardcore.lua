@@ -163,7 +163,8 @@ local COLOR_YELLOW = "|c00ffff00"
 local STRING_ADDON_STATUS_SUBTITLE = "Guild Addon Status"
 local STRING_ADDON_STATUS_SUBTITLE_LOADING = "Guild Addon Status (Loading)"
 local THROTTLE_DURATION = 5
-local SACRIFICE_LEVEL = 55
+local SACRIFICE_LEVEL_MIN = 55
+local SACRIFICE_LEVEL_MAX = 58
 
 -- frame display
 local display = "Rules"
@@ -2252,9 +2253,19 @@ function Hardcore:DKConvert(dk_convert_option)
 	local _, _, classID = UnitClass("player")
 	local level = UnitLevel("player")
 	local inCombat = UnitAffectingCombat("player")
+	local stealthed = IsStealthed()
+	local isFeign = UnitIsFeignDeath("player")
 	if dk_convert_option == "sacrifice" then
 		if inCombat == true then
 			Hardcore:Print("Can't use sacrifice in combat")
+			return
+		end
+		if stealthed == true then
+			Hardcore:Print("Can't use sacrifice while stealthed")
+			return
+		end
+		if isFeign == true then
+			Hardcore:Print("Can't use sacrifice while Feigning Death")
 			return
 		end
 		-- check if eligible
@@ -2262,8 +2273,8 @@ function Hardcore:DKConvert(dk_convert_option)
 			Hardcore:Print("You can't sacrifice Death Knight character")
 			return
 		end
-		if level ~= SACRIFICE_LEVEL then
-			Hardcore:Print(string.format("You must be level %s to sacrifice", SACRIFICE_LEVEL))
+		if level < SACRIFICE_LEVEL_MIN or level > SACRIFICE_LEVEL_MAX then
+			Hardcore:Print(string.format("You must be level %s - %s to sacrifice", SACRIFICE_LEVEL_MIN, SACRIFICE_LEVEL_MAX))
 			return
 		end
 		-- need to warn before sacrifice if something is wrong
@@ -2345,6 +2356,14 @@ function Hardcore:DKConvert(dk_convert_option)
 	elseif dk_convert_option == "override" then
 		if inCombat == true then
 			Hardcore:Print("Can't use sacrifice in combat")
+			return
+		end
+		if stealthed == true then
+			Hardcore:Print("Can't use sacrifice while stealthed")
+			return
+		end
+		if isFeign == true then
+			Hardcore:Print("Can't use sacrifice while Feigning Death")
 			return
 		end
 		-- check if eligible

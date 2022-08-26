@@ -56,7 +56,7 @@ Achievements/Pacifist.lua
 Achievements/PartnerUp.lua
 Achievements/Pyromancer.lua
 Achievements/Scavenger.lua
-Achievements/Speedrunner.lua
+#Achievements/Speedrunner.lua Removed for future updates
 Achievements/SelfMade.lua
 Achievements/ShadowEmbrace.lua
 Achievements/Shivved.lua

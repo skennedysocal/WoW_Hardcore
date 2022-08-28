@@ -1941,6 +1941,7 @@ end
 
 local ATTRIBUTE_SEPARATOR = "_"
 function Hardcore:GenerateVerificationString()
+	local version = GetAddOnMetadata("Hardcore", "Version")
 	local _, class, _, race, _, name = GetPlayerInfoByGUID(UnitGUID("player"))
 	local realm = GetRealmName()
 	local level = UnitLevel("player")
@@ -1953,6 +1954,7 @@ function Hardcore:GenerateVerificationString()
 	local game_version_checker = Hardcore_Character.game_version or { _G["HardcoreBuildLabel"] }
 
 	local baseVerificationData = {
+		version,
 		Hardcore_Character.guid,
 		realm,
 		race,

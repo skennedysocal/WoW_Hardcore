@@ -1946,6 +1946,12 @@ function Hardcore:GenerateVerificationString()
 	local level = UnitLevel("player")
 
 	local tradePartners = Hardcore_join(Hardcore_Character.trade_partners, ",")
+	local converted_successfully = "FALSE"
+	if Hardcore_Character.converted_successfully then
+		converted_successfully = "TRUE"
+	end
+	local game_version_checker = Hardcore_Character.game_version or { _G["HardcoreBuildLabel"] }
+
 	local baseVerificationData = {
 		Hardcore_Character.guid,
 		realm,
@@ -1957,31 +1963,18 @@ function Hardcore:GenerateVerificationString()
 		Hardcore_Character.time_tracked,
 		#Hardcore_Character.deaths,
 		tradePartners,
+		Hardcore_Character.sacrificed_at,
+		converted_successfully,
+		game_version_checker,
 	}
 	local baseVerificationString =
 		Hardcore_join(Hardcore_map(baseVerificationData, Hardcore_stringOrNumberToUnicode), ATTRIBUTE_SEPARATOR)
 	local bubbleHearthIncidentsVerificationString = Hardcore_tableToUnicode(Hardcore_Character.bubble_hearth_incidents)
 	local playedtimeGapsVerificationString = Hardcore_tableToUnicode(Hardcore_Character.played_time_gap_warnings)
-	local converted_successfully = "FALSE"
-	if Hardcore_Character.converted_successfully then
-		converted_successfully = "TRUE"
-	end
-	local dk_conversion = {
-		sacrificed_at = Hardcore_Character.sacrificated_at,
-		converted_successfully = converted_successfully,
-		converted_time = Hardcore_Character.converted_time,
-	}
-	local dkTable = {}
-	table.insert(dkTable, dk_conversion)
-	local deathknightVerificationString = Hardcore_tableToUnicode(dkTable)
-	local game_version_checker = Hardcore_Character.game_version or { _G["HardcoreBuildLabel"] }
-	local game_version_string = Hardcore_join(Hardcore_map({ game_version_checker }, Hardcore_stringOrNumberToUnicode))
 	return Hardcore_join({
 		baseVerificationString,
 		bubbleHearthIncidentsVerificationString,
 		playedtimeGapsVerificationString,
-		deathknightVerificationString,
-		game_version_string,
 	}, ATTRIBUTE_SEPARATOR)
 end
 

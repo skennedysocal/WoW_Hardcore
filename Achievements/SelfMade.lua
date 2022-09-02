@@ -21,7 +21,7 @@ function self_made_achievement:Unregister()
 end
 
 -- This function loops through a given tooltip when the "PLAYER_EQUIPMENT_CHANGED" event fires.
--- If it finds the player's name in the tooltip it sets the varible to true and you do not fail the achievement, if false then the rest of the event fires, failing the player.
+-- If it finds the player's name in the tooltip it sets the variable to true and you do not fail the achievement, if false then the rest of the event fires, failing the player.
 local function isSelfCreated(...)
 	local player_found = false
 	for i = 1, GameTooltip:NumLines() do

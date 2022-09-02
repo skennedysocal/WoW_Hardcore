@@ -1,7 +1,6 @@
 local _G = _G
 local self_made_achievement = CreateFrame("Frame")
 _G.achievements.SelfMade = self_made_achievement
-Player = UnitName("Player")
 
 -- General info
 self_made_achievement.name = "SelfMade"
@@ -26,9 +25,10 @@ end
 local function isSelfCreated(...)
 	local player_found = false
 	for i = 1, GameTooltip:NumLines() do
+		local player = UnitName("player")
 		local mytext = _G["GameTooltipTextLeft" .. i]
 		local text = mytext:GetText()
-		if string.match(text, Player) then
+		if string.match(text, player) then
 			player_found = true
 			break
 		else
@@ -45,9 +45,10 @@ self_made_achievement:SetScript("OnEvent", function(self, event, ...)
 	if event == "PLAYER_EQUIPMENT_CHANGED" then
 		GameTooltip:SetInventoryItem("player", arg[1])
 		if isSelfCreated() == false then
+			local player = UnitName("player")
 			local item_id = GetInventoryItemID("player", arg[1])
 			local item_name, _, _, _, _, item_type, item_subtype, _, _, _, _ = GetItemInfo(item_id)
-			Hardcore:Print("Equipped " .. item_name .. " which was not created by" .. Player)
+			Hardcore:Print("Equipped " .. item_name .. " which was not created by " .. player)
 			self_made_achievement.fail_function_executor.Fail(self_made_achievement.name)
 		end
 	end

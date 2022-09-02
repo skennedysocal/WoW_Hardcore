@@ -21,14 +21,19 @@ function self_made_achievement:Unregister()
 end
 
 -- This function loops through a given tooltip when the "PLAYER_EQUIPMENT_CHANGED" event fires.
--- If it finds the player's name in the tooltip it sets the variable to true and you do not fail the achievement, if false then the rest of the event fires, failing the player.
+-- If it finds the player's name in the tooltip it sets the varible to true and you do not fail the achievement, if false then the rest of the event fires, failing the player.
+-- This will also check if the player has a fishing pole equipped, if so they will not fail, but they must equip a selfmade weapon after that
+
 local function isSelfCreated(...)
 	local player_found = false
 	for i = 1, GameTooltip:NumLines() do
 		local player = UnitName("player")
-		local mytext = _G["GameTooltipTextLeft" .. i]
-		local text = mytext:GetText()
-		if string.match(text, player) then
+		local fishingPole = "Fishing Pole"
+		local mytextLeft = _G["GameTooltipTextLeft" .. i]
+		local textL = mytextLeft:GetText()
+		local mytextRight = _G["GameTooltipTextRight" .. i]
+		local textR = mytextRight:GetText()
+		if textR == fishingPole or string.match(textL, player) then
 			player_found = true
 			break
 		else
@@ -42,8 +47,11 @@ end
 -- This executes on player equipping and item, then calls isSelfCreated() to check the tooltip for the player's name.
 self_made_achievement:SetScript("OnEvent", function(self, event, ...)
 	local arg = { ... }
+	if arg[2] == true then
+		return
+	end
 	if event == "PLAYER_EQUIPMENT_CHANGED" then
-		GameTooltip:SetInventoryItem("player", arg[1])
+		--GameTooltip:SetInventoryItem("player", arg[1])
 		if isSelfCreated() == false then
 			local player = UnitName("player")
 			local item_id = GetInventoryItemID("player", arg[1])

@@ -16,7 +16,6 @@ local ICON_SIZE = 39
 local TabName = "DummyHCTab"
 local TabID = CharacterFrame.numTabs + 1
 local Tab = CreateFrame("Button", "$parentTab" .. TabID, CharacterFrame, "CharacterFrameTabButtonTemplate", TabID)
-PanelTemplates_SetNumTabs(CharacterFrame, TabID)
 Tab:SetPoint("LEFT", "$parentTab" .. (TabID - 1), "RIGHT", -50000, 0) -- Offscreen; we need to have this tab as a dummy
 Tab:SetText(TabName)
 Tab:Show()

@@ -388,6 +388,21 @@ local saved_variable_meta = {
 	{ key = "hardcore_player_name", initial_data = "" },
 }
 
+local settings_saved_variable_meta = {
+	["level_list"] = {},
+	["notify"] = true,
+	["debug_log"] = {},
+	["monitor"] = false,
+	["filter_f_in_chat"] = false,
+	["show_version_in_chat"] = false,
+	["alert_frame_x_offset"] = 0,
+	["alert_frame_y_offset"] = -150,
+	["alert_frame_scale"] = 0.7,
+	["show_minimap_mailbox_icon"] = false,
+	["sacrifice"] = {},
+	["hardcore_player_name"] = "",
+}
+
 --[[ Post-utility functions]]
 --
 
@@ -406,6 +421,20 @@ end
 function Hardcore:ForceResetSavedVariables()
 	for i, v in ipairs(saved_variable_meta) do
 		Hardcore_Character[v.key] = v.initial_data
+	end
+end
+
+function Hardcore:InitializeSettingsSavedVariables()
+	if Hardcore_Settings == nil then
+		Hardcore_Settings = {}
+	end
+
+	for k, v in pairs(settings_saved_variable_meta) do
+		Hardcore_Settings[k] = Hardcore_Settings[k] or v
+	end
+
+	if Hardcore_Settings["alert_frame_scale"] <= 0 then
+		Hardcore_Settings["alert_frame_scale"] = settings_saved_variable_meta["alert_frame_scale"]
 	end
 end
 
@@ -552,6 +581,7 @@ function Hardcore:PLAYER_LOGIN()
 	self:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
 
 	Hardcore:InitializeSavedVariables()
+	Hardcore:InitializeSettingsSavedVariables()
 
 	-- different guid means new character with the same name
 	if Hardcore_Character.guid ~= PLAYER_GUID then
@@ -573,7 +603,11 @@ function Hardcore:PLAYER_LOGIN()
 
 	if Hardcore_Character.party_mode ~= nil then
 		if _G.extra_rules[Hardcore_Character.party_mode] ~= nil then
-			_G.extra_rules[Hardcore_Character.party_mode]:Register(failure_function_executor, Hardcore_Character, Hardcore_Settings)
+			_G.extra_rules[Hardcore_Character.party_mode]:Register(
+				failure_function_executor,
+				Hardcore_Character,
+				Hardcore_Settings
+			)
 		end
 	end
 
@@ -1788,7 +1822,10 @@ function Hardcore_Frame_OnShow()
 		table.insert(f, "")
 		table.insert(f, "Step 1: Start your Duo/Trio group of the “SAME FACTION” and reach the level range for")
 		table.insert(f, "sacrifice, following the HC rules.")
-		table.insert(f, "Step 2: For the player who is sacrificing, click on the “SACRIFICE” button below. This starts")
+		table.insert(
+			f,
+			"Step 2: For the player who is sacrificing, click on the “SACRIFICE” button below. This starts"
+		)
 		table.insert(f, "a 5 minute timer. You cannot activate the “SACRIFICE” button while in combat, stealthed,")
 		table.insert(f, "or during Feign Death.")
 		table.insert(f, "Step 3: During these 5 minutes, you must die on your current character. After dying,")
@@ -2210,13 +2247,7 @@ function Hardcore:ApplyAlertFrameSettings()
 	local x_offset = Hardcore_Settings.alert_frame_x_offset or 0
 	local y_offset = Hardcore_Settings.alert_frame_y_offset or 0
 	Hardcore_Alert_Frame:SetScale(scale)
-	Hardcore_Alert_Frame:SetPoint(
-		"TOP",
-		"UIParent",
-		"TOP",
-		x_offset / scale,
-		y_offset / scale	
-	)
+	Hardcore_Alert_Frame:SetPoint("TOP", "UIParent", "TOP", x_offset / scale, y_offset / scale)
 end
 
 ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", function(frame, event, message, sender, ...)
@@ -2306,7 +2337,9 @@ function Hardcore:DKConvert(dk_convert_option)
 			return
 		end
 		if level < SACRIFICE_LEVEL_MIN or level > SACRIFICE_LEVEL_MAX then
-			Hardcore:Print(string.format("You must be level %s - %s to sacrifice", SACRIFICE_LEVEL_MIN, SACRIFICE_LEVEL_MAX))
+			Hardcore:Print(
+				string.format("You must be level %s - %s to sacrifice", SACRIFICE_LEVEL_MIN, SACRIFICE_LEVEL_MAX)
+			)
 			return
 		end
 		-- need to warn before sacrifice if something is wrong
@@ -2404,7 +2437,9 @@ function Hardcore:DKConvert(dk_convert_option)
 			return
 		end
 		if level < SACRIFICE_LEVEL_MIN or level > SACRIFICE_LEVEL_MAX then
-			Hardcore:Print(string.format("You must be level %s - %s to sacrifice", SACRIFICE_LEVEL_MIN, SACRIFICE_LEVEL_MAX))
+			Hardcore:Print(
+				string.format("You must be level %s - %s to sacrifice", SACRIFICE_LEVEL_MIN, SACRIFICE_LEVEL_MAX)
+			)
 			return
 		end
 		local sacrifice = {}
@@ -2539,12 +2574,15 @@ local options = {
 					type = "range",
 					name = "Scale",
 					desc = "Modify alert frame's scale.",
-					min = 0,
+					min = 0.1,
 					max = 2,
 					get = function()
 						return Hardcore_Settings.alert_frame_scale
 					end,
 					set = function(info, value)
+						if value < 0.1 then
+							value = 0.1
+						end
 						Hardcore_Settings.alert_frame_scale = value
 						Hardcore:ApplyAlertFrameSettings()
 					end,

@@ -367,6 +367,7 @@ TabGUI:SetScript("OnEvent", function(self, event, ...)
 		HideCharacterHC()
 		_G["HardcoreCharacterTab"]:SetScript("OnClick", function(self, arg1) end)
 	elseif event == "PLAYER_LEAVE_COMBAT" then
+		TabGUI.text:SetText("HC")
 		_G["HardcoreCharacterTab"]:SetScript("OnClick", function(self, arg1)
 			PanelTemplates_SetTab(CharacterFrame, 6)
 			if _G["HonorFrame"] ~= nil then

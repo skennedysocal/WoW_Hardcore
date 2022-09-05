@@ -438,6 +438,163 @@ function Hardcore:InitializeSettingsSavedVariables()
 	end
 end
 
+function Hardcore:DKConvert(dk_convert_option)
+	local _, _, classID = UnitClass("player")
+	local level = UnitLevel("player")
+	local inCombat = UnitAffectingCombat("player")
+	local stealthed = IsStealthed()
+	local isFeign = UnitIsFeignDeath("player")
+	if dk_convert_option == "sacrifice" then
+		if inCombat == true then
+			Hardcore:Print("Can't use sacrifice in combat")
+			return
+		end
+		if stealthed == true then
+			Hardcore:Print("Can't use sacrifice while stealthed")
+			return
+		end
+		if isFeign == true then
+			Hardcore:Print("Can't use sacrifice while Feigning Death")
+			return
+		end
+		-- check if eligible
+		if classID == 6 then
+			Hardcore:Print("You can't sacrifice Death Knight character")
+			return
+		end
+		if level < SACRIFICE_LEVEL_MIN or level > SACRIFICE_LEVEL_MAX then
+			Hardcore:Print(
+				string.format("You must be level %s - %s to sacrifice", SACRIFICE_LEVEL_MIN, SACRIFICE_LEVEL_MAX)
+			)
+			return
+		end
+		-- need to warn before sacrifice if something is wrong
+		local debug_message = "Playtime gap percentage: " .. Hardcore_Character.tracked_played_percentage .. "%."
+		Hardcore:Debug(debug_message)
+		local percentage = Hardcore_Character.tracked_played_percentage
+
+		if Hardcore:ShouldShowPlaytimeWarning(level, percentage) then
+			Hardcore:DisplayPlaytimeWarning(level)
+			return
+		end
+		-- we deaths, bh, played_time_gaps and trade partners
+		if
+			#Hardcore_Character.deaths > 0
+			or #Hardcore_Character.bubble_hearth_incidents > 0
+			or #Hardcore_Character.trade_partners > 0
+		then
+			Hardcore:Print(
+				"Before proceeding with sacrifice, please contact admins and verify your character as there are some warnings!"
+			)
+			return
+		end
+		local sacrifice = {}
+		sacrifice["guid"] = Hardcore_Character.guid
+		sacrifice["localtime"] = date("%m/%d/%y %H:%M:%S")
+		sacrifice["timestamp"] = time(date("*t"))
+		sacrifice["override"] = false
+		sacrifice["complete"] = false
+		if Hardcore_Settings.sacrifice == nil then
+			Hardcore_Settings.sacrifice = {}
+		end
+		for k, v in pairs(Hardcore_Settings.sacrifice) do
+			Hardcore_Settings.sacrifice[k] = nil
+		end
+		table.insert(Hardcore_Settings.sacrifice, sacrifice)
+		--Hardcore_Character.sacrificed_at = sacrifice["localtime"]
+		Hardcore:Print("Character marked for sacrifice. Die within 5 minutes and then activate it on Death Knight.")
+		party_change_token_handler:SendRequestPartyChangeToken(
+			CTL,
+			COMM_COMMANDS[7],
+			COMM_COMMAND_DELIM,
+			COMM_NAME,
+			Hardcore_Character.team
+		)
+	elseif dk_convert_option == "activate" then
+		if inCombat == true then
+			Hardcore:Print("Can't use activate in combat")
+			return
+		end
+		if classID ~= 6 then
+			Hardcore:Print("You can activate only Death Knight character")
+			return
+		end
+		if Hardcore_Settings.sacrifice == nil or #Hardcore_Settings.sacrifice == 0 then
+			Hardcore:Print("There are no sacrificed characters")
+			return
+		end
+		--Hardcore:Print(Hardcore_Settings.sacrifice[1].guid)
+		--Hardcore:Print(Hardcore_Settings.sacrifice[1].localtime)
+		if Hardcore_Settings.sacrifice[1].complete then
+			Hardcore_Character.converted_successfully = true
+			Hardcore_Character.converted_time = date("%m/%d/%y %H:%M:%S")
+			for k, v in pairs(Hardcore_Settings.sacrifice) do
+				Hardcore_Settings.sacrifice[k] = nil
+			end
+			Hardcore:Print("Death Knight activated. Happy hunting.")
+			local party_change_token_secret = ApplyDKToken(Hardcore_Settings, Hardcore_Character)
+			party_change_token_handler:SendApplyPartyChangeToken(
+				CTL,
+				COMM_COMMANDS[8],
+				COMM_COMMAND_DELIM,
+				COMM_NAME,
+				Hardcore_Character.team,
+				party_change_token_secret
+			)
+		else
+			Hardcore:Print("There are no sacrificed characters")
+		end
+	elseif dk_convert_option == "override" then
+		if inCombat == true then
+			Hardcore:Print("Can't use sacrifice in combat")
+			return
+		end
+		if stealthed == true then
+			Hardcore:Print("Can't use sacrifice while stealthed")
+			return
+		end
+		if isFeign == true then
+			Hardcore:Print("Can't use sacrifice while Feigning Death")
+			return
+		end
+		-- check if eligible
+		if classID == 6 then
+			Hardcore:Print("You can't sacrifice Death Knight character")
+			return
+		end
+		if level < SACRIFICE_LEVEL_MIN or level > SACRIFICE_LEVEL_MAX then
+			Hardcore:Print(
+				string.format("You must be level %s - %s to sacrifice", SACRIFICE_LEVEL_MIN, SACRIFICE_LEVEL_MAX)
+			)
+			return
+		end
+		local sacrifice = {}
+		sacrifice["guid"] = Hardcore_Character.guid
+		sacrifice["localtime"] = date("%m/%d/%y %H:%M:%S")
+		sacrifice["timestamp"] = time(date("*t"))
+		sacrifice["override"] = true
+		sacrifice["complete"] = false
+		if Hardcore_Settings.sacrifice == nil then
+			Hardcore_Settings.sacrifice = {}
+		end
+		for k, v in pairs(Hardcore_Settings.sacrifice) do
+			Hardcore_Settings.sacrifice[k] = nil
+		end
+		table.insert(Hardcore_Settings.sacrifice, sacrifice)
+		Hardcore:Print("Character marked for sacrifice. Die within 5 minutes and then activate it on Death Knight.")
+		party_change_token_handler:SendRequestPartyChangeToken(
+			CTL,
+			COMM_COMMANDS[7],
+			COMM_COMMAND_DELIM,
+			COMM_NAME,
+			Hardcore_Character.team
+		)
+	else
+		Hardcore:Print("|cff00ff00Death Knight options:|r sacrifice activate")
+	end
+end
+
+
 --[[ Override default WoW UI ]]
 --
 
@@ -473,10 +630,12 @@ function Hardcore:PLAYER_LOGIN()
 	-- Show the first menu screen.  Requires short delay
 	if UnitLevel("player") < 2 then
 		C_Timer.After(1.0, function()
-			ShowFirstMenu(Hardcore_Character, Hardcore_Settings, failure_function_executor)
+			-- ShowFirstMenu(Hardcore_Character, Hardcore_Settings, failure_function_executor)
 			Hardcore_Character.first_recorded = GetServerTime()
 		end)
 	end
+
+	ShowMainMenu(Hardcore_Character, Hardcore_Settings, Hardcore.DKConvert)
 
 	-- cache player data
 	_, class, _ = UnitClass("player")
@@ -2288,162 +2447,6 @@ function Hardcore:SetGriefAlertCondition(grief_alert_option)
 		end
 		Hardcore:Print("Grief alert is currently set to: " .. grief_alert_setting_msg)
 		Hardcore:Print("|cff00ff00Grief alert options:|r off horde alliance both")
-	end
-end
-
-function Hardcore:DKConvert(dk_convert_option)
-	local _, _, classID = UnitClass("player")
-	local level = UnitLevel("player")
-	local inCombat = UnitAffectingCombat("player")
-	local stealthed = IsStealthed()
-	local isFeign = UnitIsFeignDeath("player")
-	if dk_convert_option == "sacrifice" then
-		if inCombat == true then
-			Hardcore:Print("Can't use sacrifice in combat")
-			return
-		end
-		if stealthed == true then
-			Hardcore:Print("Can't use sacrifice while stealthed")
-			return
-		end
-		if isFeign == true then
-			Hardcore:Print("Can't use sacrifice while Feigning Death")
-			return
-		end
-		-- check if eligible
-		if classID == 6 then
-			Hardcore:Print("You can't sacrifice Death Knight character")
-			return
-		end
-		if level < SACRIFICE_LEVEL_MIN or level > SACRIFICE_LEVEL_MAX then
-			Hardcore:Print(
-				string.format("You must be level %s - %s to sacrifice", SACRIFICE_LEVEL_MIN, SACRIFICE_LEVEL_MAX)
-			)
-			return
-		end
-		-- need to warn before sacrifice if something is wrong
-		local debug_message = "Playtime gap percentage: " .. Hardcore_Character.tracked_played_percentage .. "%."
-		Hardcore:Debug(debug_message)
-		local percentage = Hardcore_Character.tracked_played_percentage
-
-		if Hardcore:ShouldShowPlaytimeWarning(level, percentage) then
-			Hardcore:DisplayPlaytimeWarning(level)
-			return
-		end
-		-- we deaths, bh, played_time_gaps and trade partners
-		if
-			#Hardcore_Character.deaths > 0
-			or #Hardcore_Character.bubble_hearth_incidents > 0
-			or #Hardcore_Character.trade_partners > 0
-		then
-			Hardcore:Print(
-				"Before proceeding with sacrifice, please contact admins and verify your character as there are some warnings!"
-			)
-			return
-		end
-		local sacrifice = {}
-		sacrifice["guid"] = Hardcore_Character.guid
-		sacrifice["localtime"] = date("%m/%d/%y %H:%M:%S")
-		sacrifice["timestamp"] = time(date("*t"))
-		sacrifice["override"] = false
-		sacrifice["complete"] = false
-		if Hardcore_Settings.sacrifice == nil then
-			Hardcore_Settings.sacrifice = {}
-		end
-		for k, v in pairs(Hardcore_Settings.sacrifice) do
-			Hardcore_Settings.sacrifice[k] = nil
-		end
-		table.insert(Hardcore_Settings.sacrifice, sacrifice)
-		--Hardcore_Character.sacrificed_at = sacrifice["localtime"]
-		Hardcore:Print("Character marked for sacrifice. Die within 5 minutes and then activate it on Death Knight.")
-		party_change_token_handler:SendRequestPartyChangeToken(
-			CTL,
-			COMM_COMMANDS[7],
-			COMM_COMMAND_DELIM,
-			COMM_NAME,
-			Hardcore_Character.team
-		)
-	elseif dk_convert_option == "activate" then
-		if inCombat == true then
-			Hardcore:Print("Can't use activate in combat")
-			return
-		end
-		if classID ~= 6 then
-			Hardcore:Print("You can activate only Death Knight character")
-			return
-		end
-		if Hardcore_Settings.sacrifice == nil or #Hardcore_Settings.sacrifice == 0 then
-			Hardcore:Print("There are no sacrificed characters")
-			return
-		end
-		--Hardcore:Print(Hardcore_Settings.sacrifice[1].guid)
-		--Hardcore:Print(Hardcore_Settings.sacrifice[1].localtime)
-		if Hardcore_Settings.sacrifice[1].complete then
-			Hardcore_Character.converted_successfully = true
-			Hardcore_Character.converted_time = date("%m/%d/%y %H:%M:%S")
-			for k, v in pairs(Hardcore_Settings.sacrifice) do
-				Hardcore_Settings.sacrifice[k] = nil
-			end
-			Hardcore:Print("Death Knight activated. Happy hunting.")
-			local party_change_token_secret = ApplyDKToken(Hardcore_Settings, Hardcore_Character)
-			party_change_token_handler:SendApplyPartyChangeToken(
-				CTL,
-				COMM_COMMANDS[8],
-				COMM_COMMAND_DELIM,
-				COMM_NAME,
-				Hardcore_Character.team,
-				party_change_token_secret
-			)
-		else
-			Hardcore:Print("There are no sacrificed characters")
-		end
-	elseif dk_convert_option == "override" then
-		if inCombat == true then
-			Hardcore:Print("Can't use sacrifice in combat")
-			return
-		end
-		if stealthed == true then
-			Hardcore:Print("Can't use sacrifice while stealthed")
-			return
-		end
-		if isFeign == true then
-			Hardcore:Print("Can't use sacrifice while Feigning Death")
-			return
-		end
-		-- check if eligible
-		if classID == 6 then
-			Hardcore:Print("You can't sacrifice Death Knight character")
-			return
-		end
-		if level < SACRIFICE_LEVEL_MIN or level > SACRIFICE_LEVEL_MAX then
-			Hardcore:Print(
-				string.format("You must be level %s - %s to sacrifice", SACRIFICE_LEVEL_MIN, SACRIFICE_LEVEL_MAX)
-			)
-			return
-		end
-		local sacrifice = {}
-		sacrifice["guid"] = Hardcore_Character.guid
-		sacrifice["localtime"] = date("%m/%d/%y %H:%M:%S")
-		sacrifice["timestamp"] = time(date("*t"))
-		sacrifice["override"] = true
-		sacrifice["complete"] = false
-		if Hardcore_Settings.sacrifice == nil then
-			Hardcore_Settings.sacrifice = {}
-		end
-		for k, v in pairs(Hardcore_Settings.sacrifice) do
-			Hardcore_Settings.sacrifice[k] = nil
-		end
-		table.insert(Hardcore_Settings.sacrifice, sacrifice)
-		Hardcore:Print("Character marked for sacrifice. Die within 5 minutes and then activate it on Death Knight.")
-		party_change_token_handler:SendRequestPartyChangeToken(
-			CTL,
-			COMM_COMMANDS[7],
-			COMM_COMMAND_DELIM,
-			COMM_NAME,
-			Hardcore_Character.team
-		)
-	else
-		Hardcore:Print("|cff00ff00Death Knight options:|r sacrifice activate")
 	end
 end
 

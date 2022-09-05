@@ -77,4 +77,5 @@ Achievements/VoidServant.lua
 CharacterStatusScreen.lua
 InspectStatusScreen.lua
 FirstMenuScreen.lua
+MainMenu.lua
 Hardcore.lua

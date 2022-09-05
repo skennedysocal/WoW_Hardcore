@@ -167,7 +167,10 @@ local STRING_ADDON_STATUS_SUBTITLE_LOADING = "Guild Addon Status (Loading)"
 local THROTTLE_DURATION = 5
 local SACRIFICE_LEVEL_MIN = 55
 local SACRIFICE_LEVEL_MAX = 58
-local MOD_CHAR_NAMES = {} -- \Todo
+local MOD_CHAR_NAMES = {
+	["MOD_CHAR_NAME_GOES_HERE"] = 1,
+	["ANOTHER_MOD_CHAR_NAME_GOES_HERE"] = 1,
+}
 
 -- frame display
 local display = "Rules"
@@ -358,9 +361,11 @@ local function SlashHandler(msg, editbox)
 
 		Hardcore:ShowAlertFrame(styleConfig, message)
 	elseif cmd == "ExpectAchievementAppeal" then
+		Hardcore:Print("Allowing a hc mod to appeal achievements.")
 		expecting_achievement_appeal = true
 		C_Timer.After(60.0, function() -- one minute to receive achievement appeal
 			expecting_achievement_appeal = false
+			Hardcore:Print("No longer allowing a hc mod to appeal achievements.")
 		end)
 	elseif cmd == "AppealAchievement" then
 		if MOD_CHAR_NAMES[UnitName("player")] == nil then
@@ -1314,6 +1319,25 @@ function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
 			}
 			return
 		end
+		if command == COMM_COMMANDS[9] then -- Appeal achievement
+			local name, _ = string.split("-", sender)
+			if MOD_CHAR_NAMES[name] == nil then
+				return
+			end -- received appeal from non-mod character
+			if expecting_achievement_appeal == false then
+				Hardcore:Print(
+					'Received unexpected achievement appeal.  If you are expecting an achievement appeal type "/hardcore ExpectAchievementAppeal"'
+				)
+				return
+			end
+			local achievement_to_appeal = _G.achievements[string.split(COMM_FIELD_DELIM, data)]
+			if achievement_to_appeal ~= nil then
+				table.insert(Hardcore_Character.achievements, achievement_to_appeal.name)
+				achievement_to_appeal:Register(failure_function_executor, Hardcore_Character)
+				Hardcore:Print("Appealed " .. achievement_to_appeal.name .. " challenge!")
+			end
+			return
+		end
 		if DEPRECATED_COMMANDS[command] or alert_msg_time[command] == nil then
 			return
 		end
@@ -1344,24 +1368,6 @@ function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
 			Hardcore:ReceivePulse(data, sender)
 		else
 			-- Hardcore:Debug("Unknown command :"..command)
-		end
-		if command == COMM_COMMANDS[9] then -- Appeal achievement
-			local name, _ = string.split("-", sender)
-			if MOD_CHAR_NAMES[name] == nil then
-				return
-			end -- received appeal from non-mod character
-			if expecting_achievement_appeal == false then
-				Hardcore:Print(
-					'Received unexpected achievement appeal.  If you are expecting an achievement appeal type "/hardcore ExpectAchievementAppeal"'
-				)
-			end
-			local achievement_to_appeal = _G.achievements[string.split(COMM_FIELD_DELIM, data)]
-			if achievement_to_appeal ~= nil then
-				table.insert(Hardcore_Character.achievements, achievement_to_appeal.name)
-				achievement_to_appeal:Register(failure_function_executor, Hardcore_Character)
-				Hardcore:Print("Appealed " .. achievement_to_appeal.name .. " challenge!")
-			end
-			return
 		end
 	end
 end

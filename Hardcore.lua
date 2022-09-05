@@ -736,6 +736,7 @@ function Hardcore:UNIT_SPELLCAST_START(...)
 end
 
 function Hardcore:INSPECT_READY(...)
+	if InspectFrame == nil then return end
 	if loaded_inspect_frame == false then
 		loaded_inspect_frame = true
 		local ITabName = "HC"

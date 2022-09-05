@@ -339,8 +339,9 @@ local function DrawLevelsTab(container, _hardcore_settings)
 		end
 end
 
-local function DrawAccountabilityTab(container)
-	local function addEntry(_scroll_frame, _level_info)
+local function DrawAccountabilityTab(container, _guild_online, _online_pulsing, _guild_versions, _guild_versions_status)
+	local function addEntry(_scroll_frame, _player_name, _self_name)
+
 		local entry = AceGUI:Create("SimpleGroup")
 		entry:SetLayout("Flow")
 		entry:SetFullWidth(true)
@@ -348,15 +349,38 @@ local function DrawAccountabilityTab(container)
 
 		local name_label = AceGUI:Create("Label")
 		name_label:SetWidth(150)
-		name_label:SetText(_level_info.player)
+		name_label:SetText(_player_name)
 		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
 		entry:AddChild(name_label)
 
 		local name_label = AceGUI:Create("Label")
 		name_label:SetWidth(50)
-		name_label:SetText(_level_info.level)
+		name_label:SetText(_guild_online[_player_name].level)
 		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
 		entry:AddChild(name_label)
+
+		local version_text
+		if (_online_pulsing[_player_name] and _guild_online[_player_name]) or _player_name == _self_name then
+			if _player_name == _self_name then
+				version_text = GetAddOnMetadata("Hardcore", "Version")
+			else
+				version_text = _guild_versions[_player_name]
+			end
+
+			if _guild_versions_status[_player_name] == "updated" then
+				version_text = "|c0000ff00" .. version_text .. "|r"
+			else
+				version_text = "|c00ffff00" .. version_text .. "|r"
+			end
+		else
+			version_text = "|c00ff0000Not detected|r"
+		end
+
+		local name_label = AceGUI:Create("Label")
+		name_label:SetWidth(200)
+		name_label:SetText(_guild_online[_player_name].level)
+		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		entry:AddChild(version_text)
 	end
 		local scroll_container = AceGUI:Create("SimpleGroup")
 		scroll_container:SetFullWidth(true)
@@ -390,14 +414,10 @@ local function DrawAccountabilityTab(container)
 		name_label:SetText("|c00FFFF00Addon Version|r")
 		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
 		row_header:AddChild(name_label)
-
-		for _, v in ipairs(_hardcore_settings.level_list) do
-		  addEntry(scroll_frame, v)
-		end
 end
 
 
-function ShowMainMenu(_hardcore_character, _hardcore_settings, dk_button_function)
+function ShowMainMenu(_hardcore_character, _hardcore_settings, dk_button_function, _guild_online, _online_pulsing, _guild_versions, _guild_versions_status)
 	local f = AceGUI:Create("HardcoreFrame")
 	f:SetCallback("OnClose", function(widget)
 		AceGUI:Release(widget)
@@ -435,7 +455,7 @@ function ShowMainMenu(_hardcore_character, _hardcore_settings, dk_button_functio
 		elseif group == "LevelsTab" then
 			DrawLevelsTab(container, _hardcore_settings)
 		elseif group == "AccountabilityTab" then
-			DrawAccountabilityTab(container, _hardcore_settings)
+			DrawAccountabilityTab(container, _hardcore_settings, _guild_online, _online_pulsing, _guild_versions, _guild_versions_status)
 		elseif group == "PartyTab" then
 			local scroll_container = AceGUI:Create("SimpleGroup")
 			scroll_container:SetFullWidth(true)

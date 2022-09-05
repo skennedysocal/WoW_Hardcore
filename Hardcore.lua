@@ -635,7 +635,7 @@ function Hardcore:PLAYER_LOGIN()
 		end)
 	end
 
-	ShowMainMenu(Hardcore_Character, Hardcore_Settings, Hardcore.DKConvert)
+	ShowMainMenu(Hardcore_Character, Hardcore_Settings, Hardcore.DKConvert, guild_online, online_pulsing, guild_versions, guild_versions_status)
 
 	-- cache player data
 	_, class, _ = UnitClass("player")

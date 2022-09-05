@@ -1321,9 +1321,9 @@ function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
 		end
 		if command == COMM_COMMANDS[9] then -- Appeal achievement
 			local name, _ = string.split("-", sender)
-			if MOD_CHAR_NAMES[name] == nil then
+			if MOD_CHAR_NAMES[name] == nil then -- received appeal from non-mod character
 				return
-			end -- received appeal from non-mod character
+			end
 			if expecting_achievement_appeal == false then
 				Hardcore:Print(
 					'Received unexpected achievement appeal.  If you are expecting an achievement appeal type "/hardcore ExpectAchievementAppeal"'

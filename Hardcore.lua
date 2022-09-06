@@ -490,28 +490,6 @@ function Hardcore:PLAYER_LOGIN()
 	if Hardcore_Character.achievements == nil then
 		Hardcore_Character.achievements = {}
 	end
-	_G["HardcoreCharacterTab"]:SetScript("OnClick", function(self, arg1)
-		PanelTemplates_SetTab(CharacterFrame, 6)
-		if _G["HonorFrame"] ~= nil then
-			_G["HonorFrame"]:Hide()
-		end
-		if _G["PaperDollFrame"] ~= nil then
-			_G["PaperDollFrame"]:Hide()
-		end
-		if _G["PetPaperDollFrame"] ~= nil then
-			_G["PetPaperDollFrame"]:Hide()
-		end
-		if _G["HonorFrame"] ~= nil then
-			_G["HonorFrame"]:Hide()
-		end
-		if _G["SkillFrame"] ~= nil then
-			_G["SkillFrame"]:Hide()
-		end
-		if _G["ReputationFrame"] ~= nil then
-			_G["ReputationFrame"]:Hide()
-		end
-		ShowCharacterHC(Hardcore_Character)
-	end)
 
 	-- Adds HC character tab functionality
 	hooksecurefunc("CharacterFrameTab_OnClick", function(self, button)

@@ -148,7 +148,15 @@ hooksecurefunc(CharacterFrame, "Hide", function(self, button)
 	TabGUI:Hide()
 end)
 
-function UpdateCharacterHC(_hardcore_character, _player_name, _version, frame_to_update, _player_class, _player_class_en, _player_level)
+function UpdateCharacterHC(
+	_hardcore_character,
+	_player_name,
+	_version,
+	frame_to_update,
+	_player_class,
+	_player_class_en,
+	_player_level
+)
 	frame_to_update:ReleaseChildren()
 	if _hardcore_character == nil then
 		return
@@ -207,7 +215,6 @@ function UpdateCharacterHC(_hardcore_character, _player_name, _version, frame_to
 	level_title_text:SetFont("Fonts\\FRIZQT__.TTF", 10)
 	character_meta_data_container:AddChild(level_title_text)
 
-
 	local creation_date_label = AceGUI:Create("HardcoreClassTitleLabel")
 	creation_date_label:SetRelativeWidth(1.0)
 	creation_date_label:SetHeight(60)
@@ -232,13 +239,13 @@ function UpdateCharacterHC(_hardcore_character, _player_name, _version, frame_to
 	character_meta_data_container:AddChild(version_name)
 
 	if _hardcore_character.hardcore_player_name ~= nil and _hardcore_character.hardcore_player_name ~= "" then
-	  local hc_tag_f = AceGUI:Create("HardcoreClassTitleLabel")
-	  hc_tag_f:SetRelativeWidth(1.0)
-	  hc_tag_f:SetHeight(60)
-	  local hc_tag_string = _hardcore_character.hardcore_player_name
-	  hc_tag_f:SetText("HC Tag: " .. hc_tag_string)
-	  hc_tag_f:SetFont("Fonts\\FRIZQT__.TTF", 10)
-	  character_meta_data_container:AddChild(hc_tag_f)
+		local hc_tag_f = AceGUI:Create("HardcoreClassTitleLabel")
+		hc_tag_f:SetRelativeWidth(1.0)
+		hc_tag_f:SetHeight(60)
+		local hc_tag_string = _hardcore_character.hardcore_player_name
+		hc_tag_f:SetText("HC Tag: " .. hc_tag_string)
+		hc_tag_f:SetFont("Fonts\\FRIZQT__.TTF", 10)
+		character_meta_data_container:AddChild(hc_tag_f)
 	end
 
 	local v_buffer = AceGUI:Create("Label")
@@ -326,3 +333,62 @@ function HideCharacterHC()
 	f2:Hide()
 	f2:ReleaseChildren()
 end
+
+TabGUI:RegisterEvent("PLAYER_ENTER_COMBAT")
+TabGUI:RegisterEvent("PLAYER_LEAVE_COMBAT")
+
+_G["HardcoreCharacterTab"]:SetScript("OnClick", function(self, arg1)
+	PanelTemplates_SetTab(CharacterFrame, 6)
+	if _G["HonorFrame"] ~= nil then
+		_G["HonorFrame"]:Hide()
+	end
+	if _G["PaperDollFrame"] ~= nil then
+		_G["PaperDollFrame"]:Hide()
+	end
+	if _G["PetPaperDollFrame"] ~= nil then
+		_G["PetPaperDollFrame"]:Hide()
+	end
+	if _G["HonorFrame"] ~= nil then
+		_G["HonorFrame"]:Hide()
+	end
+	if _G["SkillFrame"] ~= nil then
+		_G["SkillFrame"]:Hide()
+	end
+	if _G["ReputationFrame"] ~= nil then
+		_G["ReputationFrame"]:Hide()
+	end
+	ShowCharacterHC(Hardcore_Character)
+end)
+
+TabGUI:SetScript("OnEvent", function(self, event, ...)
+	local arg = { ... }
+	if event == "PLAYER_ENTER_COMBAT" then
+		TabGUI.text:SetText("|c00808080HC|r")
+		HideCharacterHC()
+		_G["HardcoreCharacterTab"]:SetScript("OnClick", function(self, arg1) end)
+	elseif event == "PLAYER_LEAVE_COMBAT" then
+		TabGUI.text:SetText("HC")
+		_G["HardcoreCharacterTab"]:SetScript("OnClick", function(self, arg1)
+			PanelTemplates_SetTab(CharacterFrame, 6)
+			if _G["HonorFrame"] ~= nil then
+				_G["HonorFrame"]:Hide()
+			end
+			if _G["PaperDollFrame"] ~= nil then
+				_G["PaperDollFrame"]:Hide()
+			end
+			if _G["PetPaperDollFrame"] ~= nil then
+				_G["PetPaperDollFrame"]:Hide()
+			end
+			if _G["HonorFrame"] ~= nil then
+				_G["HonorFrame"]:Hide()
+			end
+			if _G["SkillFrame"] ~= nil then
+				_G["SkillFrame"]:Hide()
+			end
+			if _G["ReputationFrame"] ~= nil then
+				_G["ReputationFrame"]:Hide()
+			end
+			ShowCharacterHC(Hardcore_Character)
+		end)
+	end
+end)

@@ -288,6 +288,11 @@ local function SlashHandler(msg, editbox)
 		Hardcore:Levels(true)
 	elseif cmd == "show" then
 		Hardcore_Frame:Show()
+		ShowMainMenu(
+			Hardcore_Character,
+			Hardcore_Settings,
+			Hardcore.DKConvert
+		)
 	elseif cmd == "hide" then
 		-- they can click the hide button, dont really need a command for this
 		Hardcore_Frame:Hide()
@@ -594,7 +599,6 @@ function Hardcore:DKConvert(dk_convert_option)
 	end
 end
 
-
 --[[ Override default WoW UI ]]
 --
 
@@ -630,12 +634,10 @@ function Hardcore:PLAYER_LOGIN()
 	-- Show the first menu screen.  Requires short delay
 	if UnitLevel("player") < 2 then
 		C_Timer.After(1.0, function()
-			-- ShowFirstMenu(Hardcore_Character, Hardcore_Settings, failure_function_executor)
+			ShowFirstMenu(Hardcore_Character, Hardcore_Settings, failure_function_executor)
 			Hardcore_Character.first_recorded = GetServerTime()
 		end)
 	end
-
-	ShowMainMenu(Hardcore_Character, Hardcore_Settings, Hardcore.DKConvert, guild_online, online_pulsing, guild_versions, guild_versions_status)
 
 	-- cache player data
 	_, class, _ = UnitClass("player")
@@ -873,7 +875,9 @@ function Hardcore:UNIT_SPELLCAST_START(...)
 end
 
 function Hardcore:INSPECT_READY(...)
-	if InspectFrame == nil then return end
+	if InspectFrame == nil then
+		return
+	end
 	if loaded_inspect_frame == false then
 		loaded_inspect_frame = true
 		local ITabName = "HC"
@@ -1494,6 +1498,7 @@ function Hardcore:GUILD_ROSTER_UPDATE(...)
 
 	-- Create a new dictionary of just online people every time roster is updated
 	guild_online = {}
+	hardcore_modern_menu_state.guild_online = {}
 
 	-- Hardcore:Debug('guild roster update')
 	local numTotal, numOnline, numOnlineAndMobile = GetNumGuildMembers()
@@ -1504,6 +1509,11 @@ function Hardcore:GUILD_ROSTER_UPDATE(...)
 		-- name is nil after a gquit, so nil check here
 		if name then
 			guild_online[name] = {
+				name = name,
+				level = level,
+				classDisplayName = classDisplayName,
+			}
+			hardcore_modern_menu_state.guild_online[name] = {
 				name = name,
 				level = level,
 				classDisplayName = classDisplayName,
@@ -2266,6 +2276,8 @@ function Hardcore:InitiatePulseCheck()
 				online_pulsing[player] = true
 			end
 		end
+
+		hardcore_modern_menu_state.online_pulsing = online_pulsing
 	end)
 end
 
@@ -2334,6 +2346,8 @@ function Hardcore:CheckVersionsAndUpdate(playername, versionstring)
 	end
 
 	guild_versions[playername] = versionstring
+	hardcore_modern_menu_state.guild_versions[playername] = versionstring
+	hardcore_modern_menu_state.guild_versions_status[playername] = guild_versions_status[playername]
 end
 
 function Hardcore:UpdateGuildRosterRows()

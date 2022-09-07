@@ -29,9 +29,9 @@ function druid_of_the_claw_achievement:GatherBlackList()
 		local name, texture, offset, numSlots, isGuild, offspecID = GetSpellTabInfo(i)
 		if name == "Balance" then
 			for j = offset + 1, offset + numSlots do
-				local spell_name = GetSpellInfo(j, "")
-				if spell_name ~= "Bear Form" or spell_name ~= "Dire Bear Form" then
-					table.insert(druid_of_the_claw_achievement.blacklist, spell_name)
+				local _, _, _, _, _, _, spell_id = GetSpellInfo(j, "")
+				if spell_id ~= 5487 and spell_id ~= 9634 and spell_id ~= 19027 then -- 5487: bear form, 9634: dire bear form, 19027: teleport moonglade
+					druid_of_the_claw_achievement.blacklist[spell_id] = 1
 				end
 			end
 		end
@@ -48,12 +48,10 @@ druid_of_the_claw_achievement:SetScript("OnEvent", function(self, event, ...)
 		if unit ~= "player" then
 			return
 		end
-		local spell_name = GetSpellInfo(spell_id)
-		for i, blacklist_spell in ipairs(druid_of_the_claw_achievement.blacklist) do
-			if spell_name == blacklist_spell then
-				druid_of_the_claw_achievement.fail_function_executor.Fail(druid_of_the_claw_achievement.name)
-				return
-			end
+		if druid_of_the_claw_achievement.blacklist[spell_id] ~= nil then
+			druid_of_the_claw_achievement.fail_function_executor.Fail(druid_of_the_claw_achievement.name)
+			local spell_name = GetSpellInfo(spell_id)
+			Hardcore:Print("Failed Druid of the Claw; casted " .. spell_name)
 		end
 	end
 end)

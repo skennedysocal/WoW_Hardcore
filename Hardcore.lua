@@ -484,7 +484,6 @@ function Hardcore:PLAYER_LOGIN()
 	PLAYER_GUID = UnitGUID("player")
 	PLAYER_FACTION, _ = UnitFactionGroup("player")
 	local PLAYER_LEVEL = UnitLevel("player")
-	Hardcore:ApplyAlertFrameSettings()
 
 	-- Register achievements
 	if Hardcore_Character.achievements == nil then
@@ -560,6 +559,8 @@ function Hardcore:PLAYER_LOGIN()
 
 	Hardcore:InitializeSavedVariables()
 	Hardcore:InitializeSettingsSavedVariables()
+
+	Hardcore:ApplyAlertFrameSettings()
 
 	-- different guid means new character with the same name
 	if Hardcore_Character.guid ~= PLAYER_GUID then

@@ -6,6 +6,7 @@
 	<Script file="widgets\AceGUIContainer-DropDownGroup.lua"/>
 	<Script file="widgets\AceGUIContainer-Frame.lua"/>
 	<Script file="widgets\AceGUIContainer-HardcoreFrame.lua"/>
+	<Script file="widgets\AceGUIContainer-HardcoreFrameModernMenu.lua"/>
 	<Script file="widgets\AceGUIContainer-HardcoreFrameEmpty.lua"/>
 	<Script file="widgets\AceGUIContainer-InlineGroup.lua"/>
 	<Script file="widgets\AceGUIContainer-ScrollFrame.lua"/>

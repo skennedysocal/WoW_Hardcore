@@ -52,6 +52,7 @@ Hardcore_Settings = {
 	show_minimap_mailbox_icon = false,
 	sacrifice = {},
 	hardcore_player_name = "",
+	use_alternative_menu = false,
 }
 
 --[[ Character saved variables ]]
@@ -287,12 +288,15 @@ local function SlashHandler(msg, editbox)
 	elseif cmd == "alllevels" then
 		Hardcore:Levels(true)
 	elseif cmd == "show" then
-		Hardcore_Frame:Show()
-		ShowMainMenu(
-			Hardcore_Character,
-			Hardcore_Settings,
-			Hardcore.DKConvert
-		)
+		if Hardcore_Settings.use_alternative_menu then
+			ShowMainMenu(
+				Hardcore_Character,
+				Hardcore_Settings,
+				Hardcore.DKConvert
+			)
+		else
+			Hardcore_Frame:Show()
+		end
 	elseif cmd == "hide" then
 		-- they can click the hide button, dont really need a command for this
 		Hardcore_Frame:Hide()
@@ -406,6 +410,7 @@ local settings_saved_variable_meta = {
 	["show_minimap_mailbox_icon"] = false,
 	["sacrifice"] = {},
 	["hardcore_player_name"] = "",
+	["use_alternative_menu"] = false,
 }
 
 --[[ Post-utility functions]]
@@ -2087,11 +2092,33 @@ function Hardcore:initMinimapButton()
 			end
 
 			-- No modifier key toggles the options panel
-			if Hardcore_Frame:IsShown() then
-				Hardcore_Frame:Hide()
+			if not Hardcore_Settings.use_alternative_menu then
+				  if Hardcore_Frame:IsShown() then
+					  Hardcore_Frame:Hide()
+				  else
+					  Hardcore_Frame:Show()
+				  end
 			else
-				Hardcore_Frame:Show()
+				if hardcore_modern_menu == nil then 
+					ShowMainMenu(
+						Hardcore_Character,
+						Hardcore_Settings,
+						Hardcore.DKConvert
+					)
+				else
+					if hardcore_modern_menu:IsShown() then
+						hardcore_modern_menu:Hide() -- destructs
+						hardcore_modern_menu = nil
+					else
+						ShowMainMenu(
+							Hardcore_Character,
+							Hardcore_Settings,
+							Hardcore.DKConvert
+						)
+					end
+				end
 			end
+
 		end
 	end
 
@@ -2665,6 +2692,30 @@ local options = {
 						Hardcore_Character.hardcore_player_name = val
 					end,
 					order = 11,
+				},
+				use_alternative_menu = {
+					type = "toggle",
+					name = "Use alternative menu",
+					desc = "Use alternative menu",
+					get = function()
+						return Hardcore_Settings.use_alternative_menu
+					end,
+					set = function()
+						Hardcore_Settings.use_alternative_menu = not Hardcore_Settings.use_alternative_menu
+					end,
+					order = 12,
+				},
+				show_minimap_icon_option = {
+					type = "toggle",
+					name = "Show minimap icon",
+					desc = "Show minimap icon",
+					get = function()
+						return not Hardcore_Settings.hide
+					end,
+					set = function()
+						Hardcore:ToggleMinimapIcon()
+					end,
+					order = 13,
 				},
 			},
 		},

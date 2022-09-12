@@ -11,17 +11,34 @@ scavenger_achievement.description =
 	"Complete the Hardcore challenge without at any point using, consuming, or equipping an item that you have not looted from a mob, chest, or loot container, or crafted or conjured yourself. You are not allowed to ever buy any items from vendors, nor use, consume, or equip items rewarded by a quest (items provided for a quest can be used, consumed, or equipped). This includes consumables, projectiles, trade goods, and containers. All items you start with can be used, consumed, and equipped, including Hearthstone."
 scavenger_achievement.blacklist = {}
 
+-- Internal states
+scavenger_achievement.item_pushed = false
+scavenger_achievement.merchant_updated = false
+scavenger_achievement.active = false
+
 -- Registers
 function scavenger_achievement:Register(fail_function_executor)
 	scavenger_achievement:RegisterEvent("MERCHANT_SHOW")
 	scavenger_achievement:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
+	scavenger_achievement:RegisterEvent("MERCHANT_UPDATE")
+	scavenger_achievement:RegisterEvent("ITEM_PUSH")
 	scavenger_achievement:GenerateBlacklist()
 	scavenger_achievement.fail_function_executor = fail_function_executor
+
+	scavenger_achievement.item_pushed = false
+	scavenger_achievement.merchant_updated = false
+	scavenger_achievement.active = true
 end
 
 function scavenger_achievement:Unregister()
 	scavenger_achievement:UnregisterEvent("MERCHANT_SHOW")
 	scavenger_achievement:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED")
+	scavenger_achievement:UnregisterEvent("MERCHANT_UPDATE")
+	scavenger_achievement:UnregisterEvent("ITEM_PUSH")
+
+	scavenger_achievement.item_pushed = false
+	scavenger_achievement.merchant_updated = false
+	scavenger_achievement.active = false
 end
 
 function scavenger_achievement:GenerateBlacklist()
@@ -36,6 +53,16 @@ function scavenger_achievement:GenerateBlacklist()
 	end
 end
 
+local function CheckPurchase()
+	if
+		scavenger_achievement.item_pushed
+		and scavenger_achievement.merchant_updated
+		and scavenger_achievement.active
+	then
+		scavenger_achievement.fail_function_executor.Fail(scavenger_achievement.name)
+	end
+end
+
 -- Register Definitions
 scavenger_achievement:SetScript("OnEvent", function(self, event, ...)
 	local arg = { ... }
@@ -45,6 +72,18 @@ scavenger_achievement:SetScript("OnEvent", function(self, event, ...)
 				_G["MerchantItem" .. i]:Hide()
 			end
 		end
+	elseif event == "MERCHANT_UPDATE" then
+		scavenger_achievement.merchant_updated = true
+		C_Timer.After(1.0, function()
+			CheckPurchase()
+			scavenger_achievement.merchant_updated = false
+		end)
+	elseif event == "ITEM_PUSH" then
+		scavenger_achievement.item_pushed = true
+		C_Timer.After(1.0, function()
+			CheckPurchase()
+			scavenger_achievement.item_pushed = false
+		end)
 	elseif event == "PLAYER_EQUIPMENT_CHANGED" then
 		if arg[2] == true then
 			return

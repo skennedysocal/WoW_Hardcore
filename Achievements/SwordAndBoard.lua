@@ -8,7 +8,7 @@ sword_and_board_achievement.title = "Sword & Board"
 sword_and_board_achievement.class = "Warrior"
 sword_and_board_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_sword_and_board.blp"
 sword_and_board_achievement.description =
-	"Complete the Hardcore challenge without at any point wielding a two-handed melee weapon or dual wielding. If your race starts with a two-handed weapon, unequip it upon logging in."
+"Complete the Hardcore challenge without at any point wielding a two-handed melee weapon or dual wielding (Fishing Pole is acceptable). If your race starts with a two-handed weapon, unequip it upon logging in."
 
 -- Registers
 function sword_and_board_achievement:Register(fail_function_executor)
@@ -33,21 +33,20 @@ sword_and_board_achievement:SetScript("OnEvent", function(self, event, ...)
 		local item_name, _, _, _, _, item_type, item_subtype, _, _, _, _ = GetItemInfo(item_id)
 		if arg[1] == 16 then -- Mainhand
 			if item_type == "Weapon" then
-				if
-					item_subtype == "Two-Handed Axes"
+				if item_subtype == "Two-Handed Axes"
 					or item_subtype == "Two-Handed Maces"
 					or item_subtype == "Two-Handed Swords"
 					or item_subtype == "Polearms"
 					or item_subtype == "Staves"
-					or item_subtype == "Fishing Poles"
+				--or item_subtype == "Fishing Poles"
 				then
-					Hardcore:Print("Equiped " .. item_name .. ".")
+					Hardcore:Print("Equipped " .. item_name .. ".")
 					sword_and_board_achievement.fail_function_executor.Fail(sword_and_board_achievement.name)
 				end
 			end
 		elseif arg[1] == 17 then -- Offhand
 			if item_type == "Weapon" then
-				Hardcore:Print("Equiped " .. item_name .. ".")
+				Hardcore:Print("Equipped " .. item_name .. ".")
 				sword_and_board_achievement.fail_function_executor.Fail(sword_and_board_achievement.name)
 			end
 		end

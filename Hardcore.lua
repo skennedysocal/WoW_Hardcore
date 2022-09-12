@@ -168,8 +168,8 @@ local THROTTLE_DURATION = 5
 local SACRIFICE_LEVEL_MIN = 55
 local SACRIFICE_LEVEL_MAX = 58
 local MOD_CHAR_NAMES = {
-	["MOD_CHAR_NAME_GOES_HERE"] = 1,
-	["ANOTHER_MOD_CHAR_NAME_GOES_HERE"] = 1,
+	["Knic"] = 1,
+	["Kknic"] = 1,
 }
 
 -- frame display

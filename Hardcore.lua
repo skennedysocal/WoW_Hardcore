@@ -289,11 +289,7 @@ local function SlashHandler(msg, editbox)
 		Hardcore:Levels(true)
 	elseif cmd == "show" then
 		if Hardcore_Settings.use_alternative_menu then
-			ShowMainMenu(
-				Hardcore_Character,
-				Hardcore_Settings,
-				Hardcore.DKConvert
-			)
+			ShowMainMenu(Hardcore_Character, Hardcore_Settings, Hardcore.DKConvert)
 		else
 			Hardcore_Frame:Show()
 		end
@@ -1910,7 +1906,7 @@ function Hardcore_Frame_OnShow()
 		table.insert(f, "")
 		table.insert(
 			f,
-			"At 60 you earn your IMMORTALITY and become a full fledged character with insane bragging rights "
+			"At MAX level you earn your IMMORTALITY and become a full fledged character with insane bragging rights "
 		)
 		table.insert(f, "")
 		table.insert(f, "")
@@ -2093,32 +2089,23 @@ function Hardcore:initMinimapButton()
 
 			-- No modifier key toggles the options panel
 			if not Hardcore_Settings.use_alternative_menu then
-				  if Hardcore_Frame:IsShown() then
-					  Hardcore_Frame:Hide()
-				  else
-					  Hardcore_Frame:Show()
-				  end
+				if Hardcore_Frame:IsShown() then
+					Hardcore_Frame:Hide()
+				else
+					Hardcore_Frame:Show()
+				end
 			else
-				if hardcore_modern_menu == nil then 
-					ShowMainMenu(
-						Hardcore_Character,
-						Hardcore_Settings,
-						Hardcore.DKConvert
-					)
+				if hardcore_modern_menu == nil then
+					ShowMainMenu(Hardcore_Character, Hardcore_Settings, Hardcore.DKConvert)
 				else
 					if hardcore_modern_menu:IsShown() then
 						hardcore_modern_menu:Hide() -- destructs
 						hardcore_modern_menu = nil
 					else
-						ShowMainMenu(
-							Hardcore_Character,
-							Hardcore_Settings,
-							Hardcore.DKConvert
-						)
+						ShowMainMenu(Hardcore_Character, Hardcore_Settings, Hardcore.DKConvert)
 					end
 				end
 			end
-
 		end
 	end
 
@@ -2695,8 +2682,8 @@ local options = {
 				},
 				use_alternative_menu = {
 					type = "toggle",
-					name = "Use alternative menu",
-					desc = "Use alternative menu",
+					name = "Use modern menu (beta)",
+					desc = "Use modern menu.  This feature replaces the menu that shows with /hardcore show.",
 					get = function()
 						return Hardcore_Settings.use_alternative_menu
 					end,

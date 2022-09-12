@@ -156,7 +156,6 @@ local function DrawRulesTab(container)
 	general_rules_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
 	scroll_frame:AddChild(general_rules_description)
 
-
 	local function DrawDungeonLevels(scroll_Frame)
 		local function addEntry(_scroll_frame, _name, _era, _wotlk)
 			local entry = AceGUI:Create("SimpleGroup")
@@ -247,7 +246,8 @@ local function DrawRulesTab(container)
 	local general_rules_description = AceGUI:Create("Label")
 	general_rules_description:SetWidth(600)
 	general_rules_description:SetText(
-		"\nDungeon Groups are authorized but only ONE run of each Dungeon per character.  Everyone in party must be following hardcore rules.  Everyone must be in level range of the meeting stone.  Group at the meeting stone to start the dungeon.  You can invite people who are on the way.  If you level up inside of the dungeon and exceed the meeting stone requirement you can stay.  Warlocks are allowed to summon players to the meeting stone\n\n\n\n")
+		"\nDungeon Groups are authorized but only ONE run of each Dungeon per character.  Everyone in party must be following hardcore rules.  Everyone must be in level range of the meeting stone.  Group at the meeting stone to start the dungeon.  You can invite people who are on the way.  If you level up inside of the dungeon and exceed the meeting stone requirement you can stay.  Warlocks are allowed to summon players to the meeting stone\n\n\n\n"
+	)
 	general_rules_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
 	scroll_frame:AddChild(general_rules_description)
 	DrawDungeonLevels(scroll_frame)
@@ -265,7 +265,7 @@ local function DrawRulesTab(container)
 	local general_rules_description = AceGUI:Create("Label")
 	general_rules_description:SetWidth(600)
 	general_rules_description:SetText(
-		"\nYou can verify your run using this addon (Get verified tab). Recording or streaming is also recommended to provide evidence for special circumstances such as disconnection deaths.\n\nAt 60 you earn your IMMORTALITY and become a full fledged character with insane bragging rights.\n\n\n\n"
+		"\nYou can verify your run using this addon (Get verified tab). Recording or streaming is also recommended to provide evidence for special circumstances such as disconnection deaths.\n\nAt MAX level you earn your IMMORTALITY and become a full fledged character with insane bragging rights.\n\n\n\n"
 	)
 	general_rules_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
 	scroll_frame:AddChild(general_rules_description)
@@ -698,8 +698,7 @@ local function DrawAccountabilityTab(container)
 end
 
 local function DrawAchievementsTab(container)
-	local function addEntry(_scroll_frame, _player_name, _self_name)
-	end
+	local function addEntry(_scroll_frame, _player_name, _self_name) end
 
 	local scroll_container = AceGUI:Create("SimpleGroup")
 	scroll_container:SetFullWidth(true)
@@ -721,36 +720,33 @@ local function DrawAchievementsTab(container)
 	local function DrawClassContainer(class_container, class, size)
 		local c = 0
 		for k, v in pairs(_G.achievements) do
-				if v.class == class then
-					c = c + 1
-					local achievement_icon = AceGUI:Create("Icon")
-					achievement_icon:SetWidth(size)
-					achievement_icon:SetHeight(size)
-					achievement_icon:SetImage(v.icon_path)
-					achievement_icon:SetImageSize(size, size)
-					achievement_icon.image:SetVertexColor(1, 1, 1)
-					achievement_icon:SetCallback("OnEnter", function(widget)
-						GameTooltip:SetOwner(WorldFrame, "ANCHOR_CURSOR")
-						GameTooltip:AddLine(v.title)
-						GameTooltip:AddLine(v.description, 1, 1, 1, true)
-						GameTooltip:Show()
-					end)
-					achievement_icon:SetCallback("OnLeave", function(widget)
-						GameTooltip:Hide()
-					end)
-					  class_container:AddChild(achievement_icon)
-				end
+			if v.class == class then
+				c = c + 1
+				local achievement_icon = AceGUI:Create("Icon")
+				achievement_icon:SetWidth(size)
+				achievement_icon:SetHeight(size)
+				achievement_icon:SetImage(v.icon_path)
+				achievement_icon:SetImageSize(size, size)
+				achievement_icon.image:SetVertexColor(1, 1, 1)
+				achievement_icon:SetCallback("OnEnter", function(widget)
+					GameTooltip:SetOwner(WorldFrame, "ANCHOR_CURSOR")
+					GameTooltip:AddLine(v.title)
+					GameTooltip:AddLine(v.description, 1, 1, 1, true)
+					GameTooltip:Show()
+				end)
+				achievement_icon:SetCallback("OnLeave", function(widget)
+					GameTooltip:Hide()
+				end)
+				class_container:AddChild(achievement_icon)
+			end
 		end
 
 		local achievement_icon = AceGUI:Create("Icon")
 		achievement_icon:SetWidth(1)
 		achievement_icon:SetHeight(10)
-		-- achievement_icon:SetImage(v.icon_path)
-		-- achievement_icon:SetImageSize(icon_size, icon_size)
-		-- achievement_icon.image:SetVertexColor(1, 1, 1)
 		class_container:AddChild(achievement_icon)
 	end
-	
+
 	local achievements_title = AceGUI:Create("HardcoreClassTitleLabel")
 	achievements_title:SetRelativeWidth(1.0)
 	achievements_title:SetHeight(40)
@@ -780,13 +776,13 @@ local function DrawAchievementsTab(container)
 	achievements_container:SetHeight(200)
 	achievements_container:SetLayout("CenteredFlow")
 	scroll_container:AddChild(achievements_container)
-		local achievements_title = AceGUI:Create("HardcoreClassTitleLabel")
-		achievements_title:SetRelativeWidth(1.0)
-		achievements_title:SetHeight(40)
-		achievements_title:SetText("\n\n\n\n")
-		achievements_title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 16)
-		scroll_container:AddChild(achievements_title)
-	
+	local achievements_title = AceGUI:Create("HardcoreClassTitleLabel")
+	achievements_title:SetRelativeWidth(1.0)
+	achievements_title:SetHeight(40)
+	achievements_title:SetText("\n\n\n\n")
+	achievements_title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 16)
+	scroll_container:AddChild(achievements_title)
+
 	local achievements_container = AceGUI:Create("SimpleGroup")
 	achievements_container:SetRelativeWidth(1.0)
 	achievements_container:SetHeight(50)
@@ -801,79 +797,25 @@ local function DrawAchievementsTab(container)
 	DrawClassContainer2(achievements_container, "Priest", 36)
 	DrawClassContainer2(achievements_container, "Shaman", 36)
 	DrawClassContainer2(achievements_container, "Rogue", 36)
-
-
-
-	-- local row_header = AceGUI:Create("SimpleGroup")
-	-- row_header:SetLayout("Flow")
-	-- row_header:SetFullWidth(true)
-	-- scroll_frame:AddChild(row_header)
-
-	-- local spacing_label = AceGUI:Create("Label")
-	-- spacing_label:SetWidth(150)
-	-- spacing_label:SetText("")
-	-- spacing_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
-	-- row_header:AddChild(spacing_label)
-
-	-- local name_label = AceGUI:Create("InteractiveLabel")
-	-- name_label:SetWidth(150)
-	-- name_label:SetText("|c00FFFF00Name|r")
-	-- name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
-	-- row_header:AddChild(name_label)
-
-	-- name_label:SetCallback("OnClick", function(widget)
-	-- 	container:ReleaseChildren()
-	-- 	if hardcore_modern_menu_state.accountability_sort_state ~= "Alph" then
-	-- 		hardcore_modern_menu_state.accountability_sort_state = "Alph"
-	-- 	else
-	-- 		hardcore_modern_menu_state.accountability_sort_state = "rAlph"
-	-- 	end
-	-- 	DrawAccountabilityTab(container)
-	-- end)
-
-	-- local level_label = AceGUI:Create("InteractiveLabel")
-	-- level_label:SetWidth(50)
-	-- level_label:SetText("|c00FFFF00Lvl|r")
-	-- level_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
-	-- row_header:AddChild(level_label)
-
-	-- level_label:SetCallback("OnClick", function(widget)
-	-- 	container:ReleaseChildren()
-	-- 	if hardcore_modern_menu_state.accountability_sort_state ~= "lvl" then
-	-- 		hardcore_modern_menu_state.accountability_sort_state = "lvl"
-	-- 	else
-	-- 		hardcore_modern_menu_state.accountability_sort_state = "rlvl"
-	-- 	end
-	-- 	DrawAccountabilityTab(container)
-	-- end)
-
-	-- local version_label = AceGUI:Create("InteractiveLabel")
-	-- version_label:SetWidth(200)
-	-- version_label:SetText("|c00FFFF00Addon Version|r")
-	-- version_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
-	-- row_header:AddChild(version_label)
-
-	-- version_label:SetCallback("OnClick", function(widget)
-	-- 	container:ReleaseChildren()
-	-- 	if hardcore_modern_menu_state.accountability_sort_state ~= "v" then
-	-- 		hardcore_modern_menu_state.accountability_sort_state = "v"
-	-- 	else
-	-- 		hardcore_modern_menu_state.accountability_sort_state = "rv"
-	-- 	end
-	-- 	DrawAccountabilityTab(container)
-	-- end)
-
-	-- self_name = UnitName("player")
-	-- for _player_name, _ in
-	-- 	spairs(
-	-- 		hardcore_modern_menu_state.guild_online,
-	-- 		sort_functions[hardcore_modern_menu_state.accountability_sort_state]
-	-- 	)
-	-- do
-	-- 	addEntry(scroll_frame, _player_name, self_name)
-	-- end
 end
 
+local function DrawLeaderboardTab(container)
+	local scroll_container = AceGUI:Create("SimpleGroup")
+	scroll_container:SetFullWidth(true)
+	scroll_container:SetFullHeight(true)
+	scroll_container:SetLayout("Fill")
+	tabcontainer:AddChild(scroll_container)
+
+	local scroll_frame = AceGUI:Create("ScrollFrame")
+	scroll_frame:SetLayout("Flow")
+	scroll_container:AddChild(scroll_frame)
+
+	local first_menu_description_title = AceGUI:Create("Label")
+	first_menu_description_title:SetWidth(500)
+	first_menu_description_title:SetText("Leaderboard coming soon!")
+	first_menu_description_title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 20)
+	scroll_frame:AddChild(first_menu_description_title)
+end
 
 function ShowMainMenu(_hardcore_character, _hardcore_settings, dk_button_function)
 	hardcore_modern_menu = AceGUI:Create("HardcoreFrameModernMenu")
@@ -936,10 +878,10 @@ function ShowMainMenu(_hardcore_character, _hardcore_settings, dk_button_functio
 			local scroll_frame = AceGUI:Create("ScrollFrame")
 			scroll_frame:SetLayout("Flow")
 			scroll_container:AddChild(scroll_frame)
-
-			-- DrawPartyTab(container, scroll_frame)
 		elseif group == "AchievementsTab" then
 			DrawAchievementsTab(container)
+		elseif group == "LeaderboardTab" then
+			DrawLeaderboardTab(container)
 		end
 	end
 

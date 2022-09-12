@@ -119,9 +119,9 @@ local function DrawGeneralTab(container)
 	scroll_frame:AddChild(first_menu_description_title)
 
 	local first_menu_description = AceGUI:Create("Label")
-	first_menu_description:SetWidth(550)
+	first_menu_description:SetWidth(600)
 	first_menu_description:SetText(
-		"\n\nIf playing in a duo or trio, click the `Party` tab.\n\nTo select achievements, click on an icon in the achievement tab.\n\nAt any point during the run, open the HC tab on the character screen to check party status and achievements. \n\nThis window will not appear past level 2 and configuration cannot be changed later so make sure to fill these out correctly."
+		"\n\n Check out the following tabs \n\n\n   |c00FFFF00Rules|r: Compiled list of hardcore challenge rules\n\n   |c00FFFF00Verify|r: Generate a verification string to confirm your max level character\n\n   |c00FFFF00Death Knight|r: Read about Death Knight rules and/or sacrifice/activate\n\n   |c00FFFF00Levels|r: See a list of your recorded character levels\n\n   |c00FFFF00Accountability|r: See whose playing in your Hardcore guild and what addon versions they are using\n\n   |c00FFFF00Achievements|r: Check out all available achievements to try\n\n   |c00FFFF00Leaderboard|r: (Not available yet)"
 	)
 	first_menu_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
 	-- first_menu_description:SetPoint("TOP", 2,5)

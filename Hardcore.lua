@@ -82,6 +82,7 @@ Hardcore_Character = {
 --[[ Local variables ]]
 --
 local debug = false
+local expecting_achievement_appeal = false
 local loaded_inspect_frame = false
 local pulses = {}
 local alert_msg_time = {
@@ -128,6 +129,7 @@ local COMM_COMMANDS = {
 	"SACRIFICE", -- new sacrifice command
 	"REQUEST_PCT", -- request a party change token
 	"APPLY_PCT", -- request a party change
+	"SEND_ACHIEVEMENT_APPEAL", -- send appeal for achievement
 }
 local COMM_SPAM_THRESHOLD = { -- msgs received within durations (s) are flagged as spam
 	PULSE = 3,
@@ -166,6 +168,12 @@ local STRING_ADDON_STATUS_SUBTITLE_LOADING = "Guild Addon Status (Loading)"
 local THROTTLE_DURATION = 5
 local SACRIFICE_LEVEL_MIN = 55
 local SACRIFICE_LEVEL_MAX = 58
+local MOD_CHAR_NAMES = {
+	["Knic"] = 1,
+	["Kknic"] = 1,
+	["Semigalle"] = 1,
+	["Semidruu"] = 1,
+}
 
 -- frame display
 local display = "Rules"
@@ -359,7 +367,47 @@ local function SlashHandler(msg, editbox)
 		end
 
 		Hardcore:ShowAlertFrame(styleConfig, message)
-	-- End Alert debug code
+	elseif cmd == "ExpectAchievementAppeal" then
+		Hardcore:Print("Allowing a hc mod to appeal achievements.")
+		expecting_achievement_appeal = true
+		C_Timer.After(60.0, function() -- one minute to receive achievement appeal
+			expecting_achievement_appeal = false
+			Hardcore:Print("No longer allowing a hc mod to appeal achievements.")
+		end)
+	elseif cmd == "AppealAchievement" then
+		if MOD_CHAR_NAMES[UnitName("player")] == nil then
+			return
+		end -- character must be moderator
+		local target = nil
+		local achievement_to_appeal = nil
+		for substring in args:gmatch("%S+") do
+			if target == nil then
+				target = substring
+			elseif achievement == nil then
+				achievement_to_appeal = substring
+				break
+			end
+		end
+		if target == nil then
+			Hardcore:Print("Wrong syntax: target is nil")
+			return
+		end
+
+		if achievement_to_appeal == nil then
+			Hardcore:Print("Wrong syntax: achievement is nil")
+			return
+		end
+
+		if _G.achievements[achievement_to_appeal] == nil then
+			Hardcore:Print("Wrong syntax: achievement isn't found for " .. achievement_to_appeal)
+			return
+		end
+
+		if CTL then
+			local commMessage = COMM_COMMANDS[9] .. COMM_COMMAND_DELIM .. achievement_to_appeal
+			Hardcore:Print("Appealing " .. achievement_to_appeal .. " for " .. target)
+			CTL:SendAddonMessage("ALERT", COMM_NAME, commMessage, "WHISPER", target)
+		end
 	else
 		-- If not handled above, display some sort of help message
 		Hardcore:Print("|cff00ff00Syntax:|r/hardcore [command] [options]")
@@ -1415,6 +1463,25 @@ function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
 				last_received = time(),
 				hardcore_player_name = hc_tag,
 			}
+			return
+		end
+		if command == COMM_COMMANDS[9] then -- Appeal achievement
+			local name, _ = string.split("-", sender)
+			if MOD_CHAR_NAMES[name] == nil then -- received appeal from non-mod character
+				return
+			end
+			if expecting_achievement_appeal == false then
+				Hardcore:Print(
+					'Received unexpected achievement appeal.  If you are expecting an achievement appeal type "/hardcore ExpectAchievementAppeal"'
+				)
+				return
+			end
+			local achievement_to_appeal = _G.achievements[string.split(COMM_FIELD_DELIM, data)]
+			if achievement_to_appeal ~= nil then
+				table.insert(Hardcore_Character.achievements, achievement_to_appeal.name)
+				achievement_to_appeal:Register(failure_function_executor, Hardcore_Character)
+				Hardcore:Print("Appealed " .. achievement_to_appeal.name .. " challenge!")
+			end
 			return
 		end
 		if DEPRECATED_COMMANDS[command] or alert_msg_time[command] == nil then

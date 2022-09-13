@@ -170,6 +170,8 @@ local SACRIFICE_LEVEL_MAX = 58
 local MOD_CHAR_NAMES = {
 	["Knic"] = 1,
 	["Kknic"] = 1,
+	["Semigalle"] = 1,
+	["Semidruu"] = 1,
 }
 
 -- frame display

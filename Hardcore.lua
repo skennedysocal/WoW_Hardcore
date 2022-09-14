@@ -652,8 +652,20 @@ end
 --
 
 TradeFrameTradeButton:SetScript("OnClick", function()
-	table.insert(Hardcore_Character.trade_partners, TradeFrameRecipientNameText:GetText())
-	Hardcore_Character.trade_partners = Hardcore_FilterUnique(Hardcore_Character.trade_partners)
+	local duo_trio_partner = false
+	local target_trader = TradeFrameRecipientNameText:GetText()
+	if Hardcore_Character.team ~= nil then
+		for _, name in ipairs(Hardcore_Character.team) do
+			if target_trader == name then
+				duo_trio_partner = true
+				break
+			end
+		end
+	end
+	if duo_trio_partner == false then
+		table.insert(Hardcore_Character.trade_partners, target_trader)
+		Hardcore_Character.trade_partners = Hardcore_FilterUnique(Hardcore_Character.trade_partners)
+	end
 	AcceptTrade()
 end)
 

@@ -153,12 +153,22 @@ function trio_rules:Register(fail_function_executor, _hardcore_character, _hardc
 	trio_rules._hardcore_settings_ref = _hardcore_settings
 	if _hardcore_character.team ~= nil and _hardcore_character.team[1] then
 		trio_rules.teammate_1 = _hardcore_character.team[1]
+		for i, trading_player_name in ipairs(_hardcore_character.trade_partners) do
+			if trading_player_name == trio_rules.teammate_1 then
+				table.remove(_hardcore_character.trade_partners, i)
+			end
+		end
 	else
 		Hardcore:Print("Error setting up trio registration; character team data nil. Did you enter teammate name?")
 	end
 
 	if _hardcore_character.team ~= nil and _hardcore_character.team[2] then
 		trio_rules.teammate_2 = _hardcore_character.team[2]
+		for i, trading_player_name in ipairs(_hardcore_character.trade_partners) do
+			if trading_player_name == trio_rules.teammate_2 then
+				table.remove(_hardcore_character.trade_partners, i)
+			end
+		end
 	else
 		Hardcore:Print("Error setting up trio registration; character team data nil. Did you enter teammate name?")
 	end

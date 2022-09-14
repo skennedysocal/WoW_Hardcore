@@ -79,43 +79,37 @@ local sort_functions = {
 	end,
 	["simpledate"] = function(t, a, b)
 		local player_name_short = string.split("-", a)
-		local t1 = 0
+		local t1 = ""
 		if other_hardcore_character_cache[player_name_short] == nil then
-			t1 = 0
+			t1 = ""
 		else
-			t1 = other_hardcore_character_cache[player_name_short].first_recorded or 0
-			if not tonumber(t1) then
-				t1 = 0
-			end
+			t1 = other_hardcore_character_cache[player_name_short].first_recorded or ""
 		end
 
-		local t2 = 0
+		local t2 = ""
 		player_name_short = string.split("-", b)
 		if other_hardcore_character_cache[player_name_short] == nil then
-			t2 = 0
+			t2 = ""
 		else
-			t2 = other_hardcore_character_cache[player_name_short].first_recorded or 0
-			if not tonumber(t2) then
-				t2 = 0
-			end
+			t2 = other_hardcore_character_cache[player_name_short].first_recorded or ""
 		end
 		return t1 > t2
 	end,
 	["rsimpledate"] = function(t, a, b)
 		local player_name_short = string.split("-", a)
-		local t1 = 0
+		local t1 = ""
 		if other_hardcore_character_cache[player_name_short] == nil then
-			t1 = 0
+			t1 = ""
 		else
-			t1 = other_hardcore_character_cache[player_name_short].first_recorded or 0
+			t1 = other_hardcore_character_cache[player_name_short].first_recorded or ""
 		end
 
-		local t2 = 0
+		local t2 = ""
 		player_name_short = string.split("-", b)
 		if other_hardcore_character_cache[player_name_short] == nil then
-			t2 = 0
+			t2 = ""
 		else
-			t2 = other_hardcore_character_cache[player_name_short].first_recorded or 0
+			t2 = other_hardcore_character_cache[player_name_short].first_recorded or ""
 		end
 		return t1 < t2
 	end,

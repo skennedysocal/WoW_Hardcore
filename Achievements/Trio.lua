@@ -281,9 +281,9 @@ function trio_rules:Check()
 	local teammates_map_2 = C_Map.GetBestMapForUnit(member_str_2)
 
 	if
-		my_map == 80
-		or teammates_map_1 == 80
-		or teammates_map_2 == 80
+		my_map == 1450
+		or teammates_map_1 == 1450
+		or teammates_map_2 == 1450
 		or my_map == 124
 		or teammates_map_1 == 124
 		or teammates_map_2 == 124

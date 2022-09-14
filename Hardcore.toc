@@ -1,5 +1,5 @@
 ## Interface: 30400
-## Version: 0.9.3
+## Version: 0.9.4a
 ## Title: Hardcore
 ## Notes: Supports Classic Hardcore
 ## Author: The Classic Hardcore team, Molikar (Sean Kennedy)

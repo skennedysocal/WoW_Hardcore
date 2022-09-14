@@ -297,9 +297,9 @@ local function SlashHandler(msg, editbox)
 		Hardcore:Levels(true)
 	elseif cmd == "show" then
 		if Hardcore_Settings.use_alternative_menu then
-			ShowMainMenu(Hardcore_Character, Hardcore_Settings, Hardcore.DKConvert)
-		else
 			Hardcore_Frame:Show()
+		else
+			ShowMainMenu(Hardcore_Character, Hardcore_Settings, Hardcore.DKConvert)
 		end
 	elseif cmd == "hide" then
 		-- they can click the hide button, dont really need a command for this
@@ -2168,7 +2168,7 @@ function Hardcore:initMinimapButton()
 			end
 
 			-- No modifier key toggles the options panel
-			if not Hardcore_Settings.use_alternative_menu then
+			if Hardcore_Settings.use_alternative_menu then
 				if Hardcore_Frame:IsShown() then
 					Hardcore_Frame:Hide()
 				else
@@ -2762,8 +2762,8 @@ local options = {
 				},
 				use_alternative_menu = {
 					type = "toggle",
-					name = "Use modern menu (beta)",
-					desc = "Use modern menu.  This feature replaces the menu that shows with /hardcore show.",
+					name = "Use old menu",
+					desc = "Use old menu.  This feature replaces the menu that shows with /hardcore show.",
 					get = function()
 						return Hardcore_Settings.use_alternative_menu
 					end,

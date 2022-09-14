@@ -84,6 +84,9 @@ local sort_functions = {
 			t1 = 0
 		else
 			t1 = other_hardcore_character_cache[player_name_short].first_recorded or 0
+			if not tonumber(t1) then
+				t1 = 0
+			end
 		end
 
 		local t2 = 0
@@ -92,6 +95,9 @@ local sort_functions = {
 			t2 = 0
 		else
 			t2 = other_hardcore_character_cache[player_name_short].first_recorded or 0
+			if not tonumber(t2) then
+				t2 = 0
+			end
 		end
 		return t1 > t2
 	end,

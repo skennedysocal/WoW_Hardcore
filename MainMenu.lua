@@ -157,9 +157,9 @@ local sort_functions = {
 	end,
 	["mode"] = function(t, a, b)
 		local player_name_short = string.split("-", a)
-		local t1 = 0
+		local t1 = "None"
 		if other_hardcore_character_cache[player_name_short] == nil then
-			t1 = 0
+			t1 = "None"
 		else
 			t1 = other_hardcore_character_cache[player_name_short].party_mode or "None"
 		end

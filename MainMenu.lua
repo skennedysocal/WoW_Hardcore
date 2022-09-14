@@ -295,7 +295,7 @@ local function DrawGeneralTab(container)
 	local changelog_description = AceGUI:Create("Label")
 	changelog_description:SetWidth(600)
 	changelog_description:SetText(
-		"- Inspect Players in main menu\n- Moonglade correctly detected for duo/trio partners\n- Defaults to modern menu for hardcore show.  To use the old menu again, go to interface options and uncheck the checkbox.\n- Scavenger now correctly fails if player immediately equips quest reward"
+		"- Inspect Players in main menu's accountability tab\n- Moonglade correctly detected for duo/trio partners\n- Defaults to modern menu for hardcore show.  To use the old menu again, go to interface options and uncheck the checkbox.\n- Scavenger now correctly fails if player immediately equips quest reward"
 	)
 	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
 	scroll_frame:AddChild(changelog_description)

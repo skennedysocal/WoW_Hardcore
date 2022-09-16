@@ -1475,7 +1475,7 @@ function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
 				last_received = time(),
 				hardcore_player_name = hc_tag,
 			}
-			table.insert(hardcore_modern_menu_state.changeset, string.split("-", name))
+			hardcore_modern_menu_state.changeset[string.split("-", name)] = 1
 			return
 		end
 		if command == COMM_COMMANDS[9] then -- Appeal achievement
@@ -1600,7 +1600,7 @@ function Hardcore:GUILD_ROSTER_UPDATE(...)
 				level = level,
 				classDisplayName = classDisplayName,
 			}
-			table.insert(hardcore_modern_menu_state.changeset, (string.split("-", name)))
+			hardcore_modern_menu_state.changeset[(string.split("-", name))] = 1
 		end
 	end
 
@@ -2444,8 +2444,7 @@ function Hardcore:CheckVersionsAndUpdate(playername, versionstring)
 	guild_versions[playername] = versionstring
 	hardcore_modern_menu_state.guild_versions[playername] = versionstring
 	hardcore_modern_menu_state.guild_versions_status[playername] = guild_versions_status[playername]
-	-- print((string.split("-", playername)))
-	table.insert(hardcore_modern_menu_state.changeset, (string.split("-", playername)))
+	hardcore_modern_menu_state.changeset[(string.split("-", playername))] = 1
 end
 
 function Hardcore:UpdateGuildRosterRows()

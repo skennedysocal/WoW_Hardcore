@@ -1166,11 +1166,11 @@ local function DrawAccountabilityTab(container)
 	end
 
 	hardcore_modern_menu_state.ticker_handler = C_Timer.NewTicker(0.1, function()
-		for _, v in ipairs(hardcore_modern_menu_state.changeset) do
-			if hardcore_modern_menu_state.entry_tbl[v] == nil then
-				addEntry(scroll_frame, v, self_name)
+		for k, _ in pairs(hardcore_modern_menu_state.changeset) do
+			if hardcore_modern_menu_state.entry_tbl[k] == nil then
+				addEntry(scroll_frame, k, self_name)
 			else
-				updateLabelData(hardcore_modern_menu_state.entry_tbl[v], v)
+				updateLabelData(hardcore_modern_menu_state.entry_tbl[k], k)
 			end
 		end
 		hardcore_modern_menu_state.changeset = {}
@@ -1325,14 +1325,18 @@ function ShowMainMenu(_hardcore_character, _hardcore_settings, dk_button_functio
 	hardcore_modern_menu = AceGUI:Create("HardcoreFrameModernMenu")
 	hardcore_modern_menu:SetCallback("OnClose", function(widget)
 		-- AceGUI:Release(widget)
-		hardcore_modern_menu_state.ticker_handler:Cancel()
-		hardcore_modern_menu_state.ticker_handler = nil
+		if hardcore_modern_menu_state.ticker_handler ~= nil then
+			hardcore_modern_menu_state.ticker_handler:Cancel()
+			hardcore_modern_menu_state.ticker_handler = nil
+		end
 		hardcore_modern_menu_state.entry_tbl = {}
 	end)
 	hardcore_modern_menu:SetCallback("OnHide", function(widget)
 		-- AceGUI:Release(widget)
-		hardcore_modern_menu_state.ticker_handler:Cancel()
-		hardcore_modern_menu_state.ticker_handler = nil
+		if hardcore_modern_menu_state.ticker_handler ~= nil then
+			hardcore_modern_menu_state.ticker_handler:Cancel()
+			hardcore_modern_menu_state.ticker_handler = nil
+		end
 		hardcore_modern_menu_state.entry_tbl = {}
 	end)
 	hardcore_modern_menu:SetTitle("Classic Hardcore")

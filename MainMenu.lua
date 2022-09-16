@@ -10,6 +10,8 @@ hardcore_modern_menu_state.accountability_sort_state = "v"
 hardcore_modern_menu_state.levels_page = 1
 hardcore_modern_menu_state.total_levels = 1
 hardcore_modern_menu_state.levels_max_page = 1
+hardcore_modern_menu_state.changeset = {}
+hardcore_modern_menu_state.entry_tbl = {}
 
 local function RequestHCData(target_name)
 	if
@@ -885,79 +887,13 @@ local function DrawLevelsTab(container, _hardcore_settings)
 end
 
 local function DrawAccountabilityTab(container)
-	local function addEntry(_scroll_frame, _player_name, _self_name)
-		local player_name_short = string.split("-", _player_name)
-		local entry = AceGUI:Create("SimpleGroup")
-		entry:SetLayout("Flow")
-		entry:SetFullWidth(true)
-		_scroll_frame:AddChild(entry)
-
-		local name_label = AceGUI:Create("Label")
-		name_label:SetWidth(110)
-		name_label:SetText(player_name_short)
-		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
-		entry:AddChild(name_label)
-
-		local level_label = AceGUI:Create("Label")
-		level_label:SetWidth(50)
-		level_label:SetText(hardcore_modern_menu_state.guild_online[_player_name].level)
-		level_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
-		entry:AddChild(level_label)
-
-		local version_text
-		if
-			(
-				hardcore_modern_menu_state.online_pulsing[_player_name]
-				and hardcore_modern_menu_state.guild_online[_player_name]
-			) or player_name_short == _self_name
-		then
-			if player_name_short == _self_name then
-				version_text = GetAddOnMetadata("Hardcore", "Version")
-			else
-				version_text = hardcore_modern_menu_state.guild_versions[_player_name]
-			end
-
-			if hardcore_modern_menu_state.guild_versions_status[_player_name] == "updated" then
-				version_text = "|c0000ff00" .. version_text .. "|r"
-			else
-				version_text = "|c00ffff00" .. version_text .. "|r"
-			end
-		else
-			version_text = "|c00ff0000Not detected|r"
-		end
-
-		local version_label = AceGUI:Create("Label")
-		version_label:SetWidth(80)
-		version_label:SetText(version_text)
-		version_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
-		entry:AddChild(version_label)
-
-		if other_hardcore_character_cache[player_name_short] == nil then
-			local inspect_label = AceGUI:Create("InteractiveLabel")
-			inspect_label:SetWidth(100)
-			inspect_label:SetText("")
-			inspect_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
-			entry:AddChild(inspect_label)
-			inspect_label:SetCallback("OnClick", function()
-				RequestHCData(player_name_short)
-			end)
-		else
-			local inspect_label = AceGUI:Create("Label")
-			inspect_label:SetWidth(75)
-			inspect_label:SetText(other_hardcore_character_cache[player_name_short].party_mode)
-			inspect_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
-			entry:AddChild(inspect_label)
-
-			local inspect_label = AceGUI:Create("Label")
-			inspect_label:SetWidth(85)
-			inspect_label:SetText(
+	local function updateLabelData(_label_tbls, player_name_short)
+		if other_hardcore_character_cache[player_name_short] ~= nil then
+			_label_tbls["party_mode_label"]:SetText(other_hardcore_character_cache[player_name_short].party_mode)
+			_label_tbls["first_recorded_label"]:SetText(
 				date("%m/%d/%y", other_hardcore_character_cache[player_name_short].first_recorded or 0)
 			)
-			inspect_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
-			entry:AddChild(inspect_label)
 
-			local inspect_label = AceGUI:Create("InteractiveLabel")
-			inspect_label:SetWidth(120)
 			if
 				other_hardcore_character_cache[player_name_short].achievements == nil
 				or #other_hardcore_character_cache[player_name_short].achievements > 0
@@ -969,8 +905,8 @@ local function DrawAccountabilityTab(container)
 						.. _G.achievements[achievement_name].icon_path
 						.. ":16:16:0:0:64:64:4:60:4:60|t"
 				end
-				inspect_label:SetText(inline_text)
-				inspect_label:SetCallback("OnEnter", function(widget)
+				_label_tbls["achievement_label"]:SetText(inline_text)
+				_label_tbls["achievement_label"]:SetCallback("OnEnter", function(widget)
 					GameTooltip:SetOwner(WorldFrame, "ANCHOR_CURSOR")
 					GameTooltip:AddLine("Active achievements")
 					for i, achievement_name in ipairs(other_hardcore_character_cache[player_name_short].achievements) do
@@ -978,21 +914,96 @@ local function DrawAccountabilityTab(container)
 					end
 					GameTooltip:Show()
 				end)
-				inspect_label:SetCallback("OnLeave", function(widget)
+				_label_tbls["achievement_label"]:SetCallback("OnLeave", function(widget)
 					GameTooltip:Hide()
 				end)
 			else
-				inspect_label:SetText("")
+				_label_tbls["achievement_label"]:SetText("")
 			end
-			inspect_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
-			entry:AddChild(inspect_label)
-
-			local hc_tag_label = AceGUI:Create("Label")
-			hc_tag_label:SetWidth(75)
-			hc_tag_label:SetText(other_hardcore_character_cache[player_name_short].hardcore_player_name or "")
-			hc_tag_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
-			entry:AddChild(hc_tag_label)
+			_label_tbls["hc_tag_label"]:SetText(
+				other_hardcore_character_cache[player_name_short].hardcore_player_name or ""
+			)
 		end
+
+		local player_name_long = player_name_short .. "-" .. GetRealmName()
+		if hardcore_modern_menu_state.guild_online[player_name_long] ~= nil then
+			local version_text
+			if
+				(
+					hardcore_modern_menu_state.online_pulsing[player_name_long]
+					and hardcore_modern_menu_state.guild_online[player_name_long]
+				) or player_name_short == UnitName("player")
+			then
+				if player_name_short == UnitName("player") then
+					version_text = GetAddOnMetadata("Hardcore", "Version")
+				else
+					version_text = hardcore_modern_menu_state.guild_versions[player_name_long]
+				end
+
+				if hardcore_modern_menu_state.guild_versions_status[player_name_long] == "updated" then
+					version_text = "|c0000ff00" .. version_text .. "|r"
+				else
+					version_text = "|c00ffff00" .. version_text .. "|r"
+				end
+			else
+				version_text = "|c00ff0000Not detected|r"
+			end
+			_label_tbls["version_label"]:SetText(version_text)
+
+			_label_tbls["level_label"]:SetText(hardcore_modern_menu_state.guild_online[player_name_long].level)
+		end
+	end
+	local function addEntry(_scroll_frame, player_name_short, _self_name)
+		local _player_name = player_name_short .. "-" .. GetRealmName()
+		local entry = AceGUI:Create("SimpleGroup")
+		entry:SetLayout("Flow")
+		entry:SetFullWidth(true)
+		_scroll_frame:AddChild(entry)
+
+		local name_label = AceGUI:Create("Label")
+		name_label:SetWidth(110)
+		name_label:SetText(player_name_short)
+		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		entry:AddChild(name_label)
+		hardcore_modern_menu_state.entry_tbl[player_name_short] = {}
+
+		local level_label = AceGUI:Create("Label")
+		level_label:SetWidth(50)
+		level_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		entry:AddChild(level_label)
+		hardcore_modern_menu_state.entry_tbl[player_name_short]["level_label"] = level_label
+
+		local version_label = AceGUI:Create("Label")
+		version_label:SetWidth(80)
+		version_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		entry:AddChild(version_label)
+		hardcore_modern_menu_state.entry_tbl[player_name_short]["version_label"] = version_label
+
+		local party_mode_label = AceGUI:Create("Label")
+		party_mode_label:SetWidth(75)
+		party_mode_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		entry:AddChild(party_mode_label)
+		hardcore_modern_menu_state.entry_tbl[player_name_short]["party_mode_label"] = party_mode_label
+
+		local first_recorded_label = AceGUI:Create("Label")
+		first_recorded_label:SetWidth(85)
+		first_recorded_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		entry:AddChild(first_recorded_label)
+		hardcore_modern_menu_state.entry_tbl[player_name_short]["first_recorded_label"] = first_recorded_label
+
+		local achievement_label = AceGUI:Create("InteractiveLabel")
+		achievement_label:SetWidth(120)
+		achievement_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		entry:AddChild(achievement_label)
+		hardcore_modern_menu_state.entry_tbl[player_name_short]["achievement_label"] = achievement_label
+
+		local hc_tag_label = AceGUI:Create("Label")
+		hc_tag_label:SetWidth(75)
+		hc_tag_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		entry:AddChild(hc_tag_label)
+		hardcore_modern_menu_state.entry_tbl[player_name_short]["hc_tag_label"] = hc_tag_label
+
+		updateLabelData(hardcore_modern_menu_state.entry_tbl[player_name_short], player_name_short, _player_name)
 	end
 
 	local scroll_container = AceGUI:Create("SimpleGroup")
@@ -1017,6 +1028,9 @@ local function DrawAccountabilityTab(container)
 	row_header:AddChild(name_label)
 
 	name_label:SetCallback("OnClick", function(widget)
+		hardcore_modern_menu_state.entry_tbl = {}
+		hardcore_modern_menu_state.ticker_handler:Cancel()
+		hardcore_modern_menu_state.ticker_handler = nil
 		container:ReleaseChildren()
 		if hardcore_modern_menu_state.accountability_sort_state ~= "Alph" then
 			hardcore_modern_menu_state.accountability_sort_state = "Alph"
@@ -1033,6 +1047,9 @@ local function DrawAccountabilityTab(container)
 	row_header:AddChild(level_label)
 
 	level_label:SetCallback("OnClick", function(widget)
+		hardcore_modern_menu_state.entry_tbl = {}
+		hardcore_modern_menu_state.ticker_handler:Cancel()
+		hardcore_modern_menu_state.ticker_handler = nil
 		container:ReleaseChildren()
 		if hardcore_modern_menu_state.accountability_sort_state ~= "lvl" then
 			hardcore_modern_menu_state.accountability_sort_state = "lvl"
@@ -1049,6 +1066,9 @@ local function DrawAccountabilityTab(container)
 	row_header:AddChild(version_label)
 
 	version_label:SetCallback("OnClick", function(widget)
+		hardcore_modern_menu_state.entry_tbl = {}
+		hardcore_modern_menu_state.ticker_handler:Cancel()
+		hardcore_modern_menu_state.ticker_handler = nil
 		container:ReleaseChildren()
 		if hardcore_modern_menu_state.accountability_sort_state ~= "v" then
 			hardcore_modern_menu_state.accountability_sort_state = "v"
@@ -1065,6 +1085,9 @@ local function DrawAccountabilityTab(container)
 	row_header:AddChild(mode_label)
 
 	mode_label:SetCallback("OnClick", function(widget)
+		hardcore_modern_menu_state.entry_tbl = {}
+		hardcore_modern_menu_state.ticker_handler:Cancel()
+		hardcore_modern_menu_state.ticker_handler = nil
 		container:ReleaseChildren()
 		if hardcore_modern_menu_state.accountability_sort_state ~= "mode" then
 			hardcore_modern_menu_state.accountability_sort_state = "mode"
@@ -1081,6 +1104,9 @@ local function DrawAccountabilityTab(container)
 	row_header:AddChild(date_started_label)
 
 	date_started_label:SetCallback("OnClick", function(widget)
+		hardcore_modern_menu_state.entry_tbl = {}
+		hardcore_modern_menu_state.ticker_handler:Cancel()
+		hardcore_modern_menu_state.ticker_handler = nil
 		container:ReleaseChildren()
 		if hardcore_modern_menu_state.accountability_sort_state ~= "simpledate" then
 			hardcore_modern_menu_state.accountability_sort_state = "simpledate"
@@ -1097,6 +1123,9 @@ local function DrawAccountabilityTab(container)
 	row_header:AddChild(achievements_label)
 
 	achievements_label:SetCallback("OnClick", function(widget)
+		hardcore_modern_menu_state.entry_tbl = {}
+		hardcore_modern_menu_state.ticker_handler:Cancel()
+		hardcore_modern_menu_state.ticker_handler = nil
 		container:ReleaseChildren()
 		if hardcore_modern_menu_state.accountability_sort_state ~= "achievements" then
 			hardcore_modern_menu_state.accountability_sort_state = "achievements"
@@ -1113,6 +1142,9 @@ local function DrawAccountabilityTab(container)
 	row_header:AddChild(hc_tag_label)
 
 	hc_tag_label:SetCallback("OnClick", function(widget)
+		hardcore_modern_menu_state.entry_tbl = {}
+		hardcore_modern_menu_state.ticker_handler:Cancel()
+		hardcore_modern_menu_state.ticker_handler = nil
 		container:ReleaseChildren()
 		if hardcore_modern_menu_state.accountability_sort_state ~= "hctag" then
 			hardcore_modern_menu_state.accountability_sort_state = "hctag"
@@ -1129,8 +1161,20 @@ local function DrawAccountabilityTab(container)
 			sort_functions[hardcore_modern_menu_state.accountability_sort_state]
 		)
 	do
-		addEntry(scroll_frame, _player_name, self_name)
+		local player_name_short = string.split("-", _player_name)
+		addEntry(scroll_frame, player_name_short, self_name)
 	end
+
+	hardcore_modern_menu_state.ticker_handler = C_Timer.NewTicker(0.1, function()
+		for _, v in ipairs(hardcore_modern_menu_state.changeset) do
+			if hardcore_modern_menu_state.entry_tbl[v] == nil then
+				addEntry(scroll_frame, v, self_name)
+			else
+				updateLabelData(hardcore_modern_menu_state.entry_tbl[v], v)
+			end
+		end
+		hardcore_modern_menu_state.changeset = {}
+	end)
 
 	local button_container = AceGUI:Create("SimpleGroup")
 	button_container:SetWidth(100)
@@ -1142,6 +1186,19 @@ local function DrawAccountabilityTab(container)
 	inspect_all_button:SetText("Inspect All")
 	inspect_all_button:SetWidth(100)
 	button_container:AddChild(inspect_all_button)
+	inspect_all_button:SetCallback("OnClick", function()
+		for _player_name, _ in
+			spairs(
+				hardcore_modern_menu_state.guild_online,
+				sort_functions[hardcore_modern_menu_state.accountability_sort_state]
+			)
+		do
+			local player_name_short = string.split("-", _player_name)
+			if other_hardcore_character_cache[player_name_short] == nil then
+				RequestHCData(player_name_short)
+			end
+		end
+	end)
 end
 
 local function DrawAchievementsTab(container)
@@ -1268,9 +1325,15 @@ function ShowMainMenu(_hardcore_character, _hardcore_settings, dk_button_functio
 	hardcore_modern_menu = AceGUI:Create("HardcoreFrameModernMenu")
 	hardcore_modern_menu:SetCallback("OnClose", function(widget)
 		-- AceGUI:Release(widget)
+		hardcore_modern_menu_state.ticker_handler:Cancel()
+		hardcore_modern_menu_state.ticker_handler = nil
+		hardcore_modern_menu_state.entry_tbl = {}
 	end)
 	hardcore_modern_menu:SetCallback("OnHide", function(widget)
 		-- AceGUI:Release(widget)
+		hardcore_modern_menu_state.ticker_handler:Cancel()
+		hardcore_modern_menu_state.ticker_handler = nil
+		hardcore_modern_menu_state.entry_tbl = {}
 	end)
 	hardcore_modern_menu:SetTitle("Classic Hardcore")
 	hardcore_modern_menu:SetStatusText("")
@@ -1297,6 +1360,7 @@ function ShowMainMenu(_hardcore_character, _hardcore_settings, dk_button_functio
 		if hardcore_modern_menu_state.ticker_handler ~= nil then
 			hardcore_modern_menu_state.ticker_handler:Cancel()
 			hardcore_modern_menu_state.ticker_handler = nil
+			hardcore_modern_menu_state.entry_tbl = {}
 		end
 		if group == "WelcomeTab" then
 			DrawGeneralTab(container)
@@ -1310,11 +1374,6 @@ function ShowMainMenu(_hardcore_character, _hardcore_settings, dk_button_functio
 			DrawLevelsTab(container, _hardcore_settings)
 		elseif group == "AccountabilityTab" then
 			DrawAccountabilityTab(container)
-			hardcore_modern_menu_state.ticker_handler = C_Timer.NewTicker(7, function()
-				container:ReleaseChildren()
-				GuildRoster()
-				DrawAccountabilityTab(container, _online_pulsing, _guild_versions, _guild_versions_status)
-			end)
 		elseif group == "PartyTab" then
 			local scroll_container = AceGUI:Create("SimpleGroup")
 			scroll_container:SetFullWidth(true)

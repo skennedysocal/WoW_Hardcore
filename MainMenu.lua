@@ -7,6 +7,9 @@ hardcore_modern_menu_state.guild_versions_status = {}
 hardcore_modern_menu_state.online_pulsing = {}
 hardcore_modern_menu_state.levels_sort_state = "date"
 hardcore_modern_menu_state.accountability_sort_state = "v"
+hardcore_modern_menu_state.levels_page = 1
+hardcore_modern_menu_state.total_levels = 1
+hardcore_modern_menu_state.levels_max_page = 1
 
 local function RequestHCData(target_name)
 	if
@@ -649,44 +652,99 @@ local function DrawDKTab(container, dk_button_function)
 end
 
 local function DrawLevelsTab(container, _hardcore_settings)
-	local function addEntry(_scroll_frame, _level_info)
+	local function DrawNameColumn(_scroll_frame, _level_list, _player_list, width, start, max_lines)
 		local entry = AceGUI:Create("SimpleGroup")
-		entry:SetLayout("Flow")
-		entry:SetFullWidth(true)
+		entry:SetLayout("List")
+		entry:SetWidth(width)
 		_scroll_frame:AddChild(entry)
 
-		local name_label = AceGUI:Create("Label")
-		name_label:SetWidth(150)
-		name_label:SetText(_level_info.player)
-		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
-		entry:AddChild(name_label)
-
-		local level_label = AceGUI:Create("Label")
-		level_label:SetWidth(50)
-		level_label:SetText(_level_info.level)
-		level_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
-		entry:AddChild(level_label)
+		local name_str = ""
+		for i = start, start + max_lines do
+			if _player_list[i] == nil then
+				break
+			end
+			name_str = name_str .. _level_list[_player_list[i]].player .. "\n"
+		end
 
 		local name_label = AceGUI:Create("Label")
-		name_label:SetWidth(200)
-		name_label:SetText(SecondsToTime(_level_info.playedtime))
-		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
-		entry:AddChild(name_label)
-
-		local name_label = AceGUI:Create("Label")
-		name_label:SetWidth(200)
-		name_label:SetText(_level_info.localtime)
+		name_label:SetWidth(width)
+		name_label:SetText(name_str)
 		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
 		entry:AddChild(name_label)
 	end
+
+	local function DrawLevelColumn(_scroll_frame, _level_list, _player_list, width, start, max_lines)
+		local entry = AceGUI:Create("SimpleGroup")
+		entry:SetLayout("Flow")
+		entry:SetWidth(width)
+		_scroll_frame:AddChild(entry)
+
+		local name_str = ""
+		for i = start, start + max_lines do
+			if _player_list[i] == nil then
+				break
+			end
+			name_str = name_str .. _level_list[_player_list[i]].level .. "\n"
+		end
+
+		local name_label = AceGUI:Create("Label")
+		name_label:SetWidth(width)
+		name_label:SetText(name_str)
+		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		entry:AddChild(name_label)
+	end
+
+	local function DrawPlayedColumn(_scroll_frame, _level_list, _player_list, width, start, max_lines)
+		local entry = AceGUI:Create("SimpleGroup")
+		entry:SetLayout("Flow")
+		entry:SetWidth(width)
+		_scroll_frame:AddChild(entry)
+
+		local name_str = ""
+		for i = start, start + max_lines do
+			if _player_list[i] == nil then
+				break
+			end
+			name_str = name_str .. SecondsToTime(_level_list[_player_list[i]].playedtime) .. "\n"
+		end
+
+		local name_label = AceGUI:Create("Label")
+		name_label:SetWidth(width)
+		name_label:SetText(name_str)
+		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		entry:AddChild(name_label)
+	end
+
+	local function DrawDateColumn(_scroll_frame, _level_list, _player_list, width, start, max_lines)
+		local entry = AceGUI:Create("SimpleGroup")
+		entry:SetLayout("Flow")
+		entry:SetWidth(width)
+		_scroll_frame:AddChild(entry)
+
+		local name_str = ""
+		for i = start, start + max_lines do
+			if _player_list[i] == nil then
+				break
+			end
+			name_str = name_str .. _level_list[_player_list[i]].localtime .. "\n"
+		end
+
+		local name_label = AceGUI:Create("Label")
+		name_label:SetWidth(width)
+		name_label:SetText(name_str)
+		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		entry:AddChild(name_label)
+	end
+
 	local scroll_container = AceGUI:Create("SimpleGroup")
 	scroll_container:SetFullWidth(true)
 	scroll_container:SetFullHeight(true)
-	scroll_container:SetLayout("Fill")
+	scroll_container:SetLayout("List")
 	tabcontainer:AddChild(scroll_container)
 
 	local scroll_frame = AceGUI:Create("ScrollFrame")
-	scroll_frame:SetLayout("List")
+	scroll_frame:SetLayout("Flow")
+	scroll_frame:SetHeight(369)
 	scroll_container:AddChild(scroll_frame)
 
 	local row_header = AceGUI:Create("SimpleGroup")
@@ -758,9 +816,72 @@ local function DrawLevelsTab(container, _hardcore_settings)
 		DrawLevelsTab(container, _hardcore_settings)
 	end)
 
-	for _, v in spairs(_hardcore_settings.level_list, sort_functions[hardcore_modern_menu_state.levels_sort_state]) do
-		addEntry(scroll_frame, v)
+	local sorted_player_idx = {}
+	local max_lines = 500
+	hardcore_modern_menu.total_levels = #_hardcore_settings.level_list
+	hardcore_modern_menu.max_pages = hardcore_modern_menu.total_levels / max_lines
+	for i, v in spairs(_hardcore_settings.level_list, sort_functions[hardcore_modern_menu_state.levels_sort_state]) do
+		table.insert(sorted_player_idx, i)
 	end
+
+	local start = (hardcore_modern_menu_state.levels_page - 1) * max_lines + 1
+	DrawNameColumn(scroll_frame, Hardcore_Settings.level_list, sorted_player_idx, 150, start, max_lines)
+	DrawLevelColumn(scroll_frame, Hardcore_Settings.level_list, sorted_player_idx, 50, start, max_lines)
+	DrawPlayedColumn(scroll_frame, Hardcore_Settings.level_list, sorted_player_idx, 200, start, max_lines)
+	DrawDateColumn(scroll_frame, Hardcore_Settings.level_list, sorted_player_idx, 200, start, max_lines)
+
+	local entry = AceGUI:Create("SimpleGroup")
+	entry:SetLayout("Flow")
+	entry:SetWidth(10)
+	scroll_frame:AddChild(entry)
+
+	local button_container = AceGUI:Create("SimpleGroup")
+	button_container:SetWidth(700)
+	button_container:SetHeight(100)
+	button_container:SetLayout("Flow")
+	scroll_container:AddChild(button_container)
+
+	local left_page_button = AceGUI:Create("Button")
+	left_page_button:SetText("<")
+	left_page_button:SetWidth(50)
+	button_container:AddChild(left_page_button)
+	left_page_button:SetCallback("OnClick", function()
+		if hardcore_modern_menu_state.levels_page > 1 then
+			container:ReleaseChildren()
+			hardcore_modern_menu_state.levels_page = hardcore_modern_menu_state.levels_page - 1
+			DrawLevelsTab(container, _hardcore_settings)
+		end
+	end)
+
+	local date_label = AceGUI:Create("Label")
+	date_label:SetWidth(100)
+	date_label:SetText("|c00FFFF00Page " .. hardcore_modern_menu_state.levels_page .. "|r")
+	date_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	button_container:AddChild(date_label)
+
+	local date_label = AceGUI:Create("HardcoreClassTitleLabel")
+	date_label:SetWidth(350)
+	date_label:SetText("|c00FFFF00You've Leveled up " .. #_hardcore_settings.level_list .. " Times!|r")
+	date_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	button_container:AddChild(date_label)
+
+	local date_label = AceGUI:Create("HardcoreClassTitleLabel")
+	date_label:SetWidth(100)
+	date_label:SetText("")
+	date_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	button_container:AddChild(date_label)
+
+	local right_page_button = AceGUI:Create("Button")
+	right_page_button:SetText(">")
+	right_page_button:SetWidth(50)
+	button_container:AddChild(right_page_button)
+	right_page_button:SetCallback("OnClick", function()
+		if hardcore_modern_menu_state.levels_page <= hardcore_modern_menu_state.levels_max_page + 1 then
+			container:ReleaseChildren()
+			hardcore_modern_menu_state.levels_page = hardcore_modern_menu_state.levels_page + 1
+			DrawLevelsTab(container, _hardcore_settings)
+		end
+	end)
 end
 
 local function DrawAccountabilityTab(container)
@@ -1021,19 +1142,6 @@ local function DrawAccountabilityTab(container)
 	inspect_all_button:SetText("Inspect All")
 	inspect_all_button:SetWidth(100)
 	button_container:AddChild(inspect_all_button)
-	inspect_all_button:SetCallback("OnClick", function()
-		for _player_name, _ in
-			spairs(
-				hardcore_modern_menu_state.guild_online,
-				sort_functions[hardcore_modern_menu_state.accountability_sort_state]
-			)
-		do
-			local player_name_short = string.split("-", _player_name)
-			if other_hardcore_character_cache[player_name_short] == nil then
-				RequestHCData(player_name_short)
-			end
-		end
-	end)
 end
 
 local function DrawAchievementsTab(container)

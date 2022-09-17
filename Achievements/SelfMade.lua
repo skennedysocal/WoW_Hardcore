@@ -46,6 +46,7 @@ local function Start(a)
 end
 local function isSelfCreated(...)
     local v = GameTooltip:GetRegions()
+	local totRegions = select("#", GameTooltip:GetRegions())
     for i = 1, select("#", GameTooltip:GetRegions()) do
         local region = select(i, GameTooltip:GetRegions())
         if region and region:GetObjectType() == "FontString" then
@@ -56,7 +57,7 @@ local function isSelfCreated(...)
                     return true
                 end
             end
-            if i >= 36 then -- this ensures that the loop ends, was set too low, now set to total number of regions in the tooltip
+            if i == totRegions then -- this ensures that the loop ends, was set too low, now set to total number of regions in the tooltip
                 if text == nil then
                     GameTooltip:Hide() --prevents a hung empty tooltip window
                     return false

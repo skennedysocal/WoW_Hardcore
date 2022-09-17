@@ -81,7 +81,7 @@ self_made_achievement:SetScript("OnEvent", function(self, event, ...)
             return
         end
         if arg[1] == 19 then -- This is checking if what you have equipped is a tabard, we cant make those :D
-            print("You put on a tabard! Your Stylish.")
+            print("You put on a tabard! You're Stylish!")
             return
         end
     elseif event == "ITEM_UNLOCKED" and arg[2] == nil then -- need to ensure that arg[2] is nil because it is only nil when a bag is being put into the bag "CheckBox" on the action bar.

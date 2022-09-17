@@ -36,17 +36,18 @@ local function Start(a)
     local item_id = GetInventoryItemID("player", a)
     for index, value in ipairs(Combine) do
         if string.match(item_id, value) then
-            GameTooltip:Hide()--prevents a hung empty tooltip window
+            GameTooltip:Hide() --prevents a hung empty tooltip window
             return true
         elseif index == #Combine then
-            GameTooltip:Hide()--prevents a hung empty tooltip window
+            GameTooltip:Hide() --prevents a hung empty tooltip window
             return false
         end
     end
 end
+
 local function isSelfCreated(...)
     local v = GameTooltip:GetRegions()
-	local totRegions = select("#", GameTooltip:GetRegions())
+    local totRegions = select("#", GameTooltip:GetRegions())
     for i = 1, select("#", GameTooltip:GetRegions()) do
         local region = select(i, GameTooltip:GetRegions())
         if region and region:GetObjectType() == "FontString" then
@@ -57,7 +58,7 @@ local function isSelfCreated(...)
                     return true
                 end
             end
-            if i == totRegions then -- this ensures that the loop ends, was set too low, now set to total number of regions in the tooltip
+            if i == totRegions then -- this ensures that the loop ends
                 if text == nil then
                     GameTooltip:Hide() --prevents a hung empty tooltip window
                     return false
@@ -67,19 +68,27 @@ local function isSelfCreated(...)
     end
 end
 
+--end
+
+--end
+
 -- Register Definitions
 self_made_achievement:SetScript("OnEvent", function(self, event, ...)
     GameTooltip:SetOwner(WorldFrame, "ANCHOR_CURSOR") -- Anchors the cursor so it ensure we check the right tooltip
     local arg = { ... }
     if event == "PLAYER_EQUIPMENT_CHANGED" then
-        if arg[2] == true then -- this are is checking if the equippable spot is nil
+        if arg[2] == true then -- this arg[2] is checking if the equippable spot is nil
+            return
+        end
+        if arg[1] == 19 then -- This is checking if what you have equipped is a tabard, we cant make those :D
+            print("You put on a tabard! Your Stylish.")
             return
         end
     elseif event == "ITEM_UNLOCKED" and arg[2] == nil then -- need to ensure that arg[2] is nil because it is only nil when a bag is being put into the bag "CheckBox" on the action bar.
         local item_id = GetInventoryItemID("player", arg[1])
         local item_name, _, _, _, _, _, item_subtype = GetItemInfo(item_id)
         GameTooltip:SetInventoryItem("player", arg[1]) -- this arg[1] passes the invSlot to  be checked.
-	-- Should these checks fail, the player fails the achievement.
+        -- Should these checks fail, the player fails the achievement.
         if isSelfCreated(GameTooltip:GetRegions(arg[1])) == false then
             if item_subtype ~= "Fishing Poles" then
                 if Start(arg[1]) == false then

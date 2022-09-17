@@ -44,7 +44,6 @@ local function Start(a)
         end
     end
 end
-
 local function isSelfCreated(...)
     local v = GameTooltip:GetRegions()
     for i = 1, select("#", GameTooltip:GetRegions()) do
@@ -57,7 +56,7 @@ local function isSelfCreated(...)
                     return true
                 end
             end
-            if i >= 18 then -- this ensures that the loop ends
+            if i >= 36 then -- this ensures that the loop ends, was set too low, now set to total number of regions in the tooltip
                 if text == nil then
                     GameTooltip:Hide() --prevents a hung empty tooltip window
                     return false
@@ -65,7 +64,6 @@ local function isSelfCreated(...)
             end
         end
     end
-
 end
 
 -- Register Definitions

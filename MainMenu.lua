@@ -1168,7 +1168,8 @@ local function DrawAccountabilityTab(container)
 	hardcore_modern_menu_state.ticker_handler = C_Timer.NewTicker(0.1, function()
 		for k, _ in pairs(hardcore_modern_menu_state.changeset) do
 			if hardcore_modern_menu_state.entry_tbl[k] == nil then
-				addEntry(scroll_frame, k, self_name)
+				-- addEntry(scroll_frame, k, self_name)
+				-- No-op, this can look buggy
 			else
 				updateLabelData(hardcore_modern_menu_state.entry_tbl[k], k)
 			end
@@ -1324,21 +1325,24 @@ end
 function ShowMainMenu(_hardcore_character, _hardcore_settings, dk_button_function)
 	hardcore_modern_menu = AceGUI:Create("HardcoreFrameModernMenu")
 	hardcore_modern_menu:SetCallback("OnClose", function(widget)
-		-- AceGUI:Release(widget)
 		if hardcore_modern_menu_state.ticker_handler ~= nil then
 			hardcore_modern_menu_state.ticker_handler:Cancel()
 			hardcore_modern_menu_state.ticker_handler = nil
 		end
 		hardcore_modern_menu_state.entry_tbl = {}
+		AceGUI:Release(widget)
 	end)
 	hardcore_modern_menu:SetCallback("OnHide", function(widget)
-		-- AceGUI:Release(widget)
 		if hardcore_modern_menu_state.ticker_handler ~= nil then
 			hardcore_modern_menu_state.ticker_handler:Cancel()
 			hardcore_modern_menu_state.ticker_handler = nil
 		end
 		hardcore_modern_menu_state.entry_tbl = {}
+		AceGUI:Release(widget)
 	end)
+       _G["HardcoreModernMenu"] = hardcore_modern_menu.frame -- Close on <ESC>
+        tinsert(UISpecialFrames, "HardcoreModernMenu")
+
 	hardcore_modern_menu:SetTitle("Classic Hardcore")
 	hardcore_modern_menu:SetStatusText("")
 	hardcore_modern_menu:SetLayout("Flow")

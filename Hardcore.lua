@@ -734,6 +734,9 @@ function Hardcore:PLAYER_LOGIN()
 			if _G["ReputationFrame"] ~= nil then
 				_G["ReputationFrame"]:Hide()
 			end
+			if _G["TokenFrame"] ~= nil then
+				_G["TokenFrame"]:Hide()
+			end
 			ShowCharacterHC(Hardcore_Character)
 		elseif
 			(name == "InspectFrameTab3" and _G["HardcoreBuildLabel"] ~= "WotLK")

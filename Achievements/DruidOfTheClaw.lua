@@ -30,7 +30,7 @@ function druid_of_the_claw_achievement:GatherBlackList()
 		if name == "Balance" then
 			for j = offset + 1, offset + numSlots do
 				local _, _, _, _, _, _, spell_id = GetSpellInfo(j, "")
-				if spell_id ~= 5487 and spell_id ~= 9634 and spell_id ~= 19027 then -- 5487: bear form, 9634: dire bear form, 19027: teleport moonglade
+				if spell_id ~= 5487 and spell_id ~= 9634 and spell_id ~= 19027 and spell_id ~= 18960 then -- 5487: bear form, 9634: dire bear form, 19027: learning teleport moonglade, 18960: casting teleport moonglade
 					druid_of_the_claw_achievement.blacklist[spell_id] = 1
 				end
 			end

@@ -9,7 +9,7 @@ self_made_achievement.title = "Self-Made"
 self_made_achievement.class = "All"
 self_made_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_self_made.blp"
 self_made_achievement.description =
-"Complete the Hardcore challenge without at any point equipping an item that you have not crafted yourself. Items your character has conjured (e.g. Firestones) are considered crafted. No items bought, dropped, or rewarded by quests are allowed to be equipped, fishing poles MAY be equipped, starting items MAY be re-equipped if taken off (items provided for a quest can be equipped). The items your character starts with are allowed to be equipped. Bags are equipped items."
+"Complete the Hardcore challenge without at any point equipping an item that you have not crafted yourself. Items your character has conjured (e.g. Firestones) are considered crafted. No items bought, dropped, or rewarded by quests are allowed to be equipped, fishing poles MAY be equipped. The items your character starts with are allowed to be equipped. Bags are equipped items."
 local Combine = {
     35, 36, 38, 39, 40, 43, 44, 45, 47, 48, 49, 51, 52, 53, 55, 56, 57, 59, 120, 121, 127, 129, 139, 140, 147, 148, 153,
     154, 1395, 1396, 2092, 2105, 2361, 2362, 2504, 2508, 2512, 2516, 2947, 3111, 3661, 6096, 6097, 6098, 6117, 6118, 6119,
@@ -35,19 +35,16 @@ end
 local function Start(a)
     local item_id = GetInventoryItemID("player", a)
     for index, value in ipairs(Combine) do
-        if string.match(item_id, value) then
+        if string.match(value, item_id) then
             GameTooltip:Hide() --prevents a hung empty tooltip window
             return true
-        elseif index == #Combine then
-            GameTooltip:Hide() --prevents a hung empty tooltip window
-            return false
         end
     end
+    GameTooltip:Hide() --prevents a hung empty tooltip window
+    return false
 end
 
 local function isSelfCreated(...)
-    local v = GameTooltip:GetRegions()
-    local totRegions = select("#", GameTooltip:GetRegions())
     for i = 1, select("#", GameTooltip:GetRegions()) do
         local region = select(i, GameTooltip:GetRegions())
         if region and region:GetObjectType() == "FontString" then
@@ -58,19 +55,11 @@ local function isSelfCreated(...)
                     return true
                 end
             end
-            if i == totRegions then -- this ensures that the loop ends
-                if text == nil then
-                    GameTooltip:Hide() --prevents a hung empty tooltip window
-                    return false
-                end
-            end
         end
     end
+    GameTooltip:Hide() --prevents a hung empty tooltip window
+    return false
 end
-
---end
-
---end
 
 -- Register Definitions
 self_made_achievement:SetScript("OnEvent", function(self, event, ...)
@@ -81,7 +70,7 @@ self_made_achievement:SetScript("OnEvent", function(self, event, ...)
             return
         end
         if arg[1] == 19 then -- This is checking if what you have equipped is a tabard, we cant make those :D
-            print("You put on a tabard! You're Stylish!")
+            print("You put on a tabard! You're Stylish.")
             return
         end
     elseif event == "ITEM_UNLOCKED" and arg[2] == nil then -- need to ensure that arg[2] is nil because it is only nil when a bag is being put into the bag "CheckBox" on the action bar.
@@ -93,7 +82,7 @@ self_made_achievement:SetScript("OnEvent", function(self, event, ...)
             if item_subtype ~= "Fishing Poles" then
                 if Start(arg[1]) == false then
                     Hardcore:Print("Equipped " .. item_name .. " which isn't self created.")
-                    self_made_achievement.fail_function_executor.Fail(self_made_achievement.name)
+                    --self_made_achievement.fail_function_executor.Fail(self_made_achievement.name)
                 end
             end
         end

@@ -173,6 +173,8 @@ local MOD_CHAR_NAMES = {
 	["Kknic"] = 1,
 	["Semigalle"] = 1,
 	["Semidruu"] = 1,
+	["Letmefixit"] = 1,
+	["Unarchiver"] = 1,
 }
 
 -- frame display

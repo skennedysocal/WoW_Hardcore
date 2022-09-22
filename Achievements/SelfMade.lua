@@ -19,6 +19,7 @@ local Combine = {
     34656, 34651, 34655, 34648, 34650, 34653, 34659, 34649, 34657, 34658, 38147, 38707, 52021, 41165, 52020, 41164, 10512,
     15997, 23772, 10513, 8067, 8069, 8068
 }
+
 -- Registers
 function self_made_achievement:Register(fail_function_executor)
     self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
@@ -28,7 +29,7 @@ end
 
 function self_made_achievement:Unregister()
     self:UnregisterEvent("PLAYER_EQUIPMENT_CHANGED")
-    self:RegisterEvent("ITEM_UNLOCKED")
+    self:UnregisterEvent("ITEM_UNLOCKED")
 end
 
 -- Check Starting gear function
@@ -79,6 +80,7 @@ self_made_achievement:SetScript("OnEvent", function(self, event, ...)
             local item_name, _, _, _, _, _, item_subtype = GetItemInfo(item_id)
             for index, value in ipairs(Combine) do
                 if string.match(value, item_id) then
+                    print("You made this ammo: ", item_name)
                     return
                 end
             end
@@ -90,7 +92,7 @@ self_made_achievement:SetScript("OnEvent", function(self, event, ...)
         local item_name, _, _, _, _, _, item_subtype = GetItemInfo(item_id)
         GameTooltip:SetInventoryItem("player", arg[1]) -- this arg[1] passes the invSlot to  be checked.
         -- Should these checks fail, the player fails the achievement.
-        if isSelfCreated(GameTooltip:GetRegions(arg[1])) == false then
+        if isSelfCreated(GameTooltip:GetRegions()) == false then
             if item_subtype ~= "Fishing Poles" then
                 if Start(arg[1]) == false then
                     Hardcore:Print("Equipped " .. item_name .. " which isn't self created.")

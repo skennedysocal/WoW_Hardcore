@@ -16,10 +16,9 @@ local Combine = {
     6120, 6121, 6122, 6123, 6124, 6125, 6126, 6127, 6129, 6134, 6135, 6136, 6137, 6138, 6139, 6140, 6144, 12282, 20891,
     20892, 20893, 20894, 20895, 20896, 20897, 20898, 20899, 20900, 20901, 20978, 20982, 23322, 23344, 23345, 23346, 23347,
     23348, 23473, 23474, 23475, 23476, 23477, 23478, 23479, 24143, 24145, 24146, 25861, 28979, 49778, 50055, 50057, 34652,
-    34656, 34651, 34655, 34648, 34650, 34653, 34659, 34649, 34657, 34658, 38147, 38707
+    34656, 34651, 34655, 34648, 34650, 34653, 34659, 34649, 34657, 34658, 38147, 38707, 52021, 41165, 52020, 41164, 10512,
+    15997, 23772, 10513, 8067, 8069, 8068
 }
-
-
 -- Registers
 function self_made_achievement:Register(fail_function_executor)
     self:RegisterEvent("PLAYER_EQUIPMENT_CHANGED")
@@ -32,6 +31,7 @@ function self_made_achievement:Unregister()
     self:RegisterEvent("ITEM_UNLOCKED")
 end
 
+-- Check Starting gear function
 local function Start(a)
     local item_id = GetInventoryItemID("player", a)
     for index, value in ipairs(Combine) do
@@ -44,6 +44,7 @@ local function Start(a)
     return false
 end
 
+--Check if the item is selfMade
 local function isSelfCreated(...)
     for i = 1, select("#", GameTooltip:GetRegions()) do
         local region = select(i, GameTooltip:GetRegions())
@@ -73,7 +74,18 @@ self_made_achievement:SetScript("OnEvent", function(self, event, ...)
             print("You put on a tabard! You're Stylish.")
             return
         end
-    elseif event == "ITEM_UNLOCKED" and arg[2] == nil then -- need to ensure that arg[2] is nil because it is only nil when a bag is being put into the bag "CheckBox" on the action bar.
+        if GetInventoryItemID("player", 0) ~= nil then
+            local item_id = GetInventoryItemID("player", 0)
+            local item_name, _, _, _, _, _, item_subtype = GetItemInfo(item_id)
+            for index, value in ipairs(Combine) do
+                if string.match(value, item_id) then
+                    return
+                end
+            end
+            Hardcore:Print("Equipped ammo " .. item_name .. " which isn't self created.")
+            self_made_achievement.fail_function_executor.Fail(self_made_achievement.name)
+        end
+    elseif event == "ITEM_UNLOCKED" and arg[2] == nil and arg[1] ~= 19 then -- checking for nil as it will be that way for gear swap and bag swap, checking for slot 19 as that is the tabard.
         local item_id = GetInventoryItemID("player", arg[1])
         local item_name, _, _, _, _, _, item_subtype = GetItemInfo(item_id)
         GameTooltip:SetInventoryItem("player", arg[1]) -- this arg[1] passes the invSlot to  be checked.
@@ -82,7 +94,7 @@ self_made_achievement:SetScript("OnEvent", function(self, event, ...)
             if item_subtype ~= "Fishing Poles" then
                 if Start(arg[1]) == false then
                     Hardcore:Print("Equipped " .. item_name .. " which isn't self created.")
-                    --self_made_achievement.fail_function_executor.Fail(self_made_achievement.name)
+                    self_made_achievement.fail_function_executor.Fail(self_made_achievement.name)
                 end
             end
         end

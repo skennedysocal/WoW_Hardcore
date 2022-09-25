@@ -732,7 +732,11 @@ local function DrawLevelsTab(container, _hardcore_settings)
 			if _player_list[i] == nil then
 				break
 			end
-			name_str = name_str .. SecondsToTime(_level_list[_player_list[i]].playedtime) .. "\n"
+			if _level_list[_player_list[i]].playedtime ~= nil then
+				name_str = name_str .. SecondsToTime(_level_list[_player_list[i]].playedtime) .. "\n"
+			else
+				name_str = name_str .. "\n"
+			end
 		end
 
 		local name_label = AceGUI:Create("Label")

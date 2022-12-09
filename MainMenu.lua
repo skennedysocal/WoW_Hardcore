@@ -592,7 +592,10 @@ local function DrawVerifyTab(container, _hardcore_character)
 	scroll_frame:AddChild(first_menu_description)
 
 	local copy_tip_label = AceGUI:Create("Label")
-	copy_tip_label:SetText("\n\n\n\n\n\n\n\n\n\n\n\n\nSelect All (Ctrl-A), Copy (Ctrl-C), and Paste (Ctrl-V)")
+	local statusString1, statusString2 = Hardcore:GenerateVerificationStatusStrings()
+	local text = "\n\n\n\n\n\n\n\n\n\n\n\n\nSelect All (Ctrl-A), Copy (Ctrl-C), and Paste (Ctrl-V)" ..
+				"\n\n\n" .. statusString1 .. "\n" .. statusString2
+	copy_tip_label:SetText(text)
 	copy_tip_label:SetWidth(700)
 	copy_tip_label:SetFontObject(GameFontHighlightSmall)
 	scroll_frame:AddChild(copy_tip_label)

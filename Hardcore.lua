@@ -1939,6 +1939,21 @@ function Hardcore_Frame_OnShow()
 		table.insert(f, "To get verified, copy the string below and visit the classichc website.")
 		table.insert(f, "")
 		table.insert(f, verificationstring)
+		table.insert(f, "")
+		table.insert(f, "")
+		table.insert(f, "")
+		table.insert(f, "")
+		table.insert(f, "")
+		table.insert(f, "")
+		table.insert(f, "")
+		table.insert(f, "")
+		table.insert(f, "")
+		table.insert(f, "")
+		table.insert(f, "")
+		table.insert(f, "")
+		local statusString1, statusString2 = Hardcore:GenerateVerificationStatusStrings()
+		table.insert(f, statusString1)
+		table.insert(f, statusString2)
 		displaylist = f
 	elseif display == "AddonStatus" then
 		Hardcore_DK_Sacrifice:Hide()
@@ -2258,6 +2273,68 @@ function Hardcore:PrintBubbleHearthInfractions()
 		end
 	end
 end
+
+function Hardcore:GenerateVerificationStatusStrings()
+	local statusString = ""
+	local numDeaths = #Hardcore_Character.deaths
+	local perc = string.format( "tracked_time=%.1f%%", Hardcore_Character.tracked_played_percentage )
+	local numGaps = #Hardcore_Character.played_time_gap_warnings
+	local numTrades = #Hardcore_Character.trade_partners
+	local numBubs= #Hardcore_Character.bubble_hearth_incidents
+	local verdict = ""
+	local COLOR_WHITE = "|c00ffffff"
+	local reds = {}
+	local yellows = {}
+	local greens = {}
+	
+	-- Determine the end verdict
+	if numTrades <= 0 and numDeaths <= 0 and numBubs <= 0 and numGaps <= 0 and Hardcore_Character.tracked_played_percentage >= 95 then
+		verdict = COLOR_GREEN .. "PASS"
+	else
+		verdict = COLOR_YELLOW .. "FAIL (NEEDS A MOD)"
+	end
+	verdict = COLOR_WHITE .. "Verification status: " .. verdict
+
+	
+	-- Group the green, orange and red because for some weird reason we can't switch colours too often in one line
+
+	if Hardcore_Character.tracked_played_percentage >= 95 then
+		table.insert( greens, perc )
+	elseif Hardcore_Character.tracked_played_percentage >= 90 then
+		table.insert( yellows, perc )
+	else
+		table.insert( reds, perc )
+	end
+
+	if numDeaths > 0 then
+		table.insert( reds, "deaths=" .. numDeaths )
+	end
+
+	if numGaps > 0 then
+		table.insert( reds, "time_gaps=" .. numGaps )
+	end
+
+	if numTrades > 0 then
+		table.insert( reds, "trades=" .. numTrades )
+	end
+
+	if numBubs > 0 then
+		table.insert( reds, "bub_hearth=" .. numBubs )
+	end
+
+	if #reds > 0 then
+		statusString = statusString .. COLOR_RED .. table.concat( reds, " " ) .. " "
+	end
+	if #yellows > 0 then
+		statusString = statusString .. COLOR_YELLOW .. table.concat( yellows, " " ) .. " "
+	end
+	if #greens > 0 then
+		statusString = statusString .. COLOR_GREEN .. table.concat( greens, " " )
+	end
+
+	return verdict, statusString
+end
+
 
 local ATTRIBUTE_SEPARATOR = "_"
 function Hardcore:GenerateVerificationString()

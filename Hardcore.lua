@@ -279,7 +279,7 @@ function FailureFunction(achievement_name)
 		if v == achievement_name then
 			table.remove(Hardcore_Character.achievements, i)
 			_G.achievements[achievement_name]:Unregister()
-			Hardcore:Print("Failed " .. achievement_name)
+			Hardcore:Print("Failed " .. _G.achievements[achievement_name].title)
 			PlaySoundFile("Interface\\Addons\\Hardcore\\Media\\achievement_failure.ogg")
 		end
 	end

@@ -51,6 +51,7 @@ _G.a_id = {
 	Scavenger = 46,
 	InsaneInTheMembrane = 47,
 	PartnerUp = 48,
+	NoHit = 49,
 }
 _G.id_a = {}
 for k, v in pairs(_G.a_id) do

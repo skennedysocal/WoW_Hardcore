@@ -9,11 +9,25 @@ no_hit_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_no_hit.
 no_hit_achievement.description =
 	"Complete the hardcore challenge without taking a point of damage.  Falling, drowning, fatigue and other such sources that count as “Environmental Damage” according to the Combat Log are, as such, Damage. This also means that spells that expend life as a resource, such as the Warlock’s Life Tap, do not cause any 'damage' and are as such perfectly viable.  Futhermore, you must accumulate over 30,000 reputation across the four main factions."
 no_hit_achievement.class = "All"
+no_hit_achievement.alert_on_fail = 1
+
+local faction_indices = {2, 3, 4, 5}
 
 -- Registers
 function no_hit_achievement:Register(fail_function_executor)
 	no_hit_achievement:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	no_hit_achievement.fail_function_executor = fail_function_executor
+	local total_earned_value = 0
+	for _,idx in ipairs(faction_indices) do
+	  local name, description, standingId, bottomValue, topValue, earnedValue, atWarWith,
+	    canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild = GetFactionInfo(idx)
+	  total_earned_value = total_earned_value + earnedValue
+	end
+	if total_earned_value > 30000 then
+	  no_hit_achievement.description = no_hit_achievement.description .. "\n|c0000FF00Progress: Complete!|r"
+	else
+	  no_hit_achievement.description = no_hit_achievement.description .. "\n|c00FFFF00Progress: " .. total_earned_value .. "/30,000|r"
+	end
 end
 
 function no_hit_achievement:Unregister()

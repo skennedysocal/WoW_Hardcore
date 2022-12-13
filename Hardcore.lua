@@ -281,6 +281,15 @@ function FailureFunction(achievement_name)
 			_G.achievements[achievement_name]:Unregister()
 			Hardcore:Print("Failed " .. _G.achievements[achievement_name].title)
 			PlaySoundFile("Interface\\Addons\\Hardcore\\Media\\achievement_failure.ogg")
+			if _G.achievements[achievement_name].alert_on_fail ~= nil then
+			  local level = UnitLevel("player")
+			  local mapID
+			  local deathData = string.format("%s%s%s", level, COMM_FIELD_DELIM, mapID and mapID or "")
+			  local commMessage = COMM_COMMANDS[3] .. COMM_COMMAND_DELIM .. deathData
+			  if CTL then
+				  CTL:SendAddonMessage("ALERT", COMM_NAME, commMessage, "GUILD")
+			  end
+			end
 		end
 	end
 end

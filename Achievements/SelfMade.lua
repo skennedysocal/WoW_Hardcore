@@ -93,7 +93,7 @@ self_made_achievement:SetScript("OnEvent", function(self, event, ...)
         GameTooltip:SetInventoryItem("player", arg[1]) -- this arg[1] passes the invSlot to  be checked.
         -- Should these checks fail, the player fails the achievement.
         if isSelfCreated(GameTooltip:GetRegions()) == false then
-            if item_subtype ~= "Fishing Poles" then
+            if item_subtype ~= "Fishing Poles" and item_subtype ~= "Fishing Pole" then
                 if Start(arg[1]) == false then
                     Hardcore:Print("Equipped " .. item_name .. " which isn't self created.")
                     self_made_achievement.fail_function_executor.Fail(self_made_achievement.name)

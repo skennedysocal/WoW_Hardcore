@@ -4,7 +4,7 @@
 ## Author: The Classic Hardcore team, Molikar (Sean Kennedy), Mark Rogaski <stigg@aie-guild.org> as GreenWall author 
 ## X-License: All Rights Reserved
 ## X-Category: Leveling,Guild
-## Version: 1.0.0
+## Version: 0.10.0
 
 
 ## DefaultState: enabled

@@ -10,6 +10,12 @@ no_health_potions_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\i
 no_health_potions_achievement.description =
 	"Complete the Hardcore challenge without at any point consuming a health potion (items with ‘Healing Potion’ in their name). Items that restore health which are not Healing Potions (e.g. Healthstones or Crystal Restore) can be used."
 
+local blacklisted_spells = {
+  [439] = 1,
+  [441] = 1,
+  [17534] = 1,
+  [2024] = 1,
+}
 -- Registers
 function no_health_potions_achievement:Register(fail_function_executor)
 	no_health_potions_achievement:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
@@ -29,7 +35,7 @@ no_health_potions_achievement:SetScript("OnEvent", function(self, event, ...)
 			return
 		end
 		local spell_name = GetSpellInfo(spell_id)
-		if string.find(spell_name, "Healing Potion") ~= nil then
+		if blacklisted_spells[spell_id] ~= nil then
 			Hardcore:Print("Casted healing potion spell." .. spell_name)
 			no_health_potions_achievement.fail_function_executor.Fail(no_health_potions_achievement.name)
 		end

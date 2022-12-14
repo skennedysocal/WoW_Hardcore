@@ -374,7 +374,8 @@ function GwChannel:receive(f, ...)
                 end
             end
         elseif sender ~= gw.player and guild_id ~= gw.config.guild_id then
-	  hardcore_guild_member_dict[guild_id] = sender
+	  local sender_short = string.split("-", sender)
+	  hardcore_guild_member_dict[guild_id] = sender_short
             -- Process the chat message if it from another co-guild.
             gw.Debug(GW_LOG_NOTICE, 'channel=%d, type=%d, sender=%s, guild=%s, message=%q',
                     self.number, mtype, sender, guild_id, message)

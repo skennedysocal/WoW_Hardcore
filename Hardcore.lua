@@ -130,6 +130,10 @@ local COMM_COMMANDS = {
 	"REQUEST_PCT", -- request a party change token
 	"APPLY_PCT", -- request a party change
 	"SEND_ACHIEVEMENT_APPEAL", -- send appeal for achievement
+	"XGUILD_DEAD_RELAY", -- Send death message a player in another guild to relay
+	"XGUILD_DEAD", -- Send death message to other guild 
+	"XGUILD_CHAT_RELAY", -- Send chat message a player in another guild to relay
+	"XGUILD_CHAT", -- Send chat message to other guild 
 }
 local COMM_SPAM_THRESHOLD = { -- msgs received within durations (s) are flagged as spam
 	PULSE = 3,
@@ -274,6 +278,36 @@ Hardcore.ALERT_STYLES = ALERT_STYLES
 
 Hardcore_Frame:ApplyBackdrop()
 
+local function startXGuildChatMsgRelay(msg)
+  local commMessage = COMM_COMMANDS[12] .. COMM_COMMAND_DELIM .. msg
+  for _, v in pairs(hardcore_guild_member_dict) do
+      CTL:SendAddonMessage("ALERT", COMM_NAME, commMessage, "WHISPER", v)
+  end
+end
+
+local function startXGuildDeathMsgRelay()
+  local zone, mapID
+  if IsInInstance() then
+    zone = GetInstanceInfo()
+  else
+    mapID = C_Map.GetBestMapForUnit("player")
+    zone = C_Map.GetMapInfo(mapID).name
+  end
+
+  if Last_Attack_Source == nil then
+	  Last_Attack_Source = "unknown"
+  end
+  local class = UnitClass("player")
+
+  -- player name, level, zone, attack_source, class
+  local commMessage = COMM_COMMANDS[10] .. COMM_COMMAND_DELIM .. UnitName("player") .. "^" .. UnitLevel("player") .. "^" .. zone   .. "^" .. Last_Attack_Source .. "^" .. class .. "^"
+
+  for _, v in pairs(hardcore_guild_member_dict) do
+      CTL:SendAddonMessage("ALERT", COMM_NAME, commMessage, "WHISPER", v)
+  end
+end
+
+
 function FailureFunction(achievement_name)
 	for i, v in ipairs(Hardcore_Character.achievements) do
 		if v == achievement_name then
@@ -286,6 +320,11 @@ function FailureFunction(achievement_name)
 			  local mapID
 			  local deathData = string.format("%s%s%s", level, COMM_FIELD_DELIM, mapID and mapID or "")
 			  local commMessage = COMM_COMMANDS[3] .. COMM_COMMAND_DELIM .. deathData
+
+			  local messageString = UnitName("player") .. " has failed ".. _G.achievements[achievement_name].title 
+			  SendChatMessage(messageString, "GUILD")
+			  startXGuildChatMsgRelay(messageString)
+			  startXGuildDeathMsgRelay()
 			  if CTL then
 				  CTL:SendAddonMessage("ALERT", COMM_NAME, commMessage, "GUILD")
 			  end
@@ -1176,7 +1215,8 @@ function Hardcore:PLAYER_DEAD()
 	end
 
 	SendChatMessage(messageString, "GUILD")
-
+	startXGuildChatMsgRelay(messageString)
+	startXGuildDeathMsgRelay()
 	Hardcore:Print(messageString)
 
 	-- Send addon message
@@ -1436,11 +1476,58 @@ function Hardcore:DisplayPlaytimeWarning(level)
 	end
 end
 
+  -- player name, level, zone, attack_source, class
+local function receiveXGuildChat(data, sender, command)
+      Hardcore:Print(data)
+end
+
+  -- player name, level, zone, attack_source, class
+local function receiveDeathMsg(data, sender, command)
+	if Hardcore_Settings.notify then
+		local other_player_name = ""
+		local level = 0
+		local zone = ""
+		local attack_source = ""
+		local class = ""
+		if data then
+			other_player_name, level, zone, attack_source, class = string.split("^", data)
+		else
+		  return -- Failed to parse
+		end
+		local alert_msg = other_player_name .. " the |c" .. class .. "|r has died at level " .. level .. " in " .. zone
+
+		if UnitInRaid("player") == nil then
+			Hardcore:ShowAlertFrame(ALERT_STYLES.death, alert_msg)
+			return
+		end
+	end
+end
+
 function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
 	-- Ignore messages that are not ours
 	if COMM_NAME == prefix then
 		-- Get the command
 		local command, data = string.split(COMM_COMMAND_DELIM, datastr)
+		if command == COMM_COMMANDS[10] then -- Received request for guild members
+			-- receiveDeathMsg(data, sender, command) would duplicate for sender
+			local commMessage = COMM_COMMANDS[11] .. COMM_COMMAND_DELIM .. data
+			CTL:SendAddonMessage("ALERT", COMM_NAME, commMessage, "GUILD")
+			return
+		end
+		if command == COMM_COMMANDS[11] then -- Received request for guild members
+			receiveDeathMsg(data, sender, command)
+			return
+		end
+		if command == COMM_COMMANDS[12] then -- Send guild chat to other guilds
+			-- receiveXGuildChat(data, sender, command) would duplicate for sender
+			local commMessage = COMM_COMMANDS[13] .. COMM_COMMAND_DELIM .. data
+			CTL:SendAddonMessage("ALERT", COMM_NAME, commMessage, "GUILD")
+			return
+		end
+		if command == COMM_COMMANDS[13] then -- Send guild chat from another guild to this guild 
+			receiveXGuildChat(data, sender, command)
+			return
+		end
 		if command == COMM_COMMANDS[7] then -- Received request for party change
 			local name, _ = string.split("-", sender)
 			local party_change_token_secret = string.split(COMM_FIELD_DELIM, data)

@@ -80,7 +80,6 @@ self_made_achievement:SetScript("OnEvent", function(self, event, ...)
             local item_name, _, _, _, _, _, item_subtype = GetItemInfo(item_id)
             for index, value in ipairs(Combine) do
                 if string.match(value, item_id) then
-                    print("You made this ammo: ", item_name)
                     return
                 end
             end
@@ -93,7 +92,9 @@ self_made_achievement:SetScript("OnEvent", function(self, event, ...)
         GameTooltip:SetInventoryItem("player", arg[1]) -- this arg[1] passes the invSlot to  be checked.
         -- Should these checks fail, the player fails the achievement.
         if isSelfCreated(GameTooltip:GetRegions()) == false then
-            if item_subtype ~= "Fishing Poles" and item_subtype ~= "Fishing Pole" then
+            if item_subtype == "Fishing Poles" or item_subtype == "Fishing Pole" then
+	      return
+	    else
                 if Start(arg[1]) == false then
                     Hardcore:Print("Equipped " .. item_name .. " which isn't self created.")
                     self_made_achievement.fail_function_executor.Fail(self_made_achievement.name)

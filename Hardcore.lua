@@ -1306,6 +1306,7 @@ function Hardcore:PLAYER_LEVEL_UP(...)
 		local messageFormat = "%s the %s has reached level %s!"
 		local messageString = string.format(messageFormat, playerName, localizedClass, level)
 		SendChatMessage(messageString, "GUILD", nil, nil)
+		startXGuildChatMsgRelay(messageString)
 	end
 end
 
@@ -1478,7 +1479,7 @@ end
 
   -- player name, level, zone, attack_source, class
 local function receiveXGuildChat(data, sender, command)
-      Hardcore:Print(data)
+      Hardcore:FakeGuildMsg(data)
 end
 
   -- player name, level, zone, attack_source, class
@@ -1716,6 +1717,10 @@ end
 
 function Hardcore:Print(msg)
 	print("|cffed9121Hardcore|r: " .. (msg or ""))
+end
+
+function Hardcore:FakeGuildMsg(msg)
+	print("|cff00FF00"..msg.."|r ")
 end
 
 function Hardcore:Debug(msg)

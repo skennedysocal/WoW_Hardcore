@@ -462,9 +462,6 @@ local function SlashHandler(msg, editbox)
 		-- If not handled above, display some sort of help message
 		Hardcore:Print("|cff00ff00Syntax:|r/hardcore [command] [options]")
 		Hardcore:Print("|cff00ff00Commands:|r show hide levels alllevels alerts monitor griefalert dk")
-		for k,v in pairs(hardcore_guild_member_dict) do
-		  print(k .. v)
-		end
 	end
 end
 

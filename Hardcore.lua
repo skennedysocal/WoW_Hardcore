@@ -53,6 +53,8 @@ Hardcore_Settings = {
 	sacrifice = {},
 	hardcore_player_name = "",
 	use_alternative_menu = false,
+	ignore_xguild_chat = false,
+	ignore_xguild_alerts = false,
 }
 
 --[[ Character saved variables ]]
@@ -505,6 +507,8 @@ local settings_saved_variable_meta = {
 	["sacrifice"] = {},
 	["hardcore_player_name"] = "",
 	["use_alternative_menu"] = false,
+	["ignore_xguild_chat"] = false,
+	["ignore_xguild_alerts"] = false,
 }
 
 --[[ Post-utility functions]]
@@ -742,6 +746,7 @@ function Hardcore:PLAYER_LOGIN()
 	Hardcore:HandleLegacyDeaths()
 	Hardcore_Character.hardcore_player_name = Hardcore_Settings.hardcore_player_name or ""
 
+	_G.hardcore_disable_greenwall = Hardcore_Settings.ignore_xguild_chat
 	-- Show the first menu screen.  Requires short delay
 	if UnitLevel("player") < 2 then
 		C_Timer.After(1.0, function()
@@ -1484,6 +1489,7 @@ end
 
   -- player name, level, zone, attack_source, class
 local function receiveDeathMsg(data, sender, command)
+	if Hardcore_Settings.ignore_xguild_alerts ~= nil and Hardcore_Settings.ignore_xguild_alerts == true then return end
 	if Hardcore_Settings.notify then
 		local other_player_name = ""
 		local level = 0
@@ -1495,7 +1501,7 @@ local function receiveDeathMsg(data, sender, command)
 		else
 		  return -- Failed to parse
 		end
-		local alert_msg = other_player_name .. " the |c" .. class .. "|r has died at level " .. level .. " in " .. zone
+		local alert_msg = other_player_name .. " the " .. class .. " has died at level " .. level .. " in " .. zone
 
 		if UnitInRaid("player") == nil then
 			Hardcore:ShowAlertFrame(ALERT_STYLES.death, alert_msg)
@@ -2972,6 +2978,39 @@ local options = {
 				},
 			},
 		},
+		cross_guild_header = {
+			type = "group",
+			name = "Cross-Guild",
+			order = 14,
+			inline = true,
+			args = {
+				ignore_xguild_chat = {
+					width = "full",
+					type = "toggle",
+					name = "Ignore cross-guild chat [Requires reload]",
+					desc = "Ignore cross-guild chat [Requires reload]",
+					get = function()
+						return Hardcore_Settings.ignore_xguild_chat
+					end,
+					set = function()
+						Hardcore_Settings.ignore_xguild_chat = not Hardcore_Settings.ignore_xguild_chat
+					end,
+					order = 15,
+				},
+				ignore_xguild_alerts = {
+					type = "toggle",
+					name = "Ignore cross-guild alerts",
+					desc = "Ignore cross-guild alerts",
+					get = function()
+						return Hardcore_Settings.ignore_xguild_alerts
+					end,
+					set = function()
+						Hardcore_Settings.ignore_xguild_alerts = not Hardcore_Settings.ignore_xguild_alerts
+					end,
+					order = 17,
+				},
+			},
+		},
 		apply_defaults = {
 			type = "execute",
 			name = "Defaults",
@@ -2985,9 +3024,11 @@ local options = {
 				Hardcore_Settings.alert_frame_y_offset = -150
 				Hardcore_Settings.alert_frame_scale = 0.7
 				Hardcore_Settings.show_minimap_mailbox_icon = false
+				Hardcore_Settings.ignore_xguild_alerts = false
+				Hardcore_Settings.ignore_xguild_chat = false
 				Hardcore:ApplyAlertFrameSettings()
 			end,
-			order = 11,
+			order = 20,
 		},
 	},
 }

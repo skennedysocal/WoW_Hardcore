@@ -33,7 +33,9 @@ hammertime_achievement:SetScript("OnEvent", function(self, event, ...)
 			-- Checks if the mainhand is of type weapon, then checks to make sure it is not of Fishing Poles type and not of Two Handed Maces type,
 			-- If it passes those checks the player fails.
 			if item_type == "Weapon" then
-				if item_type ~= "Fishing Poles" then
+				if item_subtype == "Fishing Poles" or item_subtype == "Fishing Pole" then
+				  return
+				else
 					if item_subtype ~= "Two-Handed Maces" then
 						Hardcore:Print("Equiped " .. item_name .. ".")
 						hammertime_achievement.fail_function_executor.Fail(hammertime_achievement.name)

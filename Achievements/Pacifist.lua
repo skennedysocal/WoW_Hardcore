@@ -31,7 +31,7 @@ pacifist_achievement:SetScript("OnEvent", function(self, event, ...)
 		local item_name, _, _, _, _, item_type, item_subtype, _, _, _, _ = GetItemInfo(item_id)
 		if item_type == "Weapon" then
 			print(item_subtype)
-			if item_subtype == "Fishing Poles" or item_subtype == "Miscellaneous" then
+			if item_subtype == "Fishing Poles" or item_subtype == "Fishing Pole" or item_subtype == "Miscellaneous" then
 				return
 			end
 			Hardcore:Print("Equiped " .. item_name .. ".")

@@ -35,7 +35,9 @@ shivved_achievement:SetScript("OnEvent", function(self, event, ...)
 			or item_equip_loc == "INVTYPE_WEAPON"
 		then
 			if item_subtype ~= "Daggers" then
-				if item_subtype ~= "Fishing Poles" then
+				if item_subtype == "Fishing Poles" or item_subtype == "Fishing Pole" then
+				  return
+				else
 					Hardcore:Print("Equiped " .. item_name .. ".")
 					shivved_achievement.fail_function_executor.Fail(shivved_achievement.name)
 				end

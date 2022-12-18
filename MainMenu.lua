@@ -291,6 +291,19 @@ local function DrawGeneralTab(container)
 	changelog_title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 20)
 	scroll_frame:AddChild(changelog_title)
 
+	local changelog_title = AceGUI:Create("Label")
+	changelog_title:SetWidth(500)
+	changelog_title:SetText("10.2")
+	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16)
+	scroll_frame:AddChild(changelog_title)
+
+	local changelog_description = AceGUI:Create("Label")
+	changelog_description:SetWidth(600)
+	changelog_description:SetText(
+		"- Added options to ignore cross-guild chat and alerts (in interface options->Hardcore (not Hardcore:Greenwall!) \n- Fixed fishing poles failing Hammertime, pacifist, and shivved. \n- Fixed alert message which showed a |c before class names."
+	)
+	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	scroll_frame:AddChild(changelog_description)
 
 	local changelog_title = AceGUI:Create("Label")
 	changelog_title:SetWidth(500)

@@ -220,6 +220,7 @@ Frame Event Functions
 function GreenWall_OnEvent(self, event, ...)
 
     gw.Debug(GW_LOG_DEBUG, 'event occurred; event=%s', event)
+    if _G.hardcore_disable_greenwall then return end
 
     --
     -- Addon loading check

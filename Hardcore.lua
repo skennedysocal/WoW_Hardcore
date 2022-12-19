@@ -2397,7 +2397,7 @@ function Hardcore:GenerateVerificationStatusStrings()
 	local greens = {}
 	
 	-- Determine the end verdict
-	if numTrades <= 0 and numDeaths <= 0 and numBubs <= 0 and numGaps <= 0 and Hardcore_Character.tracked_played_percentage >= 95 then
+	if (numTrades <= 0 and numDeaths <= 0 and numBubs <= 0 and numGaps <= 0 and Hardcore_Character.tracked_played_percentage >= 95) or UnitLevel("player") < 20 then
 		verdict = COLOR_GREEN .. "PASS"
 	else
 		verdict = COLOR_YELLOW .. "FAIL (NEEDS A MOD)"

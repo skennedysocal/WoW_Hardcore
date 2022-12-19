@@ -11,10 +11,10 @@ no_health_potions_achievement.description =
 	"Complete the Hardcore challenge without at any point consuming a health potion (items with ‘Healing Potion’ in their name). Items that restore health which are not Healing Potions (e.g. Healthstones or Crystal Restore) can be used."
 
 local blacklisted_spells = {
-  [439] = 1,
-  [441] = 1,
-  [17534] = 1,
-  [2024] = 1,
+	[439] = 1,
+	[441] = 1,
+	[17534] = 1,
+	[2024] = 1,
 }
 -- Registers
 function no_health_potions_achievement:Register(fail_function_executor)

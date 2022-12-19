@@ -80,10 +80,15 @@ local TabGUI = CreateFrame("Button", "nwtab" .. TabID, CharacterFrame)
 _G["HardcoreCharacterTab"] = TabGUI
 TabGUI:SetPoint("LEFT", "CharacterFrameTab5", "RIGHT", -16 + game_version_offset, 0)
 C_Timer.After(1.0, function() -- Check to see if the currency tab is active, then offset the new tab if it is
-	if _G["TokenFrame"] ~= nil and _G["CharacterFrameTab5Text"] ~= nil and _G["CharacterFrameTab5Text"]:GetText() == "Currency" and _G["CharacterFrameTab5Text"]:IsShown() then
-		for index=1, GetCurrencyListSize() do
-			name, isHeader, isExpanded, isUnused, isWatched, count, icon = GetCurrencyListInfo(index);
-			if ( (not isHeader) and count ~= nil and (count>0) ) then
+	if
+		_G["TokenFrame"] ~= nil
+		and _G["CharacterFrameTab5Text"] ~= nil
+		and _G["CharacterFrameTab5Text"]:GetText() == "Currency"
+		and _G["CharacterFrameTab5Text"]:IsShown()
+	then
+		for index = 1, GetCurrencyListSize() do
+			name, isHeader, isExpanded, isUnused, isWatched, count, icon = GetCurrencyListInfo(index)
+			if not isHeader and count ~= nil and (count > 0) then
 				TabGUI:SetPoint("LEFT", "CharacterFrameTab5", "RIGHT", 56 + game_version_offset, 0)
 				_G["CharacterFrameTab5Text"]:SetText("Curr.")
 			end

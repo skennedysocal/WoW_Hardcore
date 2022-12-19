@@ -11,16 +11,16 @@ no_hit_achievement.description =
 no_hit_achievement.class = "All"
 no_hit_achievement.alert_on_fail = 1
 
-local faction_indices = {2, 3, 4, 5}
+local faction_indices = { 2, 3, 4, 5 }
 local starting_rep = {
-  ["Gnome"] = 13300,
-  ["Human"] = 13300,
-  ["Night Elf"] = 13300,
-  ["Dwarf"] = 13300,
-  ["Undead"] = 5500,
-  ["Tauren"] = 10700,
-  ["Orc"] = 10700,
-  ["Troll"] = 10700,
+	["Gnome"] = 13300,
+	["Human"] = 13300,
+	["Night Elf"] = 13300,
+	["Dwarf"] = 13300,
+	["Undead"] = 5500,
+	["Tauren"] = 10700,
+	["Orc"] = 10700,
+	["Troll"] = 10700,
 }
 
 -- Registers
@@ -28,16 +28,19 @@ function no_hit_achievement:Register(fail_function_executor)
 	no_hit_achievement:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	no_hit_achievement.fail_function_executor = fail_function_executor
 	local total_earned_value = 0
-	for _,idx in ipairs(faction_indices) do
-	  local name, description, standingId, bottomValue, topValue, earnedValue, atWarWith,
-	    canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild = GetFactionInfo(idx)
-	  total_earned_value = total_earned_value + earnedValue
+	for _, idx in ipairs(faction_indices) do
+		local name, description, standingId, bottomValue, topValue, earnedValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild =
+			GetFactionInfo(idx)
+		total_earned_value = total_earned_value + earnedValue
 	end
 	total_earned_value = total_earned_value - starting_rep[UnitRace("player")]
 	if total_earned_value > 30000 then
-	  no_hit_achievement.description = no_hit_achievement.description .. "\n|c0000FF00Progress: Complete!|r"
+		no_hit_achievement.description = no_hit_achievement.description .. "\n|c0000FF00Progress: Complete!|r"
 	else
-	  no_hit_achievement.description = no_hit_achievement.description .. "\n|c00FFFF00Progress: " .. total_earned_value .. "/30,000|r"
+		no_hit_achievement.description = no_hit_achievement.description
+			.. "\n|c00FFFF00Progress: "
+			.. total_earned_value
+			.. "/30,000|r"
 	end
 end
 

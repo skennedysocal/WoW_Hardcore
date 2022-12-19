@@ -157,8 +157,7 @@ function ShowFirstMenu(_hardcore_character, _hardcore_settings, _failure_functio
 
 		if achievement.warnings ~= nil then
 			for _, _warning_msg in ipairs(achievement.warnings) do
-				description_text = description_text
-					.. "\n |c00FFFF00 " .. _warning_msg .. "|r"
+				description_text = description_text .. "\n |c00FFFF00 " .. _warning_msg .. "|r"
 			end
 		end
 

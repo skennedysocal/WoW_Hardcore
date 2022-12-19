@@ -960,6 +960,11 @@ local function DrawLevelsTab(container, _hardcore_settings)
 	end)
 end
 
+local function GetSpacelessRealmName()
+	local name = GetRealmName()
+	return string.gsub( name, "%s+", "" )
+end
+
 local function DrawAccountabilityTab(container)
 	local function updateLabelData(_label_tbls, player_name_short)
 		if other_hardcore_character_cache[player_name_short] ~= nil then
@@ -999,7 +1004,7 @@ local function DrawAccountabilityTab(container)
 			)
 		end
 
-		local player_name_long = player_name_short .. "-" .. GetRealmName()
+		local player_name_long = player_name_short .. "-" .. GetSpacelessRealmName()
 		if hardcore_modern_menu_state.guild_online[player_name_long] ~= nil then
 			local version_text
 			if
@@ -1028,7 +1033,7 @@ local function DrawAccountabilityTab(container)
 		end
 	end
 	local function addEntry(_scroll_frame, player_name_short, _self_name)
-		local _player_name = player_name_short .. "-" .. GetRealmName()
+		--local _player_name = player_name_short .. "-" .. GetSpacelessRealmName()
 		local entry = AceGUI:Create("SimpleGroup")
 		entry:SetLayout("Flow")
 		entry:SetFullWidth(true)
@@ -1077,7 +1082,7 @@ local function DrawAccountabilityTab(container)
 		entry:AddChild(hc_tag_label)
 		hardcore_modern_menu_state.entry_tbl[player_name_short]["hc_tag_label"] = hc_tag_label
 
-		updateLabelData(hardcore_modern_menu_state.entry_tbl[player_name_short], player_name_short, _player_name)
+		updateLabelData(hardcore_modern_menu_state.entry_tbl[player_name_short], player_name_short ) -- , _player_name)
 	end
 
 	local scroll_container = AceGUI:Create("SimpleGroup")

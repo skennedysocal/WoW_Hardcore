@@ -12,6 +12,16 @@ no_hit_achievement.class = "All"
 no_hit_achievement.alert_on_fail = 1
 
 local faction_indices = {2, 3, 4, 5}
+local starting_rep = {
+  ["Gnome"] = 13300,
+  ["Human"] = 13300,
+  ["Night Elf"] = 13300,
+  ["Dwarf"] = 13300,
+  ["Undead"] = 5500,
+  ["Tauren"] = 10700,
+  ["Orc"] = 10700,
+  ["Troll"] = 10700,
+}
 
 -- Registers
 function no_hit_achievement:Register(fail_function_executor)
@@ -23,6 +33,7 @@ function no_hit_achievement:Register(fail_function_executor)
 	    canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild = GetFactionInfo(idx)
 	  total_earned_value = total_earned_value + earnedValue
 	end
+	total_earned_value = total_earned_value - starting_rep[UnitRace("player")]
 	if total_earned_value > 30000 then
 	  no_hit_achievement.description = no_hit_achievement.description .. "\n|c0000FF00Progress: Complete!|r"
 	else

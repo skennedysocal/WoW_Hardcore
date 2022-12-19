@@ -553,7 +553,7 @@ local function DrawRulesTab(container)
 	local general_rules_description = AceGUI:Create("Label")
 	general_rules_description:SetWidth(600)
 	general_rules_description:SetText(
-		"\nYou must not leave the same zone as each other, unless you are a Druid going to Moonglade to complete essential class quests.\nYou must choose a combo that spawns in the same starting location.\nIf one of you dies, the other must fall on the sword and the run is over.\nYou can trade your duo partner found or crafted items, including gold.\nMultiboxing goes against the spirit of the Hardcore Challenge and is not allowed.\n\n\n\n"
+		"\nYou must not leave the same zone as each other, unless you are a Druid going to Moonglade to complete essential class quests.\nYou must choose a combo that spawns in the same starting location.\nIf one of you dies, the other must fall on the sword and the run is over.\nYou can trade your duo partner found or crafted items, including gold.\nMultiboxing goes against the spirit of the Hardcore Challenge and is not allowed.\nIf playing in a duo or trio, have all members reload ui at level 1 and click the 'Party' tab to setup your run.\n\n\n\n"
 	)
 	general_rules_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
 	scroll_frame:AddChild(general_rules_description)

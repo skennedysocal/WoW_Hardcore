@@ -566,14 +566,14 @@ local function DrawVerifyTab(container, _hardcore_character)
 		local _, class, _, race, _, name = GetPlayerInfoByGUID(UnitGUID("player"))
 		local realm = GetRealmName()
 		local level = UnitLevel("player")
-	
+
 		local tradePartners = Hardcore_join(_hardcore_character.trade_partners, ",")
 		local converted_successfully = "FALSE"
 		if _hardcore_character.converted_successfully then
 			converted_successfully = "TRUE"
 		end
 		local game_version_checker = _hardcore_character.game_version or { _G["HardcoreBuildLabel"] }
-	
+
 		local baseVerificationData = {
 			version,
 			_hardcore_character.guid,
@@ -592,7 +592,8 @@ local function DrawVerifyTab(container, _hardcore_character)
 		}
 		local baseVerificationString =
 			Hardcore_join(Hardcore_map(baseVerificationData, Hardcore_stringOrNumberToUnicode), ATTRIBUTE_SEPARATOR)
-		local bubbleHearthIncidentsVerificationString = Hardcore_tableToUnicode(_hardcore_character.bubble_hearth_incidents)
+		local bubbleHearthIncidentsVerificationString =
+			Hardcore_tableToUnicode(_hardcore_character.bubble_hearth_incidents)
 		local playedtimeGapsVerificationString = Hardcore_tableToUnicode(_hardcore_character.played_time_gap_warnings)
 		return Hardcore_join({
 			baseVerificationString,
@@ -635,8 +636,11 @@ local function DrawVerifyTab(container, _hardcore_character)
 
 	local copy_tip_label = AceGUI:Create("Label")
 	local statusString1, statusString2 = Hardcore:GenerateVerificationStatusStrings()
-	local text = "\n\n\n\n\n\n\n\n\n\n\n\n\nSelect All (Ctrl-A), Copy (Ctrl-C), and Paste (Ctrl-V)" ..
-				"\n\n\n" .. statusString1 .. "\n" .. statusString2
+	local text = "\n\n\n\n\n\n\n\n\n\n\n\n\nSelect All (Ctrl-A), Copy (Ctrl-C), and Paste (Ctrl-V)"
+		.. "\n\n\n"
+		.. statusString1
+		.. "\n"
+		.. statusString2
 	copy_tip_label:SetText(text)
 	copy_tip_label:SetWidth(700)
 	copy_tip_label:SetFontObject(GameFontHighlightSmall)
@@ -962,7 +966,7 @@ end
 
 local function GetSpacelessRealmName()
 	local name = GetRealmName()
-	return string.gsub( name, "%s+", "" )
+	return string.gsub(name, "%s+", "")
 end
 
 local function DrawAccountabilityTab(container)
@@ -1082,7 +1086,7 @@ local function DrawAccountabilityTab(container)
 		entry:AddChild(hc_tag_label)
 		hardcore_modern_menu_state.entry_tbl[player_name_short]["hc_tag_label"] = hc_tag_label
 
-		updateLabelData(hardcore_modern_menu_state.entry_tbl[player_name_short], player_name_short ) -- , _player_name)
+		updateLabelData(hardcore_modern_menu_state.entry_tbl[player_name_short], player_name_short) -- , _player_name)
 	end
 
 	local scroll_container = AceGUI:Create("SimpleGroup")
@@ -1419,8 +1423,8 @@ function ShowMainMenu(_hardcore_character, _hardcore_settings, dk_button_functio
 		hardcore_modern_menu_state.entry_tbl = {}
 		AceGUI:Release(widget)
 	end)
-       _G["HardcoreModernMenu"] = hardcore_modern_menu.frame -- Close on <ESC>
-        tinsert(UISpecialFrames, "HardcoreModernMenu")
+	_G["HardcoreModernMenu"] = hardcore_modern_menu.frame -- Close on <ESC>
+	tinsert(UISpecialFrames, "HardcoreModernMenu")
 
 	hardcore_modern_menu:SetTitle("Classic Hardcore")
 	hardcore_modern_menu:SetStatusText("")

@@ -8,7 +8,7 @@ hammertime_achievement.title = "Hammertime"
 hammertime_achievement.class = "Paladin"
 hammertime_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_hammertime.blp"
 hammertime_achievement.description =
-"Complete the Hardcore challenge without at any point equpping a melee weapon other than a two-handed mace. Fishing Pole is acceptable"
+	"Complete the Hardcore challenge without at any point equpping a melee weapon other than a two-handed mace. Fishing Pole is acceptable"
 
 -- Registers
 function hammertime_achievement:Register(fail_function_executor)
@@ -34,7 +34,7 @@ hammertime_achievement:SetScript("OnEvent", function(self, event, ...)
 			-- If it passes those checks the player fails.
 			if item_type == "Weapon" then
 				if item_subtype == "Fishing Poles" or item_subtype == "Fishing Pole" then
-				  return
+					return
 				else
 					if item_subtype ~= "Two-Handed Maces" then
 						Hardcore:Print("Equiped " .. item_name .. ".")

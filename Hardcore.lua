@@ -133,9 +133,9 @@ local COMM_COMMANDS = {
 	"APPLY_PCT", -- request a party change
 	"SEND_ACHIEVEMENT_APPEAL", -- send appeal for achievement
 	"XGUILD_DEAD_RELAY", -- Send death message a player in another guild to relay
-	"XGUILD_DEAD", -- Send death message to other guild 
+	"XGUILD_DEAD", -- Send death message to other guild
 	"XGUILD_CHAT_RELAY", -- Send chat message a player in another guild to relay
-	"XGUILD_CHAT", -- Send chat message to other guild 
+	"XGUILD_CHAT", -- Send chat message to other guild
 }
 local COMM_SPAM_THRESHOLD = { -- msgs received within durations (s) are flagged as spam
 	PULSE = 3,
@@ -281,34 +281,44 @@ Hardcore.ALERT_STYLES = ALERT_STYLES
 Hardcore_Frame:ApplyBackdrop()
 
 local function startXGuildChatMsgRelay(msg)
-  local commMessage = COMM_COMMANDS[12] .. COMM_COMMAND_DELIM .. msg
-  for _, v in pairs(hardcore_guild_member_dict) do
-      CTL:SendAddonMessage("ALERT", COMM_NAME, commMessage, "WHISPER", v)
-  end
+	local commMessage = COMM_COMMANDS[12] .. COMM_COMMAND_DELIM .. msg
+	for _, v in pairs(hardcore_guild_member_dict) do
+		CTL:SendAddonMessage("ALERT", COMM_NAME, commMessage, "WHISPER", v)
+	end
 end
 
 local function startXGuildDeathMsgRelay()
-  local zone, mapID
-  if IsInInstance() then
-    zone = GetInstanceInfo()
-  else
-    mapID = C_Map.GetBestMapForUnit("player")
-    zone = C_Map.GetMapInfo(mapID).name
-  end
+	local zone, mapID
+	if IsInInstance() then
+		zone = GetInstanceInfo()
+	else
+		mapID = C_Map.GetBestMapForUnit("player")
+		zone = C_Map.GetMapInfo(mapID).name
+	end
 
-  if Last_Attack_Source == nil then
-	  Last_Attack_Source = "unknown"
-  end
-  local class = UnitClass("player")
+	if Last_Attack_Source == nil then
+		Last_Attack_Source = "unknown"
+	end
+	local class = UnitClass("player")
 
-  -- player name, level, zone, attack_source, class
-  local commMessage = COMM_COMMANDS[10] .. COMM_COMMAND_DELIM .. UnitName("player") .. "^" .. UnitLevel("player") .. "^" .. zone   .. "^" .. Last_Attack_Source .. "^" .. class .. "^"
+	-- player name, level, zone, attack_source, class
+	local commMessage = COMM_COMMANDS[10]
+		.. COMM_COMMAND_DELIM
+		.. UnitName("player")
+		.. "^"
+		.. UnitLevel("player")
+		.. "^"
+		.. zone
+		.. "^"
+		.. Last_Attack_Source
+		.. "^"
+		.. class
+		.. "^"
 
-  for _, v in pairs(hardcore_guild_member_dict) do
-      CTL:SendAddonMessage("ALERT", COMM_NAME, commMessage, "WHISPER", v)
-  end
+	for _, v in pairs(hardcore_guild_member_dict) do
+		CTL:SendAddonMessage("ALERT", COMM_NAME, commMessage, "WHISPER", v)
+	end
 end
-
 
 function FailureFunction(achievement_name)
 	for i, v in ipairs(Hardcore_Character.achievements) do
@@ -318,18 +328,18 @@ function FailureFunction(achievement_name)
 			Hardcore:Print("Failed " .. _G.achievements[achievement_name].title)
 			PlaySoundFile("Interface\\Addons\\Hardcore\\Media\\achievement_failure.ogg")
 			if _G.achievements[achievement_name].alert_on_fail ~= nil then
-			  local level = UnitLevel("player")
-			  local mapID
-			  local deathData = string.format("%s%s%s", level, COMM_FIELD_DELIM, mapID and mapID or "")
-			  local commMessage = COMM_COMMANDS[3] .. COMM_COMMAND_DELIM .. deathData
+				local level = UnitLevel("player")
+				local mapID
+				local deathData = string.format("%s%s%s", level, COMM_FIELD_DELIM, mapID and mapID or "")
+				local commMessage = COMM_COMMANDS[3] .. COMM_COMMAND_DELIM .. deathData
 
-			  local messageString = UnitName("player") .. " has failed ".. _G.achievements[achievement_name].title 
-			  SendChatMessage(messageString, "GUILD")
-			  startXGuildChatMsgRelay(messageString)
-			  startXGuildDeathMsgRelay()
-			  if CTL then
-				  CTL:SendAddonMessage("ALERT", COMM_NAME, commMessage, "GUILD")
-			  end
+				local messageString = UnitName("player") .. " has failed " .. _G.achievements[achievement_name].title
+				SendChatMessage(messageString, "GUILD")
+				startXGuildChatMsgRelay(messageString)
+				startXGuildDeathMsgRelay()
+				if CTL then
+					CTL:SendAddonMessage("ALERT", COMM_NAME, commMessage, "GUILD")
+				end
 			end
 		end
 	end
@@ -1482,14 +1492,16 @@ function Hardcore:DisplayPlaytimeWarning(level)
 	end
 end
 
-  -- player name, level, zone, attack_source, class
+-- player name, level, zone, attack_source, class
 local function receiveXGuildChat(data, sender, command)
-      Hardcore:FakeGuildMsg(data)
+	Hardcore:FakeGuildMsg(data)
 end
 
-  -- player name, level, zone, attack_source, class
+-- player name, level, zone, attack_source, class
 local function receiveDeathMsg(data, sender, command)
-	if Hardcore_Settings.ignore_xguild_alerts ~= nil and Hardcore_Settings.ignore_xguild_alerts == true then return end
+	if Hardcore_Settings.ignore_xguild_alerts ~= nil and Hardcore_Settings.ignore_xguild_alerts == true then
+		return
+	end
 	if Hardcore_Settings.notify then
 		local other_player_name = ""
 		local level = 0
@@ -1499,7 +1511,7 @@ local function receiveDeathMsg(data, sender, command)
 		if data then
 			other_player_name, level, zone, attack_source, class = string.split("^", data)
 		else
-		  return -- Failed to parse
+			return -- Failed to parse
 		end
 		local alert_msg = other_player_name .. " the " .. class .. " has died at level " .. level .. " in " .. zone
 
@@ -1531,7 +1543,7 @@ function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
 			CTL:SendAddonMessage("ALERT", COMM_NAME, commMessage, "GUILD")
 			return
 		end
-		if command == COMM_COMMANDS[13] then -- Send guild chat from another guild to this guild 
+		if command == COMM_COMMANDS[13] then -- Send guild chat from another guild to this guild
 			receiveXGuildChat(data, sender, command)
 			return
 		end
@@ -1726,7 +1738,7 @@ function Hardcore:Print(msg)
 end
 
 function Hardcore:FakeGuildMsg(msg)
-	print("|cff00FF00"..msg.."|r ")
+	print("|cff00FF00" .. msg .. "|r ")
 end
 
 function Hardcore:Debug(msg)
@@ -2386,64 +2398,70 @@ end
 function Hardcore:GenerateVerificationStatusStrings()
 	local statusString = ""
 	local numDeaths = #Hardcore_Character.deaths
-	local perc = string.format( "tracked_time=%.1f%%", Hardcore_Character.tracked_played_percentage )
+	local perc = string.format("tracked_time=%.1f%%", Hardcore_Character.tracked_played_percentage)
 	local numGaps = #Hardcore_Character.played_time_gap_warnings
 	local numTrades = #Hardcore_Character.trade_partners
-	local numBubs= #Hardcore_Character.bubble_hearth_incidents
+	local numBubs = #Hardcore_Character.bubble_hearth_incidents
 	local verdict = ""
 	local COLOR_WHITE = "|c00ffffff"
 	local reds = {}
 	local yellows = {}
 	local greens = {}
-	
+
 	-- Determine the end verdict
-	if (numTrades <= 0 and numDeaths <= 0 and numBubs <= 0 and numGaps <= 0 and Hardcore_Character.tracked_played_percentage >= 95) or UnitLevel("player") < 20 then
+	if
+		(
+			numTrades <= 0
+			and numDeaths <= 0
+			and numBubs <= 0
+			and numGaps <= 0
+			and Hardcore_Character.tracked_played_percentage >= 95
+		) or UnitLevel("player") < 20
+	then
 		verdict = COLOR_GREEN .. "PASS"
 	else
 		verdict = COLOR_YELLOW .. "FAIL (NEEDS A MOD)"
 	end
 	verdict = COLOR_WHITE .. "Verification status: " .. verdict
 
-	
 	-- Group the green, orange and red because for some weird reason we can't switch colours too often in one line
 
 	if Hardcore_Character.tracked_played_percentage >= 95 then
-		table.insert( greens, perc )
+		table.insert(greens, perc)
 	elseif Hardcore_Character.tracked_played_percentage >= 90 then
-		table.insert( yellows, perc )
+		table.insert(yellows, perc)
 	else
-		table.insert( reds, perc )
+		table.insert(reds, perc)
 	end
 
 	if numDeaths > 0 then
-		table.insert( reds, "deaths=" .. numDeaths )
+		table.insert(reds, "deaths=" .. numDeaths)
 	end
 
 	if numGaps > 0 then
-		table.insert( reds, "time_gaps=" .. numGaps )
+		table.insert(reds, "time_gaps=" .. numGaps)
 	end
 
 	if numTrades > 0 then
-		table.insert( reds, "trades=" .. numTrades )
+		table.insert(reds, "trades=" .. numTrades)
 	end
 
 	if numBubs > 0 then
-		table.insert( reds, "bub_hearth=" .. numBubs )
+		table.insert(reds, "bub_hearth=" .. numBubs)
 	end
 
 	if #reds > 0 then
-		statusString = statusString .. COLOR_RED .. table.concat( reds, " " ) .. " "
+		statusString = statusString .. COLOR_RED .. table.concat(reds, " ") .. " "
 	end
 	if #yellows > 0 then
-		statusString = statusString .. COLOR_YELLOW .. table.concat( yellows, " " ) .. " "
+		statusString = statusString .. COLOR_YELLOW .. table.concat(yellows, " ") .. " "
 	end
 	if #greens > 0 then
-		statusString = statusString .. COLOR_GREEN .. table.concat( greens, " " )
+		statusString = statusString .. COLOR_GREEN .. table.concat(greens, " ")
 	end
 
 	return verdict, statusString
 end
-
 
 local ATTRIBUTE_SEPARATOR = "_"
 function Hardcore:GenerateVerificationString()

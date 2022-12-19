@@ -2131,6 +2131,8 @@ function Hardcore_Frame_OnShow()
 		table.insert(f, "")
 		table.insert(f, "Multiboxing goes against the spirit of the Hardcore Challenge and is not allowed")
 		table.insert(f, "")
+		table.insert(f, "If playing in a duo or trio, have all members reload ui at level 1")
+		table.insert(f, "and click the 'Party' tab to setup your run.")
 		displaylist = f
 	elseif display == "DeathKnight" then
 		Hardcore_Name_Sort:Hide()

@@ -10,6 +10,10 @@ arcanist_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_arcan
 arcanist_achievement.description =
 	"Complete the Hardcore challenge using only abilities within the “Arcane” (and “General”) tab of your spellbook. No spells outside of those listed under “Arcane” or “General” are allowed. You are allowed to put points into all talent trees, but active abilities thus unlocked that are not in the “Arcane” tab of your spellbook are not allowed to be used."
 
+local whitelist = {
+  ['133'] = 1,
+}
+
 -- Registers
 function arcanist_achievement:Register(fail_function_executor)
 	arcanist_achievement:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
@@ -47,6 +51,7 @@ arcanist_achievement:SetScript("OnEvent", function(self, event, ...)
 			return
 		end
 		local spell_name = GetSpellInfo(spell_id)
+		if whitelist[spell_id] then return end
 		for i, blacklist_spell in ipairs(arcanist_achievement.blacklist) do
 			if spell_name == blacklist_spell then
 				arcanist_achievement.fail_function_executor.Fail(arcanist_achievement.name)

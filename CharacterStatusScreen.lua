@@ -293,6 +293,7 @@ function UpdateCharacterHC(
 				achievement_icon:SetImageSize(ICON_SIZE, ICON_SIZE)
 				achievement_icon.image:SetVertexColor(1, 1, 1)
 				achievement_icon:SetCallback("OnEnter", function(widget)
+					if UnitName("player") == _player_name and _G.achievements[v].UpdateDescription then _G.achievements[v]:UpdateDescription() end
 					GameTooltip:SetOwner(WorldFrame, "ANCHOR_CURSOR")
 					GameTooltip:AddLine(_G.achievements[v].title)
 					GameTooltip:AddLine(_G.achievements[v].description, 1, 1, 1, true)

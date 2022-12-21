@@ -1455,6 +1455,16 @@ function Hardcore:RequestTimePlayed()
 end
 
 function Hardcore:ShouldShowPlaytimeWarning(level, percentage)
+
+	-- The table of percentages is relevant for SoM/Era (max level 60), but in Wrath there are 80
+	-- levels, so much more time to make up for missing tracked time. So we scale down the level 
+	-- if not SoM or Era (forward compatibility).
+	if (Hardcore_Character.game_version ~= "") and
+	   (Hardcore_Character.game_version ~= "Era") and
+	   (Hardcore_Character.game_version ~= "SoM") then
+		level = (level * 60) / 80
+	end		
+
 	if level <= 5 then
 		return false
 	elseif level <= 15 then
@@ -2399,7 +2409,6 @@ function Hardcore:GenerateVerificationStatusStrings()
 	local statusString = ""
 	local numDeaths = #Hardcore_Character.deaths
 	local perc = string.format("tracked_time=%.1f%%", Hardcore_Character.tracked_played_percentage)
-	local numGaps = #Hardcore_Character.played_time_gap_warnings
 	local numTrades = #Hardcore_Character.trade_partners
 	local numBubs = #Hardcore_Character.bubble_hearth_incidents
 	local verdict = ""
@@ -2408,19 +2417,17 @@ function Hardcore:GenerateVerificationStatusStrings()
 	local yellows = {}
 	local greens = {}
 
-	-- Determine the end verdict
-	if
-		(
-			numTrades <= 0
-			and numDeaths <= 0
-			and numBubs <= 0
-			and numGaps <= 0
-			and Hardcore_Character.tracked_played_percentage >= 95
-		) or UnitLevel("player") < 20
-	then
-		verdict = COLOR_GREEN .. "PASS"
-	else
+	-- Determine the end verdict. Any trades or deaths or bubs give a fail
+	if  numTrades > 0 
+		or numDeaths > 0 
+		or numBubs > 0 
+		or (
+				UnitLevel("player") >= 20 
+				and Hardcore:ShouldShowPlaytimeWarning(UnitLevel("player"), Hardcore_Character.tracked_played_percentage)
+		   ) then
 		verdict = COLOR_YELLOW .. "FAIL (NEEDS A MOD)"
+	else
+		verdict = COLOR_GREEN .. "PASS"
 	end
 	verdict = COLOR_WHITE .. "Verification status: " .. verdict
 
@@ -2436,10 +2443,6 @@ function Hardcore:GenerateVerificationStatusStrings()
 
 	if numDeaths > 0 then
 		table.insert(reds, "deaths=" .. numDeaths)
-	end
-
-	if numGaps > 0 then
-		table.insert(reds, "time_gaps=" .. numGaps)
 	end
 
 	if numTrades > 0 then

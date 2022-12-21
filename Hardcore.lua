@@ -358,8 +358,8 @@ local function djb2(str)
   return hash
 end
 
-local function GetCode()
-  local str = UnitName("player") .. UnitLevel("player")
+local function GetCode(ach_num)
+  local str = UnitName("player") .. UnitLevel("player") .. ach_num
   return djb2(str)
 end
 
@@ -508,7 +508,7 @@ local function SlashHandler(msg, editbox)
 			return
 		end
 
-		if tonumber(GetCode()) == tonumber(code) then
+		if tonumber(GetCode(ach_num)) == tonumber(code) then
 		  for i,v in ipairs(Hardcore_Character.achievements) do
 		    if v == _G.id_a[ach_num] then
 		      return
@@ -518,7 +518,7 @@ local function SlashHandler(msg, editbox)
 		  _G.achievements[_G.id_a[ach_num]]:Register(failure_function_executor, Hardcore_Character)
 		  Hardcore:Print("Appealed " .. _G.achievements[_G.id_a[ach_num]].name .. " challenge!")
 		else
-		  Hardcore:Print("Incorrect code. Double check with a moderator." .. GetCode() .. " " .. code)
+		  Hardcore:Print("Incorrect code. Double check with a moderator." .. GetCode(ach_num) .. " " .. code)
 		end
 
 	else

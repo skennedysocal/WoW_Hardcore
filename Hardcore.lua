@@ -350,6 +350,20 @@ local failure_function_executor = { Fail = FailureFunction }
 --[[ Command line handler ]]
 --
 
+local function djb2(str)
+  local hash = 5381
+  for i = 1, #str do
+    hash = hash * 33 + str:byte( i )
+  end
+  return hash
+end
+
+local function GetCode()
+  local str = UnitName("player") .. UnitLevel("player")
+  return djb2(str)
+end
+
+
 local function SlashHandler(msg, editbox)
 	local _, _, cmd, args = string.find(msg, "%s?(%w+)%s?(.*)")
 
@@ -470,6 +484,43 @@ local function SlashHandler(msg, editbox)
 			Hardcore:Print("Appealing " .. achievement_to_appeal .. " for " .. target)
 			CTL:SendAddonMessage("ALERT", COMM_NAME, commMessage, "WHISPER", target)
 		end
+	elseif cmd == "AppealAchievementCode" then
+		local code = nil
+		local ach_num = nil
+		for substring in args:gmatch("%S+") do
+		  if code == nil then
+			code = substring
+		  else
+			ach_num = substring
+		  end
+		end
+		if code == nil then
+			Hardcore:Print("Wrong syntax: Missing first argument")
+			return
+		end
+		if ach_num == nil or _G.ach then
+			Hardcore:Print("Wrong syntax: Missing second argument")
+			return
+		end
+
+		if _G.achievements[_G.id_a[ach_num]] == nil then
+			Hardcore:Print("Wrong syntax: achievement isn't found for " .. ach_num)
+			return
+		end
+
+		if tonumber(GetCode()) == tonumber(code) then
+		  for i,v in ipairs(Hardcore_Character.achievements) do
+		    if v == _G.id_a[ach_num] then
+		      return
+		    end
+		  end
+		  table.insert(Hardcore_Character.achievements, _G.achievements[_G.id_a[ach_num]].name)
+		  _G.achievements[_G.id_a[ach_num]]:Register(failure_function_executor, Hardcore_Character)
+		  Hardcore:Print("Appealed " .. _G.achievements[_G.id_a[ach_num]].name .. " challenge!")
+		else
+		  Hardcore:Print("Incorrect code. Double check with a moderator." .. GetCode() .. " " .. code)
+		end
+
 	else
 		-- If not handled above, display some sort of help message
 		Hardcore:Print("|cff00ff00Syntax:|r/hardcore [command] [options]")

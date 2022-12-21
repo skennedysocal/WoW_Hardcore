@@ -300,7 +300,7 @@ local function DrawGeneralTab(container)
 	local changelog_description = AceGUI:Create("Label")
 	changelog_description:SetWidth(600)
 	changelog_description:SetText(
-		"- Add Speedrunner back as an achievement! New formula for tracking time is being used.\n- Update descriptions for Stadic's challenge and speedrun when mousing over icon"
+		"- Add Speedrunner back as an achievement! New formula for tracking time is being used.\n- Update descriptions for Stadic's challenge and speedrun when mousing over icon\n- Made it more convenient to appeal achievements."
 	)
 	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
 	scroll_frame:AddChild(changelog_description)

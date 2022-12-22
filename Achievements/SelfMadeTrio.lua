@@ -4,8 +4,8 @@ _G.achievements.SelfMadeTrio = self_made_trio_achievement
 local player = UnitName("Player")
 
 -- General info
-self_made_trio_achievement.name = "SelfMadeTrio"
-self_made_trio_achievement.title = "Self-Made Trio"
+self_made_trio_achievement.name = "TrioMade"
+self_made_trio_achievement.title = "Trio-Made"
 self_made_trio_achievement.class = "All"
 self_made_trio_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_self_made.blp"
 self_made_trio_achievement.description =

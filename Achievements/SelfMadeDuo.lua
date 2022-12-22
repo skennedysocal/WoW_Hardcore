@@ -4,8 +4,8 @@ _G.achievements.SelfMadeDuo = self_made_duo_achievement
 local player = UnitName("Player")
 
 -- General info
-self_made_duo_achievement.name = "SelfMadeDuo"
-self_made_duo_achievement.title = "Self-Made Duo"
+self_made_duo_achievement.name = "DuoMade"
+self_made_duo_achievement.title = "Duo-Made"
 self_made_duo_achievement.class = "All"
 self_made_duo_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_self_made.blp"
 self_made_duo_achievement.description =

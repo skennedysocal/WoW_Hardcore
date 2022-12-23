@@ -75,6 +75,8 @@ Achievements/Unrestored.lua
 Achievements/WhiteKnight.lua
 Achievements/Vagrant.lua
 Achievements/VoidServant.lua
+Achievements/SelfMadeDuo.lua
+Achievements/SelfMadeTrio.lua
 #End achievement modules
 
 CharacterStatusScreen.lua

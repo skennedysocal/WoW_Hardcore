@@ -14,6 +14,13 @@ not_so_talented_achievement.description =
 function not_so_talented_achievement:Register(fail_function_executor)
 	not_so_talented_achievement:RegisterEvent("CHARACTER_POINTS_CHANGED")
 	not_so_talented_achievement.fail_function_executor = fail_function_executor
+
+	-- Talent frame might not exist before calling this function
+	ToggleTalentFrame()
+	_G["PlayerTalentFrame"]:SetScript("OnShow", function(self)
+		Hardcore:Print("Hiding talent frame for Not So Talented.")
+		ToggleTalentFrame()
+	end)
 end
 
 function not_so_talented_achievement:Unregister()

@@ -1,16 +1,16 @@
 local _G = _G
 local _achievement = CreateFrame("Frame")
-_G.passive_achievements.KingOfTheJungle = _achievement
+_G.passive_achievements.Kromgrul = _achievement
 
 -- General info
-_achievement.name = "KingOfTheJungle"
-_achievement.title = "King of the Jungle"
+_achievement.name = "Kromgrul"
+_achievement.title = "Krom'grul"
 _achievement.class = "All"
-_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_king_of_the_jungle.blp"
-_achievement.level_cap = 39
-_achievement.quest_num = 208
+_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_kromgrul.blp"
+_achievement.level_cap = 51
+_achievement.quest_num = 3822
 _achievement.description =
-	"Complete |cffffff00Big Game Hunter|r before reaching level " .. _achievement.level_cap
+	"Complete |cffffff00Krom'grul|r before reaching level " .. _achievement.level_cap .. "."
 _achievement.restricted_game_versions = {
 	["WotLK"] = 1,
 }

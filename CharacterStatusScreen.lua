@@ -306,6 +306,43 @@ function UpdateCharacterHC(
 			end
 		end
 	end
+
+	-- Below to be addded with passive achievements
+	-- local achievements_container = AceGUI:Create("SimpleGroup")
+	-- achievements_container:SetRelativeWidth(1.0)
+	-- achievements_container:SetHeight(50)
+	-- achievements_container:SetLayout("CenteredFlow")
+	-- frame_to_update:AddChild(achievements_container)
+
+	-- local achievements_title = AceGUI:Create("HardcoreClassTitleLabel")
+	-- achievements_title:SetRelativeWidth(1.0)
+	-- achievements_title:SetHeight(40)
+	-- achievements_title:SetText("Passive Achievements")
+	-- achievements_title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 16)
+	-- achievements_container:AddChild(achievements_title)
+	-- if _hardcore_character.passive_achievements ~= nil then
+	-- 	for i, v in ipairs(_hardcore_character.passive_achievements) do
+	-- 		if _G.passive_achievements[v] ~= nil then
+	-- 			local achievement_icon = AceGUI:Create("Icon")
+	-- 			achievement_icon:SetWidth(ICON_SIZE)
+	-- 			achievement_icon:SetHeight(ICON_SIZE)
+	-- 			achievement_icon:SetImage(_G.passive_achievements[v].icon_path)
+	-- 			achievement_icon:SetImageSize(ICON_SIZE, ICON_SIZE)
+	-- 			achievement_icon.image:SetVertexColor(1, 1, 1)
+	-- 			achievement_icon:SetCallback("OnEnter", function(widget)
+	-- 				if UnitName("player") == _player_name and _G.passive_achievements[v].UpdateDescription then _G.passive_achievements[v]:UpdateDescription() end
+	-- 				GameTooltip:SetOwner(WorldFrame, "ANCHOR_CURSOR")
+	-- 				GameTooltip:AddLine(_G.passive_achievements[v].title)
+	-- 				GameTooltip:AddLine(_G.passive_achievements[v].description, 1, 1, 1, true)
+	-- 				GameTooltip:Show()
+	-- 			end)
+	-- 			achievement_icon:SetCallback("OnLeave", function(widget)
+	-- 				GameTooltip:Hide()
+	-- 			end)
+	-- 			achievements_container:AddChild(achievement_icon)
+	-- 		end
+	-- 	end
+	-- end
 end
 
 function ShowCharacterHC(_hardcore_character)

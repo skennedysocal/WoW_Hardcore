@@ -1,16 +1,16 @@
 local _G = _G
 local _achievement = CreateFrame("Frame")
-_G.passive_achievements.KingOfTheJungle = _achievement
+_G.passive_achievements.MageSummoner = _achievement
 
 -- General info
-_achievement.name = "KingOfTheJungle"
-_achievement.title = "King of the Jungle"
+_achievement.name = "MageSummoner"
+_achievement.title = "Light of Elune"
 _achievement.class = "All"
-_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_king_of_the_jungle.blp"
-_achievement.level_cap = 39
-_achievement.quest_num = 208
+_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_light_of_elune.blp"
+_achievement.level_cap = 23
+_achievement.quest_num = 1017
 _achievement.description =
-	"Complete |cffffff00Big Game Hunter|r before reaching level " .. _achievement.level_cap
+	"Complete |cffffff00Light of Elune|r before reaching level " .. _achievement.level_cap .. "."
 _achievement.restricted_game_versions = {
 	["WotLK"] = 1,
 }

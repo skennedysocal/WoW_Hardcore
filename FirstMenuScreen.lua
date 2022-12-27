@@ -166,6 +166,91 @@ function ShowFirstMenu(_hardcore_character, _hardcore_settings, _failure_functio
 		btn_container_frame:AddChild(description)
 	end
 
+	-- function that draws the widgets for the second tab
+	local function DrawPassiveAchievementRow(achievement, _scroll_frame)
+		local btn_container = AceGUI:Create("SimpleGroup")
+		btn_container:SetWidth(800)
+		btn_container:SetHeight(60)
+		btn_container:SetLayout("Flow")
+		_scroll_frame:AddChild(btn_container)
+
+		btn_container_frame = AceGUI:Create("SimpleGroup")
+		btn_container_frame:SetLayout("Flow")
+
+		-- Create a button
+		local achievement_icon = AceGUI:Create("Icon")
+		achievement_icons[achievement.name] = achievement_icon
+		achievement_icon:SetWidth(60)
+		achievement_icon:SetHeight(60)
+		achievement_icon:SetImage(achievement.icon_path)
+		achievement_icon:SetImageSize(60, 60)
+		achievement_icon.image:SetVertexColor(0.2, 0.2, 0.2)
+		if _hardcore_character.achievements == nil then
+			_hardcore_character.achievements = {}
+		end
+		for i, v in ipairs(_hardcore_character.achievements) do
+			if v == achievement.name then
+				achievement_icon.image:SetVertexColor(1, 1, 1)
+			end
+		end
+		btn_container:AddChild(achievement_icon)
+
+		local buffer_frame = AceGUI:Create("SimpleGroup")
+		buffer_frame:SetWidth(30)
+		buffer_frame:SetHeight(30)
+		buffer_frame:SetLayout("Flow")
+		btn_container:AddChild(buffer_frame)
+
+		local btn_container_frame = AceGUI:Create("SimpleGroup")
+		btn_container_frame:SetLayout("Flow")
+		btn_container:AddChild(btn_container_frame)
+
+		local title = AceGUI:Create("Label")
+		title:SetWidth(550)
+		title:SetText(achievement.title)
+		title:SetPoint("TOP", 2, 5)
+		title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 20)
+		btn_container_frame:AddChild(title)
+
+		local description = AceGUI:Create("InteractiveLabel")
+		description:SetWidth(520)
+		description:SetFont("", 16)
+		local description_text = achievement.description
+		if achievement.forces ~= nil then
+			description_text = description_text .. "\n |c00FFFF00Selecting " .. achievement.title .. " forces "
+			for i = 1, #achievement.forces do
+				if i == #achievement.forces and #achievement.forces > 1 then
+					description_text = description_text .. "and "
+				end
+				description_text = description_text .. _G.achievements[achievement.forces[i]].title
+				if i ~= #achievement.forces then
+					description_text = description_text .. ", "
+				end
+			end
+			description_text = description_text .. ".|r"
+		end
+
+		if
+			achievement.restricted_game_versions ~= nil
+			and achievement.restricted_game_versions[_G["HardcoreBuildLabel"]] ~= nil
+		then
+			description_text = description_text
+				.. "\n |c00FF0000This achievement is not available for "
+				.. _G["HardcoreBuildLabel"]
+				.. ".|r"
+		end
+
+		if achievement.warnings ~= nil then
+			for _, _warning_msg in ipairs(achievement.warnings) do
+				description_text = description_text .. "\n |c00FFFF00 " .. _warning_msg .. "|r"
+			end
+		end
+
+		description:SetText(description_text)
+		description:SetPoint("BOTTOM", 200, 5)
+		btn_container_frame:AddChild(description)
+	end
+
 	local function DrawGeneralTab(container)
 		local scroll_container = AceGUI:Create("SimpleGroup")
 		scroll_container:SetFullWidth(true)
@@ -216,6 +301,9 @@ function ShowFirstMenu(_hardcore_character, _hardcore_settings, _failure_functio
 			["Rogue"] = "FFF468",
 			["Death Knight"] = "C41E3A",
 			["General"] = "FFFFFF",
+			["General Passive"] = "FFFFFF",
+			["Horde Only"] = "8C1616",
+			["Alliance Only"] = "004A93",
 		}
 		title:SetText("|c00" .. CLASS_COLOR_BY_NAME[_title] .. _title .. "|r Achievements")
 		title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 20)
@@ -347,11 +435,141 @@ function ShowFirstMenu(_hardcore_character, _hardcore_settings, _failure_functio
 		_scroll_frame:AddChild(bottom_buffer)
 	end
 
+local function DrawPassiveAchievementsTab2(container, scroll_container)
+	local function DrawClassContainer(class_container, low, top, size)
+		local c = 0
+		for idx, id in pairs(_G.passive_achievements_order) do
+			local v = _G.passive_achievements[id]
+			if v.level_cap >= low and v.level_cap <= top then
+				c = c + 1
+				local achievement_icon = AceGUI:Create("Icon")
+				achievement_icon:SetWidth(size)
+				achievement_icon:SetHeight(size)
+				achievement_icon:SetImage(v.icon_path)
+				achievement_icon:SetImageSize(size, size)
+				achievement_icon.image:SetVertexColor(1, 1, 1)
+				achievement_icon:SetCallback("OnEnter", function(widget)
+					GameTooltip:SetOwner(WorldFrame, "ANCHOR_CURSOR")
+					GameTooltip:AddLine(v.title)
+					GameTooltip:AddLine(v.description, 1, 1, 1, true)
+					GameTooltip:Show()
+				end)
+				achievement_icon:SetCallback("OnLeave", function(widget)
+					GameTooltip:Hide()
+				end)
+				class_container:AddChild(achievement_icon)
+			end
+		end
+
+		local achievement_icon = AceGUI:Create("Icon")
+		achievement_icon:SetWidth(1)
+		achievement_icon:SetHeight(10)
+		class_container:AddChild(achievement_icon)
+	end
+
+	local function addEntry(_scroll_frame, _player_name, _self_name) end
+
+	local achievements_container = AceGUI:Create("SimpleGroup")
+	achievements_container:SetRelativeWidth(1.0)
+	achievements_container:SetHeight(50)
+	achievements_container:SetLayout("CenteredFlow")
+	scroll_container:AddChild(achievements_container)
+
+	local achievements_container_second_row = AceGUI:Create("SimpleGroup")
+	achievements_container_second_row:SetRelativeWidth(1.0)
+	achievements_container_second_row:SetHeight(50)
+	achievements_container_second_row:SetLayout("CenteredFlow")
+	scroll_container:AddChild(achievements_container_second_row)
+
+	local achievements_title = AceGUI:Create("HardcoreClassTitleLabel")
+	achievements_title:SetRelativeWidth(1.0)
+	achievements_title:SetHeight(40)
+	achievements_title:SetText("Questing Achievements")
+	achievements_title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 20)
+	achievements_container:AddChild(achievements_title)
+
+	local achievements_title = AceGUI:Create("Label")
+	achievements_title:SetRelativeWidth(1.0)
+	achievements_title:SetHeight(40)
+	achievements_title:SetText("Lvl 1-15")
+	achievements_title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 16)
+	achievements_container:AddChild(achievements_title)
+	DrawClassContainer(achievements_container, 1, 15, 50)
+
+	local achievements_title = AceGUI:Create("Label")
+	achievements_title:SetRelativeWidth(1.0)
+	achievements_title:SetHeight(40)
+	achievements_title:SetText("Lvl 16-30")
+	achievements_title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 16)
+	achievements_container:AddChild(achievements_title)
+	DrawClassContainer(achievements_container, 16, 30, 50)
+
+	local achievements_title = AceGUI:Create("Label")
+	achievements_title:SetRelativeWidth(1.0)
+	achievements_title:SetHeight(40)
+	achievements_title:SetText("Lvl 31-40")
+	achievements_title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 16)
+	achievements_container:AddChild(achievements_title)
+	DrawClassContainer(achievements_container, 31, 40, 50)
+
+	local achievements_title = AceGUI:Create("Label")
+	achievements_title:SetRelativeWidth(1.0)
+	achievements_title:SetHeight(40)
+	achievements_title:SetText("Lvl 41-50")
+	achievements_title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 16)
+	achievements_container:AddChild(achievements_title)
+	DrawClassContainer(achievements_container, 41, 50, 50)
+
+	local achievements_title = AceGUI:Create("Label")
+	achievements_title:SetRelativeWidth(1.0)
+	achievements_title:SetHeight(40)
+	achievements_title:SetText("Lvl 51-60")
+	achievements_title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 16)
+	achievements_container:AddChild(achievements_title)
+	DrawClassContainer(achievements_container, 51, 60, 50)
+
+	local achievements_container = AceGUI:Create("SimpleGroup")
+	achievements_container:SetRelativeWidth(1.0)
+	achievements_container:SetHeight(200)
+	achievements_container:SetLayout("CenteredFlow")
+	scroll_container:AddChild(achievements_container)
+end
+
+	local function DrawPassiveAchievementsTab(container, _scroll_frame)
+		DrawClassTitleRow(_scroll_frame, "General Passive")
+		for k, achievement_name in pairs(_G.passive_achievements_order) do
+			local achievement = _G.passive_achievements[achievement_name]
+			if achievement ~= nil then
+				if achievement.class == "All" then
+					DrawPassiveAchievementRow(achievement, _scroll_frame)
+				end
+			end
+		end
+
+		local class_list = { "Alliance Only", "Horde Only" }
+
+		for i, class in ipairs(class_list) do
+			DrawClassTitleRow(_scroll_frame, class)
+			for k, achievement in pairs(_G.achievements) do
+				if achievement.class == class then
+					DrawAchievementRow(achievement, _scroll_frame)
+				end
+			end
+		end
+
+		local bottom_buffer = AceGUI:Create("SimpleGroup")
+		bottom_buffer:SetWidth(1)
+		bottom_buffer:SetHeight(5)
+		bottom_buffer:SetLayout("Flow")
+		_scroll_frame:AddChild(bottom_buffer)
+	end
+
 	tabcontainer = AceGUI:Create("TabGroup") -- "InlineGroup" is also good
 	tabcontainer:SetTabs({
 		{ value = "WelcomeTab", text = "General" },
 		{ value = "PartyTab", text = "Party" },
-		{ value = "AchievementsTab", text = "Achievements" },
+		{ value = "AchievementsTab", text = "Active Achievements" },
+		-- { value = "PassiveAchievementsTab", text = "Passive Achievements" },
 	}) -- ,
 	tabcontainer:SetFullWidth(true)
 	tabcontainer:SetFullHeight(true) -- probably?
@@ -386,6 +604,18 @@ function ShowFirstMenu(_hardcore_character, _hardcore_settings, _failure_functio
 			scroll_container:AddChild(scroll_frame)
 
 			DrawAchievementsTab(container, scroll_frame)
+		elseif group == "PassiveAchievementsTab" then
+			local scroll_container = AceGUI:Create("SimpleGroup")
+			scroll_container:SetFullWidth(true)
+			scroll_container:SetFullHeight(true)
+			scroll_container:SetLayout("Fill")
+			tabcontainer:AddChild(scroll_container)
+
+			local scroll_frame = AceGUI:Create("ScrollFrame")
+			scroll_frame:SetLayout("Flow")
+			scroll_container:AddChild(scroll_frame)
+
+			DrawPassiveAchievementsTab2(container, scroll_frame)
 		end
 	end
 

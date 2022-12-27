@@ -19,6 +19,8 @@ along with the Hardcore AddOn. If not, see <http://www.gnu.org/licenses/>.
 
 --[[ Const variables ]]
 --
+StaticPopupDialogs["CHAT_CHANNEL_PASSWORD"] = nil
+--CHAT_WRONG_PASSWORD_NOTICE = nil
 local GRIEF_WARNING_OFF = 0
 local GRIEF_WARNING_SAME_FACTION = 1
 local GRIEF_WARNING_ENEMY_FACTION = 2
@@ -71,6 +73,7 @@ Hardcore_Character = {
 	trade_partners = {},
 	grief_warning_conditions = GRIEF_WARNING_BOTH_FACTIONS,
 	achievements = {},
+	passive_achievements = {},
 	party_mode = "Solo",
 	team = {},
 	first_recorded = -1,
@@ -83,6 +86,7 @@ Hardcore_Character = {
 
 --[[ Local variables ]]
 --
+local last_received_xguild_chat = ""
 local debug = false
 local expecting_achievement_appeal = false
 local loaded_inspect_frame = false
@@ -347,6 +351,14 @@ end
 
 local failure_function_executor = { Fail = FailureFunction }
 
+function SuccessFunction(achievement_name)
+	table.insert(Hardcore_Character.passive_achievements, achievement_name)
+	Hardcore:Print("Achieved " .. _G.passive_achievements[achievement_name].title)
+end
+
+local success_function_executor = { Succeed = SuccessFunction }
+
+
 --[[ Command line handler ]]
 --
 
@@ -359,7 +371,7 @@ local function djb2(str)
 end
 
 local function GetCode(ach_num)
-  local str = UnitName("player") .. UnitLevel("player") .. ach_num
+  local str = UnitName("player"):sub(1,5) .. UnitLevel("player") .. ach_num
   return djb2(str)
 end
 
@@ -520,6 +532,41 @@ local function SlashHandler(msg, editbox)
 		else
 		  Hardcore:Print("Incorrect code. Double check with a moderator." .. GetCode(ach_num) .. " " .. code)
 		end
+	elseif cmd == "AppealPassiveAchievementCode" then
+		local code = nil
+		local ach_num = nil
+		for substring in args:gmatch("%S+") do
+		  if code == nil then
+			code = substring
+		  else
+			ach_num = substring
+		  end
+		end
+		if code == nil then
+			Hardcore:Print("Wrong syntax: Missing first argument")
+			return
+		end
+		if ach_num == nil or _G.ach then
+			Hardcore:Print("Wrong syntax: Missing second argument")
+			return
+		end
+
+		if _G.passive_achievements[_G.id_pa[ach_num]] == nil then
+			Hardcore:Print("Wrong syntax: achievement isn't found for " .. ach_num)
+			return
+		end
+
+		if tonumber(GetCode(ach_num)) == tonumber(code) then
+		  for i,v in ipairs(Hardcore_Character.passive_achievements) do
+		    if v == _G.id_pa[ach_num] then
+		      return
+		    end
+		  end
+		  table.insert(Hardcore_Character.passive_achievements, _G.passive_achievements[_G.id_pa[ach_num]].name)
+		  Hardcore:Print("Appealed " .. _G.passive_achievements[_G.id_pa[ach_num]].name .. " challenge!")
+		else
+		  Hardcore:Print("Incorrect code. Double check with a moderator." .. GetCode(ach_num) .. " " .. code)
+		end
 
 	else
 		-- If not handled above, display some sort of help message
@@ -543,6 +590,7 @@ local saved_variable_meta = {
 	{ key = "trade_partners", initial_data = {} },
 	{ key = "grief_warning_conditions", initial_data = GRIEF_WARNING_BOTH_FACTIONS },
 	{ key = "achievements", initial_data = {} },
+	{ key = "passive_achievements", initial_data = {} },
 	{ key = "party_mode", initial_data = "Solo" },
 	{ key = "team", initial_data = {} },
 	{ key = "first_recorded", initial_data = -1 },
@@ -828,6 +876,10 @@ function Hardcore:PLAYER_LOGIN()
 		Hardcore_Character.achievements = {}
 	end
 
+	if Hardcore_Character.passive_achievements == nil then
+		Hardcore_Character.passive_achievements = {}
+	end
+
 	-- Adds HC character tab functionality
 	hooksecurefunc("CharacterFrameTab_OnClick", function(self, button)
 		local name = self:GetName()
@@ -914,6 +966,9 @@ function Hardcore:PLAYER_LOGIN()
 			_G.achievements[v]:Register(failure_function_executor, Hardcore_Character)
 			any_acheivement_registered = true
 		end
+	end
+	for i, v in pairs(_G.passive_achievements) do
+		v:Register(success_function_executor, Hardcore_Character)
 	end
 	if any_acheivement_registered then
 		Hardcore:Print(
@@ -1132,6 +1187,7 @@ function Hardcore:INSPECT_READY(...)
 		else
 			local _default_hardcore_character = {
 				achievements = {},
+				passive_achievements = {},
 				party_mode = "Solo",
 				team = {},
 				first_recorded = -1,
@@ -1555,6 +1611,10 @@ end
 
 -- player name, level, zone, attack_source, class
 local function receiveXGuildChat(data, sender, command)
+	if last_received_xguild_chat and last_received_xguild_chat == data then
+	      return
+	end
+	last_received_xguild_chat = data
 	Hardcore:FakeGuildMsg(data)
 end
 
@@ -1637,7 +1697,7 @@ function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
 		end
 		if command == COMM_COMMANDS[4] then -- Received hc character data
 			local name, _ = string.split("-", sender)
-			local version_str, creation_time, achievements_str, _, party_mode_str, _, _, team_str, hc_tag =
+			local version_str, creation_time, achievements_str, _, party_mode_str, _, _, team_str, hc_tag, passive_achievements_str =
 				string.split(COMM_FIELD_DELIM, data)
 			local achievements_l = { string.split(COMM_SUBFIELD_DELIM, achievements_str) }
 			other_achievements_ds = {}
@@ -1646,10 +1706,22 @@ function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
 					table.insert(other_achievements_ds, _G.id_a[id])
 				end
 			end
+
+			other_passive_achievements_ds = {}
+			if passive_achievements_str then
+			  local passive_achievements_l = { string.split(COMM_SUBFIELD_DELIM, passive_achievements_str) }
+			  for i, id in ipairs(passive_achievements_l) do
+				  if _G.id_pa[id] ~= nil then
+					  table.insert(other_passive_achievements_ds, _G.id_pa[id])
+				  end
+			  end
+			end
+
 			local team_l = { string.split(COMM_SUBFIELD_DELIM, team_str) }
 			other_hardcore_character_cache[name] = {
 				first_recorded = creation_time,
 				achievements = other_achievements_ds,
+				passive_achievements = other_passive_achievements_ds,
 				party_mode = party_mode_str,
 				version = version_str,
 				team = team_l,
@@ -2613,6 +2685,10 @@ function Hardcore:SendCharacterData(dest)
 
 		commMessage = commMessage .. (Hardcore_Character.hardcore_player_name or "") .. COMM_FIELD_DELIM -- Add Version
 
+		for i, v in ipairs(Hardcore_Character.passive_achievements) do
+			commMessage = commMessage .. _G.pa_id[v] .. COMM_SUBFIELD_DELIM -- Add unknown creation time
+		end
+
 		CTL:SendAddonMessage("ALERT", COMM_NAME, commMessage, "WHISPER", dest)
 	end
 end
@@ -3110,6 +3186,7 @@ local options = {
 LibStub("AceConfig-3.0"):RegisterOptionsTable("Hardcore", options)
 optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Hardcore", "Hardcore")
 
+reorderPassiveAchievements()
 --[[ Start Addon ]]
 --
 Hardcore:Startup()

@@ -1,16 +1,17 @@
 local _G = _G
 local _achievement = CreateFrame("Frame")
-_G.passive_achievements.KingOfTheJungle = _achievement
+_G.passive_achievements.StinkysEscape = _achievement
 
 -- General info
-_achievement.name = "KingOfTheJungle"
-_achievement.title = "King of the Jungle"
+_achievement.name = "StinkysEscape"
+_achievement.title = "Stinky's Escape"
 _achievement.class = "All"
-_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_king_of_the_jungle.blp"
-_achievement.level_cap = 39
-_achievement.quest_num = 208
+_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_stinkys_escape.blp"
+_achievement.level_cap = 34
+_achievement.quest_num = 1270
+_achievement.quest_num_alt = 1222
 _achievement.description =
-	"Complete |cffffff00Big Game Hunter|r before reaching level " .. _achievement.level_cap
+	"Complete |cffffff00Stinky's Escape|r before reaching level " .. _achievement.level_cap .. "."
 _achievement.restricted_game_versions = {
 	["WotLK"] = 1,
 }
@@ -29,7 +30,7 @@ end
 _achievement:SetScript("OnEvent", function(self, event, ...)
 	local arg = { ... }
 	if event == "QUEST_TURNED_IN" then
-		if arg[1] == _achievement.quest_num and UnitLevel("player") <= _achievement.level_cap then
+		if (arg[1] == _achievement.quest_num or arg[1] == quest_num_alt) and UnitLevel("player") <= _achievement.level_cap then
 			Hardcore:Print("Congrats! You have achieved " .. _achievement.title)
 			_achievement.succeed_function_executor.Succeed(_achievement.name)
 		end

@@ -16,6 +16,9 @@ scavenger_achievement.item_pushed = false
 scavenger_achievement.merchant_updated = false
 scavenger_achievement.active = false
 
+local merchant_item_cache_ = {}
+local received_item = nil
+
 -- Registers
 function scavenger_achievement:Register(fail_function_executor)
 	scavenger_achievement:RegisterEvent("MERCHANT_SHOW")
@@ -58,6 +61,8 @@ local function CheckPurchase()
 		scavenger_achievement.item_pushed
 		and scavenger_achievement.merchant_updated
 		and scavenger_achievement.active
+		and received_item
+		and merchant_item_cache_[tostring(received_item)]
 	then
 		scavenger_achievement.fail_function_executor.Fail(scavenger_achievement.name)
 	end
@@ -74,15 +79,24 @@ scavenger_achievement:SetScript("OnEvent", function(self, event, ...)
 		end
 	elseif event == "MERCHANT_UPDATE" then
 		scavenger_achievement.merchant_updated = true
+		for i = 1, 12 do
+			if _G["MerchantItem" .. i] then
+				_, texture_path = GetMerchantItemInfo(i)
+				if texture_path then merchant_item_cache_[tostring(texture_path)] = 1 end
+			end
+		end
 		C_Timer.After(1.0, function()
 			CheckPurchase()
 			scavenger_achievement.merchant_updated = false
+			merchant_item_cache_ = {}
 		end)
 	elseif event == "ITEM_PUSH" then
 		scavenger_achievement.item_pushed = true
+		received_item = arg[2]
 		C_Timer.After(1.0, function()
 			CheckPurchase()
 			scavenger_achievement.item_pushed = false
+			received_item = nil
 		end)
 	elseif event == "PLAYER_EQUIPMENT_CHANGED" then
 		if arg[2] == true then

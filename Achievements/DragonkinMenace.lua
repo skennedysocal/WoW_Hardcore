@@ -1,16 +1,16 @@
 local _G = _G
 local _achievement = CreateFrame("Frame")
-_G.passive_achievements.KingOfTheJungle = _achievement
+_G.passive_achievements.DragonkinMenace = _achievement
 
 -- General info
-_achievement.name = "KingOfTheJungle"
-_achievement.title = "King of the Jungle"
+_achievement.name = "DragonkinMenace"
+_achievement.title = "Dragonkin Menace"
 _achievement.class = "All"
-_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_king_of_the_jungle.blp"
-_achievement.level_cap = 39
-_achievement.quest_num = 208
+_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_dragonkin_menace.blp"
+_achievement.level_cap = 57
+_achievement.quest_num = 4182
 _achievement.description =
-	"Complete |cffffff00Big Game Hunter|r before reaching level " .. _achievement.level_cap
+	"Complete |cffffff00Dragonkin Menace|r before reaching level " .. _achievement.level_cap .. "."
 _achievement.restricted_game_versions = {
 	["WotLK"] = 1,
 }

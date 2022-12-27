@@ -4,7 +4,7 @@
 ## Author: The Classic Hardcore team, Molikar (Sean Kennedy), Mark Rogaski <stigg@aie-guild.org> as GreenWall author 
 ## X-License: All Rights Reserved
 ## X-Category: Leveling,Guild
-## Version: 0.10.3
+## Version: 0.10.4
 
 
 ## DefaultState: enabled
@@ -43,7 +43,6 @@ Achievements/Humanist.lua
 Achievements/ICanSeeYou.lua
 Achievements/ImpMaster.lua
 Achievements/InsaneInTheMembrane.lua
-Achievements/KingOfTheJungle.lua
 Achievements/LoneWolf.lua
 Achievements/MortalPet.lua
 Achievements/Naturalist.lua
@@ -59,7 +58,7 @@ Achievements/Pacifist.lua
 Achievements/PartnerUp.lua
 Achievements/Pyromancer.lua
 Achievements/Scavenger.lua
-Achievements/Speedrunner.lua
+#Achievements/Speedrunner.lua
 Achievements/SelfMade.lua
 Achievements/ShadowEmbrace.lua
 Achievements/Shivved.lua
@@ -76,6 +75,50 @@ Achievements/WhiteKnight.lua
 Achievements/Vagrant.lua
 Achievements/VoidServant.lua
 #End achievement modules
+
+#Start passive achievements
+Achievements/KingOfTheJungle.lua
+Achievements/ShyRotam.lua
+Achievements/OfForgottenMemories.lua
+Achievements/Maltorious.lua
+Achievements/PawnCapturesQueen.lua
+Achievements/Deathclasp.lua
+Achievements/AFinalBlow.lua
+Achievements/SummoningThePrincess.lua
+Achievements/AbsentMindedProspector.lua
+Achievements/TheHuntCompleted.lua
+Achievements/MageSummoner.lua
+Achievements/EarthenArise.lua
+Achievements/GetMeOutOfHere.lua
+Achievements/RitesOfTheEarthmother.lua
+Achievements/KimjaelIndeed.lua
+Achievements/Counterattack.lua
+Achievements/DarkHeart.lua
+Achievements/AgainstLordShalzaru.lua
+Achievements/TestOfEndurance.lua
+Achievements/CuergosGold.lua
+Achievements/TheStonesThatBindUs.lua
+Achievements/GalensEscape.lua
+Achievements/Morladim.lua
+Achievements/TheForgottenHeirloom.lua
+Achievements/Hogger.lua
+Achievements/Fangore.lua
+Achievements/DragonkinMenace.lua
+Achievements/Kromgul.lua
+Achievements/SealOfEarth.lua
+Achievements/TremorsofEarth.lua
+Achievements/Vagash.lua
+Achievements/InDefenseOfTheKing.lua
+Achievements/DefeatNekrosh.lua
+Achievements/DruidOfTheClawQuest.lua
+Achievements/TheCrownOfWill.lua
+Achievements/BattleOfHillsbrad.lua
+Achievements/TheWeaver.lua
+Achievements/TheFamilyCrypt.lua
+Achievements/HintsOfANewPlague.lua
+Achievements/RecoverTheKey.lua
+Achievements/StinkysEscape.lua
+#End passive achievements
 
 CharacterStatusScreen.lua
 InspectStatusScreen.lua

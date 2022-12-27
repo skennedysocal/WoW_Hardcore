@@ -1,16 +1,16 @@
 local _G = _G
 local _achievement = CreateFrame("Frame")
-_G.passive_achievements.KingOfTheJungle = _achievement
+_G.passive_achievements.DefeatNekrosh = _achievement
 
 -- General info
-_achievement.name = "KingOfTheJungle"
-_achievement.title = "King of the Jungle"
+_achievement.name = "DefeatNekrosh"
+_achievement.title = "Defeat Nek'rosh"
 _achievement.class = "All"
-_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_king_of_the_jungle.blp"
-_achievement.level_cap = 39
-_achievement.quest_num = 208
+_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_defeat_nekrosh.blp"
+_achievement.level_cap = 31
+_achievement.quest_num = 474
 _achievement.description =
-	"Complete |cffffff00Big Game Hunter|r before reaching level " .. _achievement.level_cap
+	"Complete |cffffff00Defeat Nek'rosh|r before reaching level " .. _achievement.level_cap .. "."
 _achievement.restricted_game_versions = {
 	["WotLK"] = 1,
 }

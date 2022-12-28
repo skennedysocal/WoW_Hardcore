@@ -520,7 +520,7 @@ local function SlashHandler(msg, editbox)
 			return
 		end
 
-		if tonumber(GetCode(ach_num)) == tonumber(code) then
+		if tostring(GetCode(ach_num)):sub(1,10) == tostring(tonumber(code)):sub(1,10) then
 		  for i,v in ipairs(Hardcore_Character.achievements) do
 		    if v == _G.id_a[ach_num] then
 		      return

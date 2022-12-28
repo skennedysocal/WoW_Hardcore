@@ -29,14 +29,13 @@ shivved_achievement:SetScript("OnEvent", function(self, event, ...)
 		end
 		local item_id = GetInventoryItemID("player", arg[1])
 		local item_name, _, _, _, _, item_type, item_subtype, _, item_equip_loc, _, _ = GetItemInfo(item_id)
-		print(item_equip_loc)
 		if
 			item_equip_loc == "INVTYPE_WEAPONMAINHAND"
 			or item_equip_loc == "INVTYPE_WEAPONOFFHAND"
 			or item_equip_loc == "INVTYPE_WEAPON"
 		then
 			if item_subtype ~= "Daggers" then
-				if item_subtype == "Fishing Poles" or item_subtype == "Fishing Pole" then
+				if item_subtype == "Fishing Poles" or item_subtype == "Fishing Pole" or item_subtype == "Miscellaneous" then
 					return
 				else
 					Hardcore:Print("Equiped " .. item_name .. ".")

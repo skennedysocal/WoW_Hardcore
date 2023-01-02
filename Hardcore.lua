@@ -1712,8 +1712,8 @@ local function receiveDeathMsg(data, sender, command)
 		end
 		local alert_msg = other_player_name .. " the " .. class .. " has died at level " .. level .. " in " .. zone
 
-		local min_level = Hardcore_Settings.minimum_show_death_alert_lvl or 0
-		if level < min_level then return end
+		local min_level = tonumber(Hardcore_Settings.minimum_show_death_alert_lvl) or 0
+		if tonumber(level) < tonumber(min_level) then return end
 		if UnitInRaid("player") == nil then
 			Hardcore:ShowAlertFrame(ALERT_STYLES.death, alert_msg)
 			return
@@ -2040,8 +2040,8 @@ function Hardcore:Add(data, sender, command)
 						local mapData = C_Map.GetMapInfo(mapID) -- In case some idiot sends an invalid map ID, it won't cause mass lua errors.
 						zone = mapData and mapData.name or zone -- If player is in an instance, will have to get zone from guild roster.
 					end
-					local min_level = Hardcore_Settings.minimum_show_death_alert_lvl or 0
-					if level < min_level then return end
+					local min_level = tonumber(Hardcore_Settings.minimum_show_death_alert_lvl) or 0
+					if level < tonumber(min_level) then return end
 					level = level > 0 and level < 61 and level or guildLevel -- If player is using an older version of the addon, will have to get level from guild roster.
 					local messageFormat = "%s the %s%s|r has died at level %d in %s"
 					if command == COMM_COMMANDS[6] then

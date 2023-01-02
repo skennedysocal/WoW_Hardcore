@@ -1,6 +1,6 @@
 local _G = _G
 local self_made_trio_achievement = CreateFrame("Frame")
-_G.achievements.SelfMadeTrio = self_made_trio_achievement
+_G.achievements.TrioMade = self_made_trio_achievement
 local player = UnitName("Player")
 
 -- General info

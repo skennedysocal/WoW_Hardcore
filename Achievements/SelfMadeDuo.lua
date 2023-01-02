@@ -1,6 +1,6 @@
 local _G = _G
 local self_made_duo_achievement = CreateFrame("Frame")
-_G.achievements.SelfMadeDuo = self_made_duo_achievement
+_G.achievements.DuoMade = self_made_duo_achievement
 local player = UnitName("Player")
 
 -- General info

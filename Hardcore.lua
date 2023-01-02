@@ -86,6 +86,7 @@ Hardcore_Character = {
 
 --[[ Local variables ]]
 --
+local online_player_ranks = {}
 local last_received_xguild_chat = ""
 local debug = false
 local expecting_achievement_appeal = false
@@ -114,6 +115,15 @@ local bubble_hearth_vars = {
 	light_of_elune_name = "Light of Elune",
 }
 
+-- Ranks
+local hc_id2rank = {
+  ["1"] = "officer"
+}
+
+local hc_rank2id = {
+  ["officer"] = "1"
+}
+
 -- addon communication
 local CTL = _G.ChatThrottleLib
 local COMM_NAME = "HardcoreAddon"
@@ -140,6 +150,7 @@ local COMM_COMMANDS = {
 	"XGUILD_DEAD", -- Send death message to other guild
 	"XGUILD_CHAT_RELAY", -- Send chat message a player in another guild to relay
 	"XGUILD_CHAT", -- Send chat message to other guild
+	"NOTIFY_RANKING",
 }
 local COMM_SPAM_THRESHOLD = { -- msgs received within durations (s) are flagged as spam
 	PULSE = 3,
@@ -566,6 +577,40 @@ local function SlashHandler(msg, editbox)
 		  Hardcore:Print("Appealed " .. _G.passive_achievements[_G.id_pa[ach_num]].name .. " challenge!")
 		else
 		  Hardcore:Print("Incorrect code. Double check with a moderator." .. GetCode(ach_num) .. " " .. code)
+		end
+	elseif cmd == "SetRank" then
+		local code = nil
+		local ach_num = nil
+		local rank = nil
+		local iters = 0
+		for substring in args:gmatch("%S+") do
+		  if iters == 0 then
+			code = substring
+		  elseif iters == 1 then
+			ach_num = substring
+		  elseif iters == 2 then
+			rank = substring
+		  end
+		  iters = iters + 1
+		end
+		if code == nil then
+			Hardcore:Print("Wrong syntax: Missing first argument")
+			return
+		end
+		if ach_num == nil or _G.ach then
+			Hardcore:Print("Wrong syntax: Missing second argument")
+			return
+		end
+		if rank == nil then
+			Hardcore:Print("Wrong syntax: Missing third argument")
+			return
+		end
+
+		if tostring(GetCode(-1)):sub(1,10) == tostring(tonumber(code)):sub(1,10) then
+		  Hardcore_Settings.rank_type = rank
+		  Hardcore:Print("Set rank to " .. rank)
+		else
+		  Hardcore:Print("Incorrect code. Double check with a moderator." .. GetCode(-1) .. " " .. code)
 		end
 
 	else
@@ -1695,6 +1740,13 @@ function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
 			Hardcore:SendCharacterData(name)
 			return
 		end
+		if command == COMM_COMMANDS[14] then -- Received request for hc character data
+			local name, _ = string.split("-", sender)
+			if hc_id2rank[data] then
+				online_player_ranks[name] = hc_id2rank[data]
+				return
+			end
+		end
 		if command == COMM_COMMANDS[4] then -- Received hc character data
 			local name, _ = string.split("-", sender)
 			local version_str, creation_time, achievements_str, _, party_mode_str, _, _, team_str, hc_tag, passive_achievements_str =
@@ -1801,11 +1853,23 @@ function Hardcore:CHAT_MSG_SAY(...)
 	if self:SetRecentMsg(...) then
 		recent_msg["type"] = 0
 	end
+
+	local arg = { ... }
+	if Hardcore_Settings.rank_type and Hardcore_Settings.rank_type == "officer" and arg[5] == UnitName("player") then
+			local commMessage = COMM_COMMANDS[14] .. COMM_COMMAND_DELIM .. hc_rank2id[Hardcore_Settings.rank_type]
+			CTL:SendAddonMessage("BULK", COMM_NAME, commMessage, "GUILD")
+	end
 end
 
 function Hardcore:CHAT_MSG_GUILD(...)
 	if self:SetRecentMsg(...) then
 		recent_msg["type"] = 2
+	end
+
+	local arg = { ... }
+	if Hardcore_Settings.rank_type and Hardcore_Settings.rank_type == "officer" and arg[5] == UnitName("player") then
+			local commMessage = COMM_COMMANDS[14] .. COMM_COMMAND_DELIM .. hc_rank2id[Hardcore_Settings.rank_type]
+			CTL:SendAddonMessage("BULK", COMM_NAME, commMessage, "GUILD")
 	end
 end
 
@@ -2838,6 +2902,16 @@ function Hardcore:ApplyAlertFrameSettings()
 	Hardcore_Alert_Frame:SetPoint("TOP", "UIParent", "TOP", x_offset / scale, y_offset / scale)
 end
 
+ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", function(frame, event, message, sender, ...)
+	local _name, _ = string.split("-", sender)
+	if online_player_ranks[_name] and online_player_ranks[_name] == "officer" then
+	  message = "\124cFFFF0000<MOD>\124r " .. message
+	  -- message = "|T" .. "Interface\\Addons\\Hardcore\\Media\\icon_crown.blp" .. ":8:8:0:0:64:64:4:60:4:60|t " .. message
+	end
+
+	return false, message, sender, ... -- don't hide this message
+end)
+
 ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", function(frame, event, message, sender, ...)
 	if Hardcore_Settings.filter_f_in_chat then
 		if message == "f" or message == "F" then
@@ -2848,6 +2922,12 @@ ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", function(frame, event, message
 		if guild_versions[sender] then
 			message = "|cfffd9122[" .. guild_versions[sender] .. "]|r " .. message
 		end
+	end
+
+	local _name, _ = string.split("-", sender)
+	if online_player_ranks[_name] and online_player_ranks[_name] == "officer" then
+	  message = "\124cFFFF0000<MOD>\124r " .. message
+	  -- message = "|T" .. "Interface\\Addons\\Hardcore\\Media\\icon_crown.blp" .. ":8:8:0:0:64:64:4:60:4:60|t " .. message -- crown
 	end
 	return false, message, sender, ... -- don't hide this message
 	-- note that you must return *all* of the values that were passed to your filter, even ones you didn't change

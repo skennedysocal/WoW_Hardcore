@@ -302,7 +302,7 @@ local function DrawGeneralTab(container)
 	local changelog_description = AceGUI:Create("Label")
 	changelog_description:SetWidth(600)
 	changelog_description:SetText(
-		"- Added timer on shivved, sword and board, and berserker which gives the player a minute to unequip.\n- Fixed appeal code\n- Fixed shivved failing on skinning knife"
+		"- Added timer on shivved, sword and board, and berserker which gives the player a minute to unequip.\n- Fixed appeal code\n- Fixed shivved failing on skinning knife\n- Added DuoMade and TrioMade\n- Fixed minor menu crash\n- Added <MOD> tags"
 	)
 	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
 	scroll_frame:AddChild(changelog_description)
@@ -1034,17 +1034,21 @@ local function DrawAccountabilityTab(container)
 			then
 				local inline_text = ""
 				for i, achievement_name in ipairs(other_hardcore_character_cache[player_name_short].achievements) do
-					inline_text = inline_text
-						.. "|T"
-						.. _G.achievements[achievement_name].icon_path
-						.. ":16:16:0:0:64:64:4:60:4:60|t"
+					if _G.achievements[achievement_name] then
+						inline_text = inline_text
+							.. "|T"
+							.. _G.achievements[achievement_name].icon_path
+							.. ":16:16:0:0:64:64:4:60:4:60|t"
+					end
 				end
 				_label_tbls["achievement_label"]:SetText(inline_text)
 				_label_tbls["achievement_label"]:SetCallback("OnEnter", function(widget)
 					GameTooltip:SetOwner(WorldFrame, "ANCHOR_CURSOR")
 					GameTooltip:AddLine("Active achievements")
 					for i, achievement_name in ipairs(other_hardcore_character_cache[player_name_short].achievements) do
-						GameTooltip:AddLine(_G.achievements[achievement_name].title)
+						if _G.achievements[achievement_name] then
+							GameTooltip:AddLine(_G.achievements[achievement_name].title)
+						end
 					end
 					GameTooltip:Show()
 				end)

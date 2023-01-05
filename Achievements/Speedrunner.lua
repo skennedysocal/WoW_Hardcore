@@ -16,6 +16,7 @@ speedrunner_achievement.restricted_game_versions = {
 }
 
 speedrunner_achievement.adjusted_time = nil
+speedrunner_achievement.hardcore_char_ref = nil
 
 local time_played_snapshot = nil
 local snapshot_server_time = nil
@@ -38,6 +39,7 @@ end
 -- Registers
 function speedrunner_achievement:Register(fail_function_executor, _hardcore_character)
 	speedrunner_achievement.fail_function_executor = fail_function_executor
+	speedrunner_achievement.hardcore_char_ref = _hardcore_character
 	if _hardcore_character.first_recorded == nil or _hardcore_character.first_recorded == -1 then
 		Hardcore:Print("Could not register for Speedrunner achievement; invalid creation time")
 		speedrunner_achievement.fail_function_executor = fail_function_executor
@@ -71,6 +73,10 @@ speedrunner_achievement:SetScript("OnEvent", function(self, event, ...)
 	local arg = { ... }
 	if event == "PLAYER_LEVEL_UP" then
 		RequestTimePlayed()
+		if arg[1] == 60 then
+		      speedrunner_achievement.UpdateDescription()
+		      speedrunner_achievement.hardcore_char_ref.adjusted_sixty_time = speedrunner_achievement.adjusted_time
+		end
 	elseif event == "TIME_PLAYED_MSG" then
 		local seconds_played = arg[1]
 		time_played_snapshot = seconds_played

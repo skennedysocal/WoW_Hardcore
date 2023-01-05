@@ -41,8 +41,22 @@ sword_and_board_achievement:SetScript("OnEvent", function(self, event, ...)
 					or item_subtype == "Staves"
 					--or item_subtype == "Fishing Poles"
 				then
+
+				local time_elapsed = 0 -- seconds
+				C_Timer.NewTicker(1, function(self)
+				  time_elapsed = time_elapsed + 1
+				  Hardcore:Print("<Sword and Board>: Unequip non sword or shield item, " .. item_name .. ", or your achievement will fail in " .. 60 - time_elapsed .. " seconds.")
+				  if IsEquippedItem(item_id) == false then
+					  Hardcore:Print("<Sword and Board>: You unequipped " .. item_name .. ". No further action needed.")
+					  self:Cancel()
+					  return
+				  end
+				  if time_elapsed > 60 then
 					Hardcore:Print("Equipped " .. item_name .. ".")
 					sword_and_board_achievement.fail_function_executor.Fail(sword_and_board_achievement.name)
+					self:Cancel()
+				  end
+				end)
 				end
 			end
 		elseif arg[1] == 17 then -- Offhand

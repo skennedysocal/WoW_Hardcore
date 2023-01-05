@@ -978,6 +978,220 @@ local function DrawLevelsTab(container, _hardcore_settings)
 	end)
 end
 
+local function DrawDungeonsTab(container, _hardcore_character)
+
+	local function DrawNameColumn(_scroll_frame, _dt_runs, _dt_pending, _dt_current, width)
+		local entry = AceGUI:Create("SimpleGroup")
+		entry:SetLayout("List")
+		entry:SetWidth(width)
+		_scroll_frame:AddChild(entry)
+
+		local name_str = ""
+		local num_lines = 0
+		for i, v in pairs( _dt_runs ) do
+			name_str = name_str .. v.name .. "\n"
+			num_lines = num_lines + 1
+		end
+		for i, v in pairs( _dt_pending ) do
+			name_str = name_str .. "|c00FFFF00" .. v.name .. " (idle)\n"
+			num_lines = num_lines + 1
+		end
+		if next( _dt_current ) then
+			name_str = name_str .. "|c0000FF00" .. _dt_current.name .. " (active)\n"
+			num_lines = num_lines + 1
+		end
+		
+		-- Make sure we have at least 10 lines, or Ace moves our dungeons down a line
+		num_lines = 8 - num_lines
+		for i = 1, num_lines do
+			name_str = name_str .. "\n"
+		end
+
+		local name_label = AceGUI:Create("Label")
+		name_label:SetWidth(width)
+		name_label:SetText(name_str)
+		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		entry:AddChild(name_label)
+	end
+
+	local function DrawLevelColumn(_scroll_frame, _dt_runs, _dt_pending, _dt_current, width)
+		local entry = AceGUI:Create("SimpleGroup")
+		entry:SetLayout("Flow")
+		entry:SetWidth(width)
+		_scroll_frame:AddChild(entry)
+
+		local name_str = ""
+		local num_lines = 0
+		for i, v in pairs( _dt_runs ) do
+			if v.level > 0 then
+				name_str = name_str .. v.level .. "\n"
+			else
+				name_str = name_str .. "?" .. "\n"
+			end
+			num_lines = num_lines + 1
+		end
+		for i, v in pairs( _dt_pending ) do
+			name_str = name_str .. v.level .. "\n"
+			num_lines = num_lines + 1
+		end
+		if next( _dt_current) then
+			name_str = name_str .. _dt_current.level .. "\n"
+			num_lines = num_lines + 1
+		end
+
+		-- Make sure we have at least 10 lines, or Ace moves our dungeons down a line
+		num_lines = 8 - num_lines
+		for i = 1, num_lines do
+			name_str = name_str .. "\n"
+		end
+
+		local name_label = AceGUI:Create("Label")
+		name_label:SetWidth(width)
+		name_label:SetText(name_str)
+		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		entry:AddChild(name_label)
+	end
+
+	local function DrawPlayedColumn(_scroll_frame, _dt_runs, _dt_pending, _dt_current, width)
+		local entry = AceGUI:Create("SimpleGroup")
+		entry:SetLayout("Flow")
+		entry:SetWidth(width)
+		_scroll_frame:AddChild(entry)
+
+		local name_str = ""
+		local num_lines = 0
+		for i, v in pairs( _dt_runs ) do
+			if v.time_inside > 0 then
+				name_str = name_str .. SecondsToTime(v.time_inside) .. "\n"
+			else
+				name_str = name_str .. "?" .. "\n"
+			end
+			num_lines = num_lines + 1
+		end
+		for i, v in pairs( _dt_pending ) do
+			name_str = name_str .. SecondsToTime(v.time_inside) .. "\n"
+			num_lines = num_lines + 1
+		end
+		if next( _dt_current) then
+			name_str = name_str .. SecondsToTime(_dt_current.time_inside) .. "\n"
+			num_lines = num_lines + 1
+		end
+
+		-- Make sure we have at least 10 lines, or Ace moves our dungeons down a line
+		num_lines = 8 - num_lines
+		for i = 1, num_lines do
+			name_str = name_str .. "\n"
+		end
+
+		local name_label = AceGUI:Create("Label")
+		name_label:SetWidth(width)
+		name_label:SetText(name_str)
+		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		entry:AddChild(name_label)
+	end
+
+	local function DrawDateColumn(_scroll_frame, _dt_runs, _dt_pending, _dt_current, width)
+		local entry = AceGUI:Create("SimpleGroup")
+		entry:SetLayout("Flow")
+		entry:SetWidth(width)
+		_scroll_frame:AddChild(entry)
+
+		local name_str = ""
+		local num_lines = 0
+		for i, v in pairs( _dt_runs ) do
+			name_str = name_str .. v.date .. "\n"
+			num_lines = num_lines + 1
+		end
+		for i, v in pairs( _dt_pending ) do
+			name_str = name_str .. v.date .. "\n"
+			num_lines = num_lines + 1
+		end
+		if next( _dt_current ) then
+			name_str = name_str .. _dt_current.date .. "\n"
+			num_lines = num_lines + 1
+		end
+
+		-- Make sure we have at least 10 lines, or Ace moves our dungeons down a line
+		num_lines = 8 - num_lines
+		for i = 1, num_lines do
+			name_str = name_str .. "\n"
+		end
+
+		local name_label = AceGUI:Create("Label")
+		name_label:SetWidth(width)
+		name_label:SetText(name_str)
+		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		entry:AddChild(name_label)
+	end
+
+	local scroll_container = AceGUI:Create("SimpleGroup")
+	scroll_container:SetWidth(700)
+	scroll_container:SetFullHeight(true)
+	scroll_container:SetLayout("List")
+	container:AddChild(scroll_container)
+
+	local scroll_frame = AceGUI:Create("ScrollFrame")
+	scroll_frame:SetLayout("Flow")
+	scroll_frame:SetHeight(372)
+	scroll_container:AddChild(scroll_frame)
+
+	-- Row header
+	local row_header = AceGUI:Create("SimpleGroup")
+	row_header:SetLayout("Flow")
+	row_header:SetFullWidth(true)
+	scroll_frame:AddChild(row_header)
+
+	local name_label = AceGUI:Create("Label")
+	name_label:SetWidth(250)
+	name_label:SetText("|c00FFFF00Dungeon|r")
+	name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	row_header:AddChild(name_label)
+
+	local level_label = AceGUI:Create("Label")
+	level_label:SetWidth(50)
+	level_label:SetText("|c00FFFF00Lvl|r")
+	level_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	row_header:AddChild(level_label)
+
+	local played_time_label = AceGUI:Create("Label")
+	played_time_label:SetWidth(125)
+	played_time_label:SetText("|c00FFFF00Run Time|r")
+	played_time_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	row_header:AddChild(played_time_label)
+
+	local date_label = AceGUI:Create("Label")
+	date_label:SetWidth(125)
+	date_label:SetText("|c00FFFF00Date|r")
+	date_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	row_header:AddChild(date_label)
+
+	-- Rest of the data
+	DrawNameColumn(scroll_frame, _hardcore_character.dt.runs, _hardcore_character.dt.pending, _hardcore_character.dt.current, 250)
+	DrawLevelColumn(scroll_frame, _hardcore_character.dt.runs, _hardcore_character.dt.pending, _hardcore_character.dt.current, 50)
+	DrawPlayedColumn(scroll_frame, _hardcore_character.dt.runs, _hardcore_character.dt.pending, _hardcore_character.dt.current, 125)
+	DrawDateColumn(scroll_frame, _hardcore_character.dt.runs, _hardcore_character.dt.pending, _hardcore_character.dt.current, 125)
+
+	-- Some weird shit needed to prevent the last column from moving up
+	local entry = AceGUI:Create("SimpleGroup")
+	entry:SetLayout("Flow")
+	entry:SetWidth(10)
+	scroll_frame:AddChild(entry)
+
+	-- Footer below the scroll container
+	local footer_container = AceGUI:Create("SimpleGroup")
+	footer_container:SetFullWidth(true)
+	footer_container:SetHeight(100)
+	footer_container:SetLayout("Flow")
+	scroll_container:AddChild(footer_container)
+
+	local status_label = AceGUI:Create("Label")
+	status_label:SetWidth(350)
+	status_label:SetText("|c00FFFF00You've run " .. #_hardcore_character.dt.runs .. " dungeons.|r")
+	status_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	footer_container:AddChild(status_label)
+
+end
+
 local function GetSpacelessRealmName()
 	local name = GetRealmName()
 	return string.gsub(name, "%s+", "")
@@ -1451,6 +1665,7 @@ function ShowMainMenu(_hardcore_character, _hardcore_settings, dk_button_functio
 		{ value = "VerifyTab", text = "Verify" },
 		{ value = "DKTab", text = "Death Knight" },
 		{ value = "LevelsTab", text = "Levels" },
+		{ value = "DungeonsTab", text = "Dungeons" },
 		{ value = "AccountabilityTab", text = "Accountability" },
 		{ value = "AchievementsTab", text = "Achievements" },
 		{ value = "LeaderboardTab", text = "Leaderboard" },
@@ -1477,6 +1692,8 @@ function ShowMainMenu(_hardcore_character, _hardcore_settings, dk_button_functio
 			DrawDKTab(container, dk_button_function)
 		elseif group == "LevelsTab" then
 			DrawLevelsTab(container, _hardcore_settings)
+		elseif group == "DungeonsTab" then
+			DrawDungeonsTab(container, _hardcore_character)
 		elseif group == "AccountabilityTab" then
 			DrawAccountabilityTab(container)
 		elseif group == "PartyTab" then

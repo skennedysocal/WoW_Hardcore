@@ -6,11 +6,13 @@ _G.passive_achievements.MageSummoner = _achievement
 _achievement.name = "MageSummoner"
 _achievement.title = "Light of Elune"
 _achievement.class = "All"
-_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_light_of_elune.blp"
+_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_mage_summoner.blp"
 _achievement.level_cap = 23
 _achievement.quest_num = 1017
-_achievement.description =
-	"Complete |cffffff00Light of Elune|r before reaching level " .. _achievement.level_cap .. "."
+_achievement.quest_name = "Mage Summoner"
+_achievement.zone = "Ashenvale"
+_achievement.kill_target = "Sarilus Foulborne"
+_achievement.description = HCGeneratePassiveAchievementKillDescription(_achievement.kill_target, _achievement.quest_name, _achievement.zone, _achievement.level_cap, "Alliance")
 _achievement.restricted_game_versions = {
 	["WotLK"] = 1,
 }
@@ -28,10 +30,5 @@ end
 -- Register Definitions
 _achievement:SetScript("OnEvent", function(self, event, ...)
 	local arg = { ... }
-	if event == "QUEST_TURNED_IN" then
-		if arg[1] == _achievement.quest_num and UnitLevel("player") <= _achievement.level_cap then
-			Hardcore:Print("Congrats! You have achieved " .. _achievement.title)
-			_achievement.succeed_function_executor.Succeed(_achievement.name)
-		end
-	end
+	HCCommonPassiveAchievementKillCheck(_achievement, event, arg)
 end)

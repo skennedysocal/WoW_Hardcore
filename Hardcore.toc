@@ -80,7 +80,8 @@ Achievements/SelfMadeTrio.lua
 
 #Start passive achievements
 Achievements/KingOfTheJungle.lua
-Achievements/ShyRotam.lua
+#Achievements/ShyRotam.lua
+Achievements/HighChiefWinterfall.lua
 Achievements/OfForgottenMemories.lua
 Achievements/Maltorious.lua
 Achievements/PawnCapturesQueen.lua
@@ -95,6 +96,8 @@ Achievements/GetMeOutOfHere.lua
 Achievements/RitesOfTheEarthmother.lua
 Achievements/KimjaelIndeed.lua
 Achievements/Counterattack.lua
+Achievements/TidalCharmAcquired.lua
+Achievements/MasterLeatherworker.lua
 Achievements/DarkHeart.lua
 Achievements/AgainstLordShalzaru.lua
 Achievements/TestOfEndurance.lua
@@ -117,7 +120,7 @@ Achievements/TheCrownOfWill.lua
 Achievements/BattleOfHillsbrad.lua
 Achievements/TheWeaver.lua
 Achievements/TheFamilyCrypt.lua
-Achievements/HintsOfANewPlague.lua
+#Achievements/HintsOfANewPlague.lua
 Achievements/RecoverTheKey.lua
 Achievements/StinkysEscape.lua
 #End passive achievements
@@ -126,6 +129,7 @@ CharacterStatusScreen.lua
 InspectStatusScreen.lua
 FirstMenuScreen.lua
 MainMenu.lua
+AchievementAlertFrame.lua
 Hardcore.lua
 
 Libs/GreenWall/Constants.lua

@@ -276,7 +276,11 @@ end
 function GwChannel:tl_send(type, message)
     local opcode
     if type == GW_MTYPE_CHAT then
-        opcode = 'C'
+    if Hardcore_Settings.rank_type and Hardcore_Settings.rank_type == "officer" then
+      opcode = 'L'
+    else
+      opcode = 'C'
+    end
     elseif type == GW_MTYPE_BROADCAST then
         opcode = 'B'
     elseif type == GW_MTYPE_NOTICE then

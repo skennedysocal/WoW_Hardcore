@@ -4,13 +4,14 @@ _G.passive_achievements.CuergosGold = _achievement
 
 -- General info
 _achievement.name = "CuergosGold"
-_achievement.title = "Cuergo's Gold"
+_achievement.title = "The Hidden Treasure"
 _achievement.class = "All"
 _achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_cuergos_gold.blp"
 _achievement.level_cap = 45
 _achievement.quest_num = 2882
-_achievement.description =
-	"Complete |cffffff00Cuergo's Gold|r before reaching level " .. _achievement.level_cap .. "."
+_achievement.quest_name = "Cuergo's Gold"
+_achievement.zone = "Tanaris"
+_achievement.description = HCGeneratePassiveAchievementBasicQuestDescription(_achievement.quest_name, _achievement.zone, _achievement.level_cap)
 _achievement.restricted_game_versions = {
 	["WotLK"] = 1,
 }
@@ -28,10 +29,5 @@ end
 -- Register Definitions
 _achievement:SetScript("OnEvent", function(self, event, ...)
 	local arg = { ... }
-	if event == "QUEST_TURNED_IN" then
-		if arg[1] == _achievement.quest_num and UnitLevel("player") <= _achievement.level_cap then
-			Hardcore:Print("Congrats! You have achieved " .. _achievement.title)
-			_achievement.succeed_function_executor.Succeed(_achievement.name)
-		end
-	end
+	HCCommonPassiveAchievementBasicQuestCheck(_achievement, event, arg)
 end)

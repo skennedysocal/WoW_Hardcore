@@ -87,7 +87,7 @@ Hardcore_Character = {
 
 --[[ Local variables ]]
 --
-local online_player_ranks = {}
+_G.hc_online_player_ranks = {}
 local last_received_xguild_chat = ""
 local debug = false
 local expecting_achievement_appeal = false
@@ -375,8 +375,19 @@ end
 local failure_function_executor = { Fail = FailureFunction }
 
 function SuccessFunction(achievement_name)
+	if _G.passive_achievements[achievement_name] == nil then return end
+	for _, v in ipairs(Hardcore_Character.passive_achievements) do
+	  if v == achievement_name then return end
+	end
 	table.insert(Hardcore_Character.passive_achievements, achievement_name)
-	Hardcore:Print("Achieved " .. _G.passive_achievements[achievement_name].title)
+
+	Hardcore:ShowPassiveAchievementFrame(
+		_G.passive_achievements[achievement_name].icon_path,
+		"Achieved " .. _G.passive_achievements[achievement_name].title	.. "!",
+		5.0
+	)
+
+	Hardcore:Print("Achieved " .. _G.passive_achievements[achievement_name].title .. "! Make sure to /reload when convenient to save your progress.")
 end
 
 local success_function_executor = { Succeed = SuccessFunction }
@@ -642,10 +653,6 @@ local function SlashHandler(msg, editbox)
 		end
 		if ach_num == nil or _G.ach then
 			Hardcore:Print("Wrong syntax: Missing second argument")
-			return
-		end
-		if rank == nil then
-			Hardcore:Print("Wrong syntax: Missing third argument")
 			return
 		end
 
@@ -2290,10 +2297,10 @@ function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
 			Hardcore:SendCharacterData(name)
 			return
 		end
-		if command == COMM_COMMANDS[14] then -- Received request for hc character data
+		if command == COMM_COMMANDS[14] then
 			local name, _ = string.split("-", sender)
 			if hc_id2rank[data] then
-				online_player_ranks[name] = hc_id2rank[data]
+				_G.hc_online_player_ranks[name] = hc_id2rank[data]
 				return
 			end
 		end
@@ -2537,6 +2544,18 @@ function Hardcore:ShowAlertFrame(styleConfig, message)
 	C_Timer.After(delay, function()
 		frame:Hide()
 	end)
+end
+
+function Hardcore:ShowPassiveAchievementFrame(icon_path, message, delay)
+	-- message is any text accepted by FontString:SetText(message)
+
+	achievement_alert_handler:SetIcon(icon_path)
+	achievement_alert_handler:SetMsg(message)
+	achievement_alert_handler:ShowTimed(delay)
+
+	if alertSound then
+		PlaySound(alertSound)
+	end
 end
 
 function Hardcore:Add(data, sender, command)
@@ -3466,7 +3485,7 @@ end
 
 ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", function(frame, event, message, sender, ...)
 	local _name, _ = string.split("-", sender)
-	if online_player_ranks[_name] and online_player_ranks[_name] == "officer" then
+	if _G.hc_online_player_ranks[_name] and _G.hc_online_player_ranks[_name] == "officer" then
 	  message = "\124cFFFF0000<MOD>\124r " .. message
 	  -- message = "|T" .. "Interface\\Addons\\Hardcore\\Media\\icon_crown.blp" .. ":8:8:0:0:64:64:4:60:4:60|t " .. message
 	end
@@ -3487,9 +3506,19 @@ ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", function(frame, event, message
 	end
 
 	local _name, _ = string.split("-", sender)
-	if online_player_ranks[_name] and online_player_ranks[_name] == "officer" then
+	if _G.hc_online_player_ranks[_name] and _G.hc_online_player_ranks[_name] == "officer" then
 	  message = "\124cFFFF0000<MOD>\124r " .. message
 	  -- message = "|T" .. "Interface\\Addons\\Hardcore\\Media\\icon_crown.blp" .. ":8:8:0:0:64:64:4:60:4:60|t " .. message -- crown
+	end
+	return false, message, sender, ... -- don't hide this message
+	-- note that you must return *all* of the values that were passed to your filter, even ones you didn't change
+end)
+
+ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", function(frame, event, message, sender, ...)
+	local _name, _ = string.split("-", sender)
+	local _prefix, _ = string.split("#", message)
+	if _prefix == "L" then
+	  _G.hc_online_player_ranks[_name] = "officer"
 	end
 	return false, message, sender, ... -- don't hide this message
 	-- note that you must return *all* of the values that were passed to your filter, even ones you didn't change

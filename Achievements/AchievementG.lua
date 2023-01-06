@@ -108,6 +108,9 @@ _G.pa_id = {
 	TheFamilyCrypt = 38,
 	HintsOfANewPlague = 39,
 	RecoverTheKey = 40,
+	HighChiefWinterfall = 41,
+	TidalCharmAcquired = 42,
+	MasterLeatherworker = 43,
 }
 _G.id_pa = {}
 for k, v in pairs(_G.pa_id) do
@@ -144,16 +147,153 @@ end
 
 local sort_functions = {
 	["Level"] = function(t, a, b)
-		return _G.passive_achievements[t[a]].level_cap < _G.passive_achievements[t[b]].level_cap
+		if _G.passive_achievements[t[a]] and _G.passive_achievements[t[b]] then
+			return _G.passive_achievements[t[a]].level_cap < _G.passive_achievements[t[b]].level_cap
+		end
+		if _G.passive_achievements[t[a]] and _G.passive_achievements[t[b]] == nil then
+		  return true
+		end
+		if _G.passive_achievements[t[a]] == nil and _G.passive_achievements[t[b]] then
+		  return false
+		end
 	end,
 }
+
+local kill_list_dict = {}
 
 function reorderPassiveAchievements()
   local order = {}
   for i, v in spairs(_G.passive_achievements_order, sort_functions["Level"]) do
-	table.insert(order, v)
+	if _G.passive_achievements[v] then
+	  table.insert(order, v)
+	  if _G.passive_achievements[v].kill_target then
+	    kill_list_dict[_G.passive_achievements[v].kill_target] = v
+	  end
+	end
   end
   _G.passive_achievements_order = order
 end
 
 other_hardcore_character_cache = {} -- dict of player name & server to character data
+
+function HCGeneratePassiveAchievementCraftedDescription(set_name, level_cap, faction)
+	local faction_info = "" 
+	if faction then
+	  if faction == "Horde" then
+	    faction_info = "\r|cff8c1616Horde Only|r"
+	  elseif faction == "Alliance" then
+	    faction_info = "\r|cff004a93Alliance Only|r"
+	  end
+	end
+	return "Complete the Hardcore challenge after crafting the |cff00FF00" .. set_name .. "|r before reaching level " .. level_cap + 1 .. faction_info
+end
+
+function HCGeneratePassiveAchievementItemAcquiredDescription(item, rarity, level_cap, faction)
+	local faction_info = "" 
+	if faction then
+	  if faction == "Horde" then
+	    faction_info = "\r|cff8c1616Horde Only|r"
+	  elseif faction == "Alliance" then
+	    faction_info = "\r|cff004a93Alliance Only|r"
+	  end
+	end
+	return "Complete the Hardcore challenge after acquiring |cff00FF00[" .. item .. "]|r before reaching level " .. level_cap + 1 .. faction_info
+end
+
+function HCGeneratePassiveAchievementBasicQuestDescription(quest_name, zone, level_cap, faction)
+	local faction_info = "" 
+	if faction then
+	  if faction == "Horde" then
+	    faction_info = "\r|cff8c1616Horde Only|r"
+	  elseif faction == "Alliance" then
+	    faction_info = "\r|cff004a93Alliance Only|r"
+	  end
+	end
+	return "Complete the Hardcore challenge after having completed the |cffffff00" .. quest_name .. "|r quest before reaching level " .. level_cap + 1 .. "\n\n|cff808080" .. zone .. "|r" .. faction_info
+end
+
+function HCGeneratePassiveAchievementKillDescription(kill_target, quest_name, zone, level_cap, faction)
+	local faction_info = "" 
+	if faction then
+	  if faction == "Horde" then
+	    faction_info = "\r|cff8c1616Horde Only|r"
+	  elseif faction == "Alliance" then
+	    faction_info = "\r|cff004a93Alliance Only|r"
+	  end
+	end
+	return "Complete the Hardcore challenge after killing |cffFFB9AA" .. kill_target .. "|r and having completed the |cffffff00" .. quest_name .. "|r quest before reaching level " .. level_cap + 1 .. "\n\n|cff808080" .. zone .. "|r" .. faction_info
+end
+
+local passive_achievement_kill_handler = CreateFrame("Frame") 
+passive_achievement_kill_handler:RegisterEvent("CHAT_MSG_COMBAT_XP_GAIN")
+
+passive_achievement_kill_handler:SetScript("OnEvent", function(self, event, ...)
+	local arg = { ... }
+	if event == "CHAT_MSG_COMBAT_XP_GAIN" then
+		local combat_log_payload = { CombatLogGetCurrentEventInfo() }
+		local v = arg[1]:match("(.+) dies")
+		if kill_list_dict[v] then
+		  if Hardcore_Character then
+		    if Hardcore_Character.kill_list_dict == nil then
+		      Hardcore_Character.kill_list_dict = {}
+		    end
+
+		    if Hardcore_Character.kill_list_dict[v] == nil then
+		      if _G.passive_achievements[kill_list_dict[v]] then
+			Hardcore:Print("[" .. _G.passive_achievements[kill_list_dict[v]].title .. "] You have slain " .. v .. "!  Remember to /reload when convenient to save your progress.")
+		      end
+		    end
+		    Hardcore_Character.kill_list_dict[v] = 1
+		  end
+		end
+	end
+end)
+
+function HCCommonPassiveAchievementBasicQuestCheck(_achievement, _event, _args)
+	if _event == "QUEST_TURNED_IN" then
+		if _args[1] == _achievement.quest_num and UnitLevel("player") <= _achievement.level_cap then
+			_achievement.succeed_function_executor.Succeed(_achievement.name)
+		end
+	end
+end
+
+function HCCommonPassiveAchievementKillCheck(_achievement, _event, _args)
+	if _event == "QUEST_TURNED_IN" then
+		if _args[1] == _achievement.quest_num and UnitLevel("player") <= _achievement.level_cap and Hardcore_Character.kill_list_dict[_achievement.kill_target] then
+			_achievement.succeed_function_executor.Succeed(_achievement.name)
+		end
+	end
+end
+
+function HCCommonPassiveAchievementItemAcquiredCheck(_achievement, _event, _args)
+	if _achievement.item == nil then Hardcore:Print("Achievement doesn't have a specified item") end
+	if _event == "CHAT_MSG_LOOT" then
+		if string.match(_args[1], _achievement.item) and UnitLevel("player") <= _achievement.level_cap then
+			_achievement.succeed_function_executor.Succeed(_achievement.name)
+		end
+	end
+end
+
+function HCCommonPassiveAchievementCraftedCheck(_achievement, _event, _args)
+	if _achievement.craft_set == nil then Hardcore:Print("Achievement doesn't have a specified item") end
+	if _event == "CHAT_MSG_LOOT" then
+		for k, _ in pairs(_achievement.craft_set) do
+			if string.match(_args[1], k) and string.match(_args[1], "You create") and UnitLevel("player") <= _achievement.level_cap then
+				if Hardcore_Character then
+				  if Hardcore_Character.crafted_list_dict == nil then
+				    Hardcore_Character.crafted_list_dict = {}
+				  end
+
+				  Hardcore_Character.crafted_list_dict[k] = 1
+				  for craft_item, _ in pairs(_achievement.craft_set) do
+					if Hardcore_Character.crafted_list_dict[craft_item] == nil then
+					  Hardcore:Print("[" .. _achievement.title .. "] You have crafted " .. k .. "!  Remember to /reload when convenient to save your progress.")
+					  return
+					end
+				  end
+				  _achievement.succeed_function_executor.Succeed(_achievement.name)
+				end
+			end
+		end
+	end
+end

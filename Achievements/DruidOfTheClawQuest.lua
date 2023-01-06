@@ -4,13 +4,15 @@ _G.passive_achievements.DruidOfTheClawQuest = _achievement
 
 -- General info
 _achievement.name = "DruidOfTheClawQuest"
-_achievement.title = "Druid Of The Claw"
+_achievement.title = "Deep in the Ban'ethil Barrow Den"
 _achievement.class = "All"
 _achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_druid_of_the_claw_quest.blp"
 _achievement.level_cap = 9
 _achievement.quest_num = 2561
-_achievement.description =
-	"Complete |cffffff00Druid Of The Claw|r before reaching level " .. _achievement.level_cap .. "."
+_achievement.quest_name = "Druid of the Claw"
+_achievement.zone = "Teldrassil"
+_achievement.kill_target = "Rageclaw"
+_achievement.description = HCGeneratePassiveAchievementKillDescription(_achievement.kill_target, _achievement.quest_name, _achievement.zone, _achievement.level_cap, "Alliance")
 _achievement.restricted_game_versions = {
 	["WotLK"] = 1,
 }
@@ -28,10 +30,5 @@ end
 -- Register Definitions
 _achievement:SetScript("OnEvent", function(self, event, ...)
 	local arg = { ... }
-	if event == "QUEST_TURNED_IN" then
-		if arg[1] == _achievement.quest_num and UnitLevel("player") <= _achievement.level_cap then
-			Hardcore:Print("Congrats! You have achieved " .. _achievement.title)
-			_achievement.succeed_function_executor.Succeed(_achievement.name)
-		end
-	end
+	HCCommonPassiveAchievementKillCheck(_achievement, event, arg)
 end)

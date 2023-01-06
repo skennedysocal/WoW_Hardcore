@@ -1255,13 +1255,26 @@ local function DrawAccountabilityTab(container)
 							.. ":16:16:0:0:64:64:4:60:4:60|t"
 					end
 				end
+				for i, achievement_name in ipairs(other_hardcore_character_cache[player_name_short].passive_achievements) do
+					if _G.passive_achievements[achievement_name] then
+						inline_text = inline_text
+							.. "|T"
+							.. _G.passive_achievements[achievement_name].icon_path
+							.. ":16:16:0:0:64:64:4:60:4:60|t"
+					end
+				end
 				_label_tbls["achievement_label"]:SetText(inline_text)
 				_label_tbls["achievement_label"]:SetCallback("OnEnter", function(widget)
 					GameTooltip:SetOwner(WorldFrame, "ANCHOR_CURSOR")
-					GameTooltip:AddLine("Active achievements")
+					GameTooltip:AddLine("achievements")
 					for i, achievement_name in ipairs(other_hardcore_character_cache[player_name_short].achievements) do
 						if _G.achievements[achievement_name] then
 							GameTooltip:AddLine(_G.achievements[achievement_name].title)
+						end
+					end
+					for i, achievement_name in ipairs(other_hardcore_character_cache[player_name_short].passive_achievements) do
+						if _G.passive_achievements[achievement_name] then
+							GameTooltip:AddLine(_G.passive_achievements[achievement_name].title)
 						end
 					end
 					GameTooltip:Show()
@@ -1770,9 +1783,9 @@ function ShowMainMenu(_hardcore_character, _hardcore_settings, dk_button_functio
 		{ value = "LevelsTab", text = "Levels" },
 		{ value = "DungeonsTab", text = "Dungeons" },
 		{ value = "AccountabilityTab", text = "Accountability" },
-		{ value = "AchievementsTab", text = "Achievements" },
-		-- { value = "AchievementsTab", text = "Active Achievements" },
-		-- { value = "PassiveAchievementsTab", text = "Passive Achievements" },
+		-- { value = "AchievementsTab", text = "Achievements" },
+		{ value = "AchievementsTab", text = "Active Achievements" },
+		{ value = "PassiveAchievementsTab", text = "Passive Achievements" },
 	}) -- ,
 	tabcontainer:SetFullWidth(true)
 	tabcontainer:SetFullHeight(true) -- probably?

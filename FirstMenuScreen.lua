@@ -569,7 +569,7 @@ end
 		{ value = "WelcomeTab", text = "General" },
 		{ value = "PartyTab", text = "Party" },
 		{ value = "AchievementsTab", text = "Active Achievements" },
-		-- { value = "PassiveAchievementsTab", text = "Passive Achievements" },
+		{ value = "PassiveAchievementsTab", text = "Passive Achievements" },
 	}) -- ,
 	tabcontainer:SetFullWidth(true)
 	tabcontainer:SetFullHeight(true) -- probably?

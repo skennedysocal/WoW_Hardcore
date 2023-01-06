@@ -19,6 +19,8 @@ along with the Hardcore AddOn. If not, see <http://www.gnu.org/licenses/>.
 
 --[[ Const variables ]]
 --
+StaticPopupDialogs["CHAT_CHANNEL_PASSWORD"] = nil
+--CHAT_WRONG_PASSWORD_NOTICE = nil
 local GRIEF_WARNING_OFF = 0
 local GRIEF_WARNING_SAME_FACTION = 1
 local GRIEF_WARNING_ENEMY_FACTION = 2
@@ -72,6 +74,7 @@ Hardcore_Character = {
 	trade_partners = {},
 	grief_warning_conditions = GRIEF_WARNING_BOTH_FACTIONS,
 	achievements = {},
+	passive_achievements = {},
 	party_mode = "Solo",
 	team = {},
 	first_recorded = -1,
@@ -84,6 +87,8 @@ Hardcore_Character = {
 
 --[[ Local variables ]]
 --
+local online_player_ranks = {}
+local last_received_xguild_chat = ""
 local debug = false
 local expecting_achievement_appeal = false
 local loaded_inspect_frame = false
@@ -114,6 +119,15 @@ local bubble_hearth_vars = {
 	light_of_elune_name = "Light of Elune",
 }
 
+-- Ranks
+local hc_id2rank = {
+  ["1"] = "officer"
+}
+
+local hc_rank2id = {
+  ["officer"] = "1"
+}
+
 -- addon communication
 local CTL = _G.ChatThrottleLib
 local COMM_NAME = "HardcoreAddon"
@@ -140,6 +154,7 @@ local COMM_COMMANDS = {
 	"XGUILD_DEAD", -- Send death message to other guild
 	"XGUILD_CHAT_RELAY", -- Send chat message a player in another guild to relay
 	"XGUILD_CHAT", -- Send chat message to other guild
+	"NOTIFY_RANKING",
 }
 local COMM_SPAM_THRESHOLD = { -- msgs received within durations (s) are flagged as spam
 	PULSE = 3,
@@ -359,6 +374,14 @@ end
 
 local failure_function_executor = { Fail = FailureFunction }
 
+function SuccessFunction(achievement_name)
+	table.insert(Hardcore_Character.passive_achievements, achievement_name)
+	Hardcore:Print("Achieved " .. _G.passive_achievements[achievement_name].title)
+end
+
+local success_function_executor = { Succeed = SuccessFunction }
+
+
 --[[ Command line handler ]]
 --
 
@@ -371,7 +394,7 @@ local function djb2(str)
 end
 
 local function GetCode(ach_num)
-  local str = UnitName("player") .. UnitLevel("player") .. ach_num
+  local str = UnitName("player"):sub(1,5) .. UnitLevel("player") .. ach_num
   return djb2(str)
 end
 
@@ -520,7 +543,7 @@ local function SlashHandler(msg, editbox)
 			return
 		end
 
-		if tonumber(GetCode(ach_num)) == tonumber(code) then
+		if tostring(GetCode(ach_num)):sub(1,10) == tostring(tonumber(code)):sub(1,10) then
 		  for i,v in ipairs(Hardcore_Character.achievements) do
 		    if v == _G.id_a[ach_num] then
 		      return
@@ -532,9 +555,108 @@ local function SlashHandler(msg, editbox)
 		else
 		  Hardcore:Print("Incorrect code. Double check with a moderator." .. GetCode(ach_num) .. " " .. code)
 		end
-		
 	elseif cmd == "AppealDungeonCode" then
 		Hardcore:DungeonTrackerHandleAppealCode( args )
+	elseif cmd == "AppealPassiveAchievementCode" then
+		local code = nil
+		local ach_num = nil
+		for substring in args:gmatch("%S+") do
+		  if code == nil then
+			code = substring
+		  else
+			ach_num = substring
+		  end
+		end
+		if code == nil then
+			Hardcore:Print("Wrong syntax: Missing first argument")
+			return
+		end
+		if ach_num == nil or _G.ach then
+			Hardcore:Print("Wrong syntax: Missing second argument")
+			return
+		end
+
+		if _G.passive_achievements[_G.id_pa[ach_num]] == nil then
+			Hardcore:Print("Wrong syntax: achievement isn't found for " .. ach_num)
+			return
+		end
+
+		if tostring(GetCode(ach_num)):sub(1,10) == tostring(tonumber(code)):sub(1,10) then
+		  for i,v in ipairs(Hardcore_Character.passive_achievements) do
+		    if v == _G.id_pa[ach_num] then
+		      return
+		    end
+		  end
+		  table.insert(Hardcore_Character.passive_achievements, _G.passive_achievements[_G.id_pa[ach_num]].name)
+		  Hardcore:Print("Appealed " .. _G.passive_achievements[_G.id_pa[ach_num]].name .. " challenge!")
+		else
+		  Hardcore:Print("Incorrect code. Double check with a moderator." .. GetCode(ach_num) .. " " .. code)
+		end
+	elseif cmd == "SetRank" then
+		local code = nil
+		local ach_num = nil
+		local rank = nil
+		local iters = 0
+		for substring in args:gmatch("%S+") do
+		  if iters == 0 then
+			code = substring
+		  elseif iters == 1 then
+			ach_num = substring
+		  elseif iters == 2 then
+			rank = substring
+		  end
+		  iters = iters + 1
+		end
+		if code == nil then
+			Hardcore:Print("Wrong syntax: Missing first argument")
+			return
+		end
+		if ach_num == nil or _G.ach then
+			Hardcore:Print("Wrong syntax: Missing second argument")
+			return
+		end
+		if rank == nil then
+			Hardcore:Print("Wrong syntax: Missing third argument")
+			return
+		end
+
+		if tostring(GetCode(-1)):sub(1,10) == tostring(tonumber(code)):sub(1,10) then
+		  Hardcore_Settings.rank_type = rank
+		  Hardcore:Print("Set rank to " .. rank)
+		else
+		  Hardcore:Print("Incorrect code. Double check with a moderator." .. GetCode(-1) .. " " .. code)
+		end
+	elseif cmd == "AppealTradePartners" then
+		local code = nil
+		local ach_num = nil
+		local iters = 0
+		for substring in args:gmatch("%S+") do
+		  if iters == 0 then
+			code = substring
+		  elseif iters == 1 then
+			ach_num = substring
+		  end
+		  iters = iters + 1
+		end
+		if code == nil then
+			Hardcore:Print("Wrong syntax: Missing first argument")
+			return
+		end
+		if ach_num == nil or _G.ach then
+			Hardcore:Print("Wrong syntax: Missing second argument")
+			return
+		end
+		if rank == nil then
+			Hardcore:Print("Wrong syntax: Missing third argument")
+			return
+		end
+
+		if tostring(GetCode(-1)):sub(1,10) == tostring(tonumber(code)):sub(1,10) then
+		  Hardcore_Character.trade_partners = {}
+		  Hardcore:Print("Appealed Trade partners")
+		else
+		  Hardcore:Print("Incorrect code. Double check with a moderator." .. GetCode(-1) .. " " .. code)
+		end
 	else
 		-- If not handled above, display some sort of help message
 		Hardcore:Print("|cff00ff00Syntax:|r/hardcore [command] [options]")
@@ -558,6 +680,7 @@ local saved_variable_meta = {
 	{ key = "trade_partners", initial_data = {} },
 	{ key = "grief_warning_conditions", initial_data = GRIEF_WARNING_BOTH_FACTIONS },
 	{ key = "achievements", initial_data = {} },
+	{ key = "passive_achievements", initial_data = {} },
 	{ key = "party_mode", initial_data = "Solo" },
 	{ key = "team", initial_data = {} },
 	{ key = "first_recorded", initial_data = -1 },
@@ -850,6 +973,10 @@ function Hardcore:PLAYER_LOGIN()
 		Hardcore_Character.achievements = {}
 	end
 
+	if Hardcore_Character.passive_achievements == nil then
+		Hardcore_Character.passive_achievements = {}
+	end
+
 	-- Adds HC character tab functionality
 	hooksecurefunc("CharacterFrameTab_OnClick", function(self, button)
 		local name = self:GetName()
@@ -939,6 +1066,9 @@ function Hardcore:PLAYER_LOGIN()
 			_G.achievements[v]:Register(failure_function_executor, Hardcore_Character)
 			any_acheivement_registered = true
 		end
+	end
+	for i, v in pairs(_G.passive_achievements) do
+		v:Register(success_function_executor, Hardcore_Character)
 	end
 	if any_acheivement_registered then
 		Hardcore:Print(
@@ -1157,6 +1287,7 @@ function Hardcore:INSPECT_READY(...)
 		else
 			local _default_hardcore_character = {
 				achievements = {},
+				passive_achievements = {},
 				party_mode = "Solo",
 				team = {},
 				first_recorded = -1,
@@ -2194,6 +2325,10 @@ end
 
 -- player name, level, zone, attack_source, class
 local function receiveXGuildChat(data, sender, command)
+	if last_received_xguild_chat and last_received_xguild_chat == data then
+	      return
+	end
+	last_received_xguild_chat = data
 	Hardcore:FakeGuildMsg(data)
 end
 
@@ -2215,6 +2350,8 @@ local function receiveDeathMsg(data, sender, command)
 		end
 		local alert_msg = other_player_name .. " the " .. class .. " has died at level " .. level .. " in " .. zone
 
+		local min_level = tonumber(Hardcore_Settings.minimum_show_death_alert_lvl) or 0
+		if tonumber(level) < tonumber(min_level) then return end
 		if UnitInRaid("player") == nil then
 			Hardcore:ShowAlertFrame(ALERT_STYLES.death, alert_msg)
 			return
@@ -2274,9 +2411,16 @@ function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
 			Hardcore:SendCharacterData(name)
 			return
 		end
+		if command == COMM_COMMANDS[14] then -- Received request for hc character data
+			local name, _ = string.split("-", sender)
+			if hc_id2rank[data] then
+				online_player_ranks[name] = hc_id2rank[data]
+				return
+			end
+		end
 		if command == COMM_COMMANDS[4] then -- Received hc character data
 			local name, _ = string.split("-", sender)
-			local version_str, creation_time, achievements_str, _, party_mode_str, _, _, team_str, hc_tag =
+			local version_str, creation_time, achievements_str, _, party_mode_str, _, _, team_str, hc_tag, passive_achievements_str =
 				string.split(COMM_FIELD_DELIM, data)
 			local achievements_l = { string.split(COMM_SUBFIELD_DELIM, achievements_str) }
 			other_achievements_ds = {}
@@ -2285,10 +2429,22 @@ function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
 					table.insert(other_achievements_ds, _G.id_a[id])
 				end
 			end
+
+			other_passive_achievements_ds = {}
+			if passive_achievements_str then
+			  local passive_achievements_l = { string.split(COMM_SUBFIELD_DELIM, passive_achievements_str) }
+			  for i, id in ipairs(passive_achievements_l) do
+				  if _G.id_pa[id] ~= nil then
+					  table.insert(other_passive_achievements_ds, _G.id_pa[id])
+				  end
+			  end
+			end
+
 			local team_l = { string.split(COMM_SUBFIELD_DELIM, team_str) }
 			other_hardcore_character_cache[name] = {
 				first_recorded = creation_time,
 				achievements = other_achievements_ds,
+				passive_achievements = other_passive_achievements_ds,
 				party_mode = party_mode_str,
 				version = version_str,
 				team = team_l,
@@ -2368,11 +2524,23 @@ function Hardcore:CHAT_MSG_SAY(...)
 	if self:SetRecentMsg(...) then
 		recent_msg["type"] = 0
 	end
+
+	local arg = { ... }
+	if Hardcore_Settings.rank_type and Hardcore_Settings.rank_type == "officer" and arg[5] == UnitName("player") then
+			local commMessage = COMM_COMMANDS[14] .. COMM_COMMAND_DELIM .. hc_rank2id[Hardcore_Settings.rank_type]
+			CTL:SendAddonMessage("BULK", COMM_NAME, commMessage, "GUILD")
+	end
 end
 
 function Hardcore:CHAT_MSG_GUILD(...)
 	if self:SetRecentMsg(...) then
 		recent_msg["type"] = 2
+	end
+
+	local arg = { ... }
+	if Hardcore_Settings.rank_type and Hardcore_Settings.rank_type == "officer" and arg[5] == UnitName("player") then
+			local commMessage = COMM_COMMANDS[14] .. COMM_COMMAND_DELIM .. hc_rank2id[Hardcore_Settings.rank_type]
+			CTL:SendAddonMessage("BULK", COMM_NAME, commMessage, "GUILD")
 	end
 end
 
@@ -2510,6 +2678,8 @@ function Hardcore:Add(data, sender, command)
 						local mapData = C_Map.GetMapInfo(mapID) -- In case some idiot sends an invalid map ID, it won't cause mass lua errors.
 						zone = mapData and mapData.name or zone -- If player is in an instance, will have to get zone from guild roster.
 					end
+					local min_level = tonumber(Hardcore_Settings.minimum_show_death_alert_lvl) or 0
+					if level < tonumber(min_level) then return end
 					level = level > 0 and level < 61 and level or guildLevel -- If player is using an older version of the addon, will have to get level from guild roster.
 					local messageFormat = "%s the %s%s|r has died at level %d in %s"
 					if command == COMM_COMMANDS[6] then
@@ -3261,6 +3431,10 @@ function Hardcore:SendCharacterData(dest)
 
 		commMessage = commMessage .. (Hardcore_Character.hardcore_player_name or "") .. COMM_FIELD_DELIM -- Add Version
 
+		for i, v in ipairs(Hardcore_Character.passive_achievements) do
+			commMessage = commMessage .. _G.pa_id[v] .. COMM_SUBFIELD_DELIM -- Add unknown creation time
+		end
+
 		CTL:SendAddonMessage("ALERT", COMM_NAME, commMessage, "WHISPER", dest)
 	end
 end
@@ -3411,6 +3585,16 @@ function Hardcore:ApplyAlertFrameSettings()
 	Hardcore_Alert_Frame:SetPoint("TOP", "UIParent", "TOP", x_offset / scale, y_offset / scale)
 end
 
+ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", function(frame, event, message, sender, ...)
+	local _name, _ = string.split("-", sender)
+	if online_player_ranks[_name] and online_player_ranks[_name] == "officer" then
+	  message = "\124cFFFF0000<MOD>\124r " .. message
+	  -- message = "|T" .. "Interface\\Addons\\Hardcore\\Media\\icon_crown.blp" .. ":8:8:0:0:64:64:4:60:4:60|t " .. message
+	end
+
+	return false, message, sender, ... -- don't hide this message
+end)
+
 ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", function(frame, event, message, sender, ...)
 	if Hardcore_Settings.filter_f_in_chat then
 		if message == "f" or message == "F" then
@@ -3421,6 +3605,12 @@ ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", function(frame, event, message
 		if guild_versions[sender] then
 			message = "|cfffd9122[" .. guild_versions[sender] .. "]|r " .. message
 		end
+	end
+
+	local _name, _ = string.split("-", sender)
+	if online_player_ranks[_name] and online_player_ranks[_name] == "officer" then
+	  message = "\124cFFFF0000<MOD>\124r " .. message
+	  -- message = "|T" .. "Interface\\Addons\\Hardcore\\Media\\icon_crown.blp" .. ":8:8:0:0:64:64:4:60:4:60|t " .. message -- crown
 	end
 	return false, message, sender, ... -- don't hide this message
 	-- note that you must return *all* of the values that were passed to your filter, even ones you didn't change
@@ -3534,6 +3724,18 @@ local options = {
 					end,
 					set = function(info, value)
 						Hardcore:SetGriefAlertCondition(value)
+					end,
+					order = 3,
+				},
+				minimum_alert_level = {
+					type = "input",
+					name = "Minimum Alert Level",
+					desc = "Minimum Alert Level",
+					get = function()
+						return Hardcore_Settings.minimum_show_death_alert_lvl or "0"
+					end,
+					set = function(info, val)
+						Hardcore_Settings.minimum_show_death_alert_lvl = val
 					end,
 					order = 3,
 				},
@@ -3759,6 +3961,7 @@ local options = {
 LibStub("AceConfig-3.0"):RegisterOptionsTable("Hardcore", options)
 optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions("Hardcore", "Hardcore")
 
+reorderPassiveAchievements()
 --[[ Start Addon ]]
 --
 Hardcore:Startup()

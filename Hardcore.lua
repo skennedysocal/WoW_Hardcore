@@ -532,7 +532,9 @@ local function SlashHandler(msg, editbox)
 		else
 		  Hardcore:Print("Incorrect code. Double check with a moderator." .. GetCode(ach_num) .. " " .. code)
 		end
-
+		
+	elseif cmd == "AppealDungeonCode" then
+		Hardcore:DungeonTrackerHandleAppealCode( args )
 	else
 		-- If not handled above, display some sort of help message
 		Hardcore:Print("|cff00ff00Syntax:|r/hardcore [command] [options]")
@@ -1424,25 +1426,26 @@ function Hardcore:DungeonTrackerGetDungeonMaxLevel( name )
 		["Uldaman"] = {51, 44},
 		["Zul'Farrak"] = {54, 50},
 		["Maraudon"] = {55, 52},
-		["Sunken Temple"] = {60, 54},
+		["The Temple of Atal'Hakkar"] = {60, 54},
 		["Blackrock Depths"] = {60, 60},
-		["Lower Blackrock Spire"] = {60, 62},
+		["Blackrock Spire"] = {60, 62},
 		["Scholomance"] = {60, 62},
 		["Dire Maul"] = {60, 62},
-		["Upper Blackrock Spire"] = {60, 62},
 		["Stratholme"] = {60, 62},
+		-- TBC
 		["Hellfire Ramparts"] = {1000,64},
 		["Blood Furnace"] = {1000,65},
 		["The Slave Pens"] = {1000,66},
 		["The Underbog"] = {1000,66},
 		["Mana Tombs"] = {1000,68},
+		-- WotLK
 		["Utgarde Keep"] = {1000,74},
 		["Nexus"] = {1000,75},
 		["Azjol-Nerub"] = {1000,76},
 		["Ahn'kahet"] = {1000,77},
 		["Drak'Tharon Keep"] = {1000,78},
 		["Violet Hold"] = {1000,79},
-		["Grundrak"] = {1000,80},
+		["Gundrak"] = {1000,80},
 		["Halls of Stone"] = {1000,80},
 		["Halls of Lightning"] = {1000,80},
 		["The Culling of Stratholme"] = {1000,80},
@@ -1470,7 +1473,6 @@ function Hardcore:DungeonTrackerGetDungeonMaxLevel( name )
 end
 
 
-
 function Hardcore:DungeonTrackerPopulateFromQuests()
 
 	-- Try to guess the dungeon history prior to tracking by looking at the dungeon quests that have been 
@@ -1485,74 +1487,74 @@ function Hardcore:DungeonTrackerPopulateFromQuests()
 	-- Start looking for finished quests
 	local dungeon_quests = {
 	
-		["Ragefire Chasm"]  = { 5728, 5761, 5722, 5723, 5725 },		-- All 5 quests in RFC
-		["The Deadmines"] = { 2040, 166, 214, 373},					-- Underground Assault, The Defias Brotherhood, Red Silk Bandanas, The Unsent Letter
-		["Wailing Caverns"] = { 914, 1487, 3366},					-- Leaders of the Fang, Deviate Eradication, The Glowing Shard
-		["Shadowfang Keep"] = { 1013, 1098, 1014},					-- The Book of Ur, Deathstalkers in Shadowfang, Arugal Must Die
-		["Blackfathom Deeps"] = { 971, 1198, 1199, 1275, 6565, 6921, 1200, 6561, 6922 },
-		["The Stockade"] = { 387, 386, 378, 388, 377, 391},
-		["Razorfen Kraul"] = { 1221, 1102, 1109, 1101, 1144, 1142, 6522},
-		["Gnomeregan"] = { 2904, 2951, 2945, 2922, 2928, 2924, 2930, 2929, 2841 },
-		["Razorfen Downs"] = { 3636, 3341, 3525 },
-		--["Scarlet Monastery (GY)"] = {},							-- No quests here
-		["Scarlet Monastery (Lib)"] = { 1050, 1053, 1049, 1048, 1160, 1951},	-- 1048+1053: kill 4 bosses needs Lib+Cath+Arm
-		["Scarlet Monastery (Cath)"] = { 1053, 1048 },
-		["Scarlet Monastery (Arm)"] = { 1053, 1048 },
-		["Uldaman"] = { 1360, 722, 2240, 17, 1139, 2204, 2342, 709, 2278, },
-		["Zul'Farrak"] = { 3042, 2865, 2846, 2768, 2770, 3527, 2991, 2936 },
-		["Maraudon"] = { 7041, 7029, 7065, 7064, 7067, 7044, 7046},
-		-- TODO: add more dungeons here
-		["Sunken Temple"] = {},
-		["Blackrock Depths"] = {},
-		["Lower Blackrock Spire"] = {},
-		["Scholomance"] = {},
-		["Dire Maul"] = {},
-		["Upper Blackrock Spire"] = {},
-		["Stratholme"] = {},
-		["Hellfire Ramparts"] = {},
-		["Blood Furnace"] = {},
-		["The Slave Pens"] = {},
-		["The Underbog"] = {},
-		["Mana Tombs"] = {},
-		["Utgarde Keep"] = {},
-		["Nexus"] = {},
-		["Azjol-Nerub"] = {},
-		["Ahn'kahet"] = {},
-		["Drak'Tharon Keep"] = {},
-		["Violet Hold"] = {},
-		["Grundrak"] = {},
-		["Halls of Stone"] = {},
-		["Halls of Lightning"] = {},
-		["The Culling of Stratholme"] = {},
-		["The Oculus"] = {},
-		["Utgarde Pinnacle"] = {},
-		["Forge of Souls"] = {},
-		["Pit of Saron"] = {},
-		["Halls of Reflection"] = {},
-		["Trial of the Champion"] = {}
+		{ "Ragefire Chasm", 5728, 5761, 5722, 5723, 5725 },		-- All 5 quests in RFC
+		{ "The Deadmines", 2040, 166, 214, 373},					-- Underground Assault, The Defias Brotherhood, Red Silk Bandanas, The Unsent Letter
+		{ "Wailing Caverns", 914, 1487, 3366},					-- Leaders of the Fang, Deviate Eradication, The Glowing Shard
+		{ "Shadowfang Keep", 1013, 1098, 1014},					-- The Book of Ur, Deathstalkers in Shadowfang, Arugal Must Die
+		{ "Blackfathom Deeps", 971, 1198, 1199, 1275, 6565, 6921, 1200, 6561, 6922 },
+		{ "The Stockade", 387, 386, 378, 388, 377, 391},
+		{ "Razorfen Kraul", 1221, 1102, 1109, 1101, 1144, 1142, 6522},
+		{ "Gnomeregan", 2904, 2951, 2945, 2922, 2928, 2924, 2930, 2929, 2841 },
+		{ "Razorfen Downs", 3636, 3341, 3525 },
+		--{ "Scarlet Monastery (GY)"] = {},							-- No quests here
+		{ "Scarlet Monastery (Lib)", 1050, 1053, 1049, 1048, 1160, 1951},	-- 1048+1053: kill 4 bosses needs Lib+Cath+Arm
+		{ "Scarlet Monastery (Cath)", 1053, 1048 },
+		{ "Scarlet Monastery (Arm)", 1053, 1048 },
+		{ "Uldaman", 1360, 722, 2240, 17, 1139, 2204, 2342, 709, 2278, },
+		{ "Zul'Farrak", 3042, 2865, 2846, 2768, 2770, 3527, 2991, 2936 },
+		{ "Maraudon", 7041, 7029, 7065, 7064, 7067, 7044, 7046},
+		{ "The Temple of Atal'Hakkar", 3528, 3446, 3447, 1475, 4143, 4146, 3373 },
+		{ "Blackrock Depths", 4136, 4123, 4286, 4126, 4081, 4134},
+		{ "Blackrock Spire", 4701, 5001, 4724, 4982, 4903, 4862, 4729, 4788, 4768, 4974, 4764, 5102, 6821, 7761 },  -- UBRS and LBRS are one instance
+		{ "Scholomance", 5529, 5582, 5382, 5384, 5466, 5343, 5341},
+		{ "Dire Maul", 7488, 7489, 7441, 7461, 7462, 7703, 5526 },
+		{ "Stratholme", 5282, 5214, 5251, 5262, 5848, 5122, 5212, 5263, 5243, 5122, 6163, 5463, 8945},	-- Undead / Live parts are one instance
+		-- TBC
+		{ "Hellfire Ramparts", 9575, 9572, 9587, 9588 },
+		{ "Blood Furnace", 9607, 9608, 9589, 9590 },
+		{ "The Slave Pens", 9738 },
+		{ "The Underbog", 9738, 9717, 9719 },						-- 9715 removed because also drops in Steamvault
+		{ "Mana Tombs", 10216, 10218, 10165 },
+		-- WotLK
+		{ "Utgarde Keep", 11272, 13206, 11262, 13245, 13205, 11252 },
+		{ "Nexus", 13094, 13095, 11905, 11911, 11973, 13246 },
+		{ "Azjol-Nerub", 13167, 13182, 13254 },
+		{ "Ahn'kahet", 13187, 13204, 13190, 13255 },
+		{ "Drak'Tharon Keep", 12238, 12037, 13129, 13249 },
+		{ "Violet Hold", 13158, 13159, 13256 },
+		{ "Gundrak", 13098, 13096, 13111, 13250 },
+		{ "Halls of Stone", 13207, 13252 },
+		{ "Halls of Lightning", 13109, 13108, 13244, 13253 },
+		{ "The Culling of Stratholme", 13151, 13149, 13240, 13251 },
+		{ "The Oculus", 13124, 13126, 13127, 13128, 13240, 13247 },
+		{ "Utgarde Pinnacle", 13131, 13132, 13241, 13248 },
+		{ "Forge of Souls", 24506, 24510, 24511, 24499, 24682, 24683 },
+		{ "Pit of Saron", 24682, 24683, 24507, 24498, 24712, 24710, 24713, 24711, 24559, 24461 },
+		{ "Halls of Reflection", 24713, 24711, 24802, 24500, 24561, 24480 },
+		{ "Trial of the Champion", 14199 }
 	}
-	Hardcore:Print( "Logging legacy runs.." )
+	Hardcore:Debug( "Logging legacy runs.." )
 
 	-- Go through the list and log a run for each dungeon for which one or more quests are flagged as completed
-	for name, q_ids in pairs( dungeon_quests ) do
+	for i, v in pairs( dungeon_quests ) do
 		local dungeon_done = false
-		for _, id in pairs( q_ids ) do
-			if C_QuestLog.IsQuestFlaggedCompleted(id) then
-				Hardcore:Print( "Found legacy quest " .. id )
+		local j
+		for j = 2, #v do
+			if C_QuestLog.IsQuestFlaggedCompleted(v[j]) then
+				Hardcore:Debug( "Found legacy quest " .. v[j] )
 				dungeon_done = true
 				break
 			end
 		end
 		if dungeon_done == true then
 			DUNGEON_RUN = {}
-			DUNGEON_RUN.name   		 = name
+			DUNGEON_RUN.name   		 = v[1]
 			DUNGEON_RUN.date   		 = "(legacy)"
 			DUNGEON_RUN.time_inside  = 0
 			DUNGEON_RUN.level        = 0
-			DUNGEON_RUN.quest_id     = id
+			DUNGEON_RUN.quest_id     = v[j]
 			Hardcore:Print( "Logging legacy run in " .. DUNGEON_RUN.name )
 			table.insert( Hardcore_Character.dt.runs, DUNGEON_RUN )
-		
 		end
 	end
 end
@@ -1600,12 +1602,31 @@ function Hardcore:DungeonTrackerWarnInfraction( name )
 	if Hardcore_Character.dt.current.time_inside - Hardcore_Character.dt.current.last_warn < DT_WARN_INTERVAL then
 		return
 	end
+	
+	-- Don't warn at max level (they can do whatever dungeon then) or when the user turned warnings off
+	-- /run Hardcore_Character.dt.warn_infractions=false
+	if Hardcore_Character.dt.warn_infractions == false then
+		return
+	else
+		if Hardcore_Character.game_version ~= nil then
+			local max_level
+			if Hardcore_Character.game_version == "Era" or Hardcore_Character.game_version == "SoM" then
+				max_level = 60
+			else -- if Hardcore_Character.game_version == "WotLK" or anything else
+				max_level = 80
+			end
+			if UnitLevel( "player" ) >= max_level then
+				Hardcore_Character.dt.warn_infractions = false
+				return
+			end
+		end
+	end
 
 	-- See if the player's level is allowed in this dungeon
 	local max_level = Hardcore:DungeonTrackerGetDungeonMaxLevel( Hardcore_Character.dt.current.name )
 	if Hardcore_Character.dt.current.level > max_level then
 		Hardcore_Character.dt.current.last_warn = Hardcore_Character.dt.current.time_inside
-		message = "\124cffFF0000You are too high level for " .. name .. ", max level = " .. max_level .. 
+		message = "\124cffFF0000You are overleveled for " .. name .. ", max level = " .. max_level .. 
 				  " -- leave the dungeon within " .. time_left .. " seconds!"
 		Hardcore:Print(message)
 	end	
@@ -1625,36 +1646,38 @@ end
 
 function Hardcore:DungeonTrackerLogCurrentRun( run )
 
-	local message = "Logging run in " ..run.name
-
 	-- We don't log this run if the inside time is too small
 	if run.time_inside < DT_INSIDE_MAX_TIME then
-		Hardcore:Print( "Not logging short run in " .. run.name )
+		Hardcore:Debug( "Not logging short run in " .. run.name )
 		return
 	end
 	
 	-- Don't store an SM run without a wing -- if we didn't even run into any recognised mob, what's the point?
 	if run.name == "Scarlet Monastery" then
-		Hardcore:Print( "Not logging run in unidentified SM wing" )
+		Hardcore:Debug( "Not logging run in unidentified SM wing" )
 		return
 	end
 
-	-- Check if this is a repeated run and log
+	-- Warn if this is a repeated run and log
 	for i, v in ipairs(Hardcore_Character.dt.runs) do
 		if v.name == run.name then
-			message = "\124cffFF0000Player entered " .. run.name .. " already at date " .. v.date .. " -- logging repeated run"
+			if Hardcore.dt.warn_infractions == true then
+				Hardcore:Print( "\124cffFF0000Player entered " .. run.name .. " already at date " .. v.date .. " -- logging repeated run" )
+			end
 			break
 		end
 	end
 
-	-- Check if this is an overleveled run and log
+	-- Warn if this is an overleveled run and log
 	local max_level = Hardcore:DungeonTrackerGetDungeonMaxLevel( run.name )
 	if run.level > max_level then
-		message = "\124cffFF0000Player was overleveled for " .. run.name .. " -- logging overleveled run"
+		if Hardcore.dt.warn_infractions == true then
+			Hardcore:Print( "\124cffFF0000Player was overleveled for " .. run.name .. " -- logging overleveled run" )
+		end
 	end
 
 	-- Now actually log the run
-	Hardcore:Print( message )
+	Hardcore:Debug( "Logging run in " ..run.name )
 	table.insert( Hardcore_Character.dt.runs, run )
 
 	-- Update infraction statistics (involves a re-count)
@@ -1709,14 +1732,14 @@ function Hardcore:DungeonTrackerCheckChanged( name )
 				dt_forbidden = false
 				TargetUnit( npc, true )				-- This throws an exception if the unit is found; we catch this and change dt_forbidden
 				if dt_forbidden == true then
-					--Hardcore:Print( "Found " .. npc .. " in " .. wing )
+					--Hardcore:Debug( "Found " .. npc .. " in " .. wing )
 					-- We know where we are now, so set the proper wing name as dungeon name
 					name = name .. " (" .. wing .. ")"
 					-- Now check if we knew the wing already
 					if Hardcore_Character.dt.current.name == SM then
 						-- We didn't know the wing, so we set it and assume it didn't change
 						Hardcore_Character.dt.current.name = name
-						Hardcore:Print( "Identified SM wing " .. wing )
+						Hardcore:Debug( "Identified SM wing " .. wing )
 					end
 					break
 				end
@@ -1736,7 +1759,7 @@ function Hardcore:DungeonTrackerCheckChanged( name )
 	-- This should normally not happen, as once we're outside, the current dungeon is queued
 	if Hardcore_Character.dt.current.name ~= name then
 		-- Change to the new dungeon, but we store only if we spent enough time
-		Hardcore:Print( "Left dungeon " .. Hardcore_Character.dt.current.name .. " for dungeon " .. name )
+		Hardcore:Debug( "Left dungeon " .. Hardcore_Character.dt.current.name .. " for dungeon " .. name )
 		Hardcore:DungeonTrackerLogCurrentRun( Hardcore_Character.dt.current )
 		Hardcore_Character.dt.current = {}
 	end
@@ -1767,6 +1790,7 @@ function Hardcore:DungeonTracker()
 		Hardcore_Character.dt.repeated_runs = 0
 		Hardcore_Character.dt.overleveled_runs = 0
 		Hardcore_Character.dt.legacy_runs_imported = false
+		Hardcore_Character.dt.warn_infractions = true
 	end
 
 	-- If there are no logged runs yet, we try to figure out which dungeons were already done from the completed quests.
@@ -1792,7 +1816,7 @@ function Hardcore:DungeonTracker()
 	if instanceType == "none" then
 		-- Move current to pending
 		if next(Hardcore_Character.dt.current) then
-			Hardcore:Print( "Queuing active run in " .. Hardcore_Character.dt.current.name )
+			Hardcore:Debug( "Queuing active run in " .. Hardcore_Character.dt.current.name )
 			table.insert( Hardcore_Character.dt.pending, Hardcore_Character.dt.current )
 			Hardcore_Character.dt.current = {}
 		end
@@ -1822,7 +1846,7 @@ function Hardcore:DungeonTracker()
 		if( Hardcore_Character.dt.pending[i].name == name ) then
 			Hardcore_Character.dt.current = Hardcore_Character.dt.pending[ i ]
 			table.remove( Hardcore_Character.dt.pending, i )
-			Hardcore:Print( "Reconnected to pending run in " .. Hardcore_Character.dt.current.name )
+			Hardcore:Debug( "Reconnected to pending run in " .. Hardcore_Character.dt.current.name )
 			reconnected = true
 			break
 		end
@@ -1832,6 +1856,7 @@ function Hardcore:DungeonTracker()
 	if (reconnected == false) and (not next(Hardcore_Character.dt.current)) then
 		DUNGEON_RUN = {}
 		DUNGEON_RUN.name   		 = name
+		DUNGEON_RUN.id   		 = instanceID
 		DUNGEON_RUN.date   		 = date("%m/%d/%y %H:%M:%S")
 		DUNGEON_RUN.time_inside  = 0
 		DUNGEON_RUN.time_outside = 0
@@ -1848,7 +1873,7 @@ function Hardcore:DungeonTracker()
 		DUNGEON_RUN.party = group_composition
 		
 		Hardcore_Character.dt.current = DUNGEON_RUN
-		Hardcore:Print( "Starting new run in " .. Hardcore_Character.dt.current.name )
+		Hardcore:Debug( "Starting new run in " .. Hardcore_Character.dt.current.name )
 	end
 
 	-- Extend the current run (reconnected or new) by another time step and update the last_seen time
@@ -1860,15 +1885,127 @@ function Hardcore:DungeonTracker()
 	Hardcore:DungeonTrackerWarnInfraction(name)
 end
 
-
-
--- DungeonTrackerHandleModCommand()
+-- DungeonTrackerHandleAppealCode()
 --
 -- Handle a Mod command received through a coded string in chat
-function Hardcore:DungeonTrackerHandleModCommand( name )
+-- Specifying the date is only necessary when multiple dungeons are given
+--
+-- /hc AppealDungeonCode <hash> <cmd> <"dungeon name"> <"date">
+--
+-- /hc AppealDungeonCode <hash> delete <"dungeon name"> ["date"]
+-- /hc AppealDungeonCode <hash> merge  <"dungeon name"> <"date"> <"dungeon name"> <"date">
+--
+-- This function uses a proprietory cryptographic hash (yes, I know I shouldn't)
+-- different from djb2() above, because that one doesn't work for long strings
 
-		-- TODO TODO TODO
+local function GetCryptoHash( str )
 
+	local a = 0
+	local b = 0
+	local dictionary = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 /:"
+	
+	for i = 1, #str do
+		x, y = string.find( dictionary, str:sub(i,i), 1, true )
+		if x == nil then
+			x = #dictionary
+		end
+		for i=1, 17 do
+			a = (a * (-6) + b + 0x74FA - x) % 4096
+			b = (math.floor(b / 3) + a + 0x81BE - x) % 4096
+		end
+	end
+	return (a * 4096) + b
+end
+
+local function GetDungeonAppealCode( dungeon, date_str )
+  local str = UnitName("player") .. UnitLevel("player") .. dungeon .. date_str
+  return GetCryptoHash(str)
+end
+
+function Hardcore:DungeonTrackerHandleAppealCode( args )
+
+	local usage = "Usage: /hc AppealDungeonCode <code> <cmd> <args>\nwhere <cmd> = delete or merge"
+	local usage1 = "/hc AppealDungeonCode <code> delete \"dungeon name\" \"date\""
+	local usage2 = "/hc AppealDungeonCode <code> merge  <\"dungeon name\"> <\"date\"> <\"dungeon name\"> <\"date\">"
+	local code = nil
+	local cmd = nil
+	local quoted_args = {}
+
+	-- Check and retrieve code and command
+	for substring in args:gmatch("%S+") do
+		if code == nil then
+			code = substring
+		elseif cmd == nil then
+			cmd = substring
+		end
+	end
+	if code == nil then
+		Hardcore:Print("Wrong syntax: Missing first argument")
+		Hardcore:Print(usage)
+		return
+	end
+	if cmd == nil then
+		Hardcore:Print("Wrong syntax: Missing second argument")
+		Hardcore:Print(usage)
+		return
+	end
+
+	-- Retrieve arguments in quotes, chuck away the code and command and space between
+	for arg in args:gmatch('[^\"]+') do
+		table.insert( quoted_args, arg )
+	end
+	table.remove( quoted_args, 1 )		-- Remove the code and command
+	table.remove( quoted_args, 2 )		-- Remove the empty space
+		
+	if cmd == "delete" then
+		if #quoted_args < 2 then
+			Hardcore:Print("Wrong syntax: delete cmd should be followed by dungeon name and date string (both in quotes)" )
+			Hardcore:Print(usage1)
+			return
+		else
+			-- Look for the run with that dungeon and date
+			local run_found = false
+			local index = 0
+			for i,v in ipairs( Hardcore_Character.dt.runs ) do
+				if Hardcore_Character.dt.runs[ i ].name == quoted_args[1] and Hardcore_Character.dt.runs[ i ].date == quoted_args[2] then
+					run_found = true
+					index = i
+				end					
+			end
+			
+			-- If we find multiple matches, we don't do anything
+			if run_found == true then
+			
+				-- Check if the hash code is correct
+				local appeal_code = GetDungeonAppealCode( Hardcore_Character.dt.runs[ index ].name, Hardcore_Character.dt.runs[ index ].date )
+				
+				if tonumber( code ) ~= tonumber( appeal_code ) then
+					Hardcore:Print("Incorrect code. Double check with a moderator." )
+					return
+				end								
+				
+				-- Delete the run
+				Hardcore:Print("Removed dungeon run " .. Hardcore_Character.dt.runs[ index ].name .. " of " .. Hardcore_Character.dt.runs[ index ].date)
+				table.remove( Hardcore_Character.dt.runs, index )
+				Hardcore:DungeonTrackerUpdateInfractions()
+				return
+			else
+				local message = "Dungeon run in " .. quoted_args[1]
+				if #quoted_args == 2 then
+					message = message .. " of " .. quoted_args[2]
+				end
+				Hardcore:Print( message .. " not found!" )
+				return
+			end
+		end		
+	elseif cmd == "merge" then
+		Hardcore:Print("Merge command not yet implemented!" )
+		return
+	else
+		Hardcore:Print("Unknown command: " .. cmd )
+		Hardcore:Print(usage)
+		return
+	end
 
 end
 
@@ -1876,8 +2013,6 @@ end
 ------------------------------
 -- DUNGEON RUN TRACKING END --
 ------------------------------
-
-
 
 
 function Hardcore:TIME_PLAYED_MSG(...)

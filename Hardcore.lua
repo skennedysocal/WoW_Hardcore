@@ -896,8 +896,8 @@ TradeFrameTradeButton:SetScript("OnClick", function()
 	local level = UnitLevel("player")
 	local max_level = 60
 	if (Hardcore_Character.game_version ~= "") and
-	   (Hardcore_Character.game_version ~= "Era") and
-	   (Hardcore_Character.game_version ~= "SoM") then
+		(Hardcore_Character.game_version ~= "Era") and
+		(Hardcore_Character.game_version ~= "SoM") then
 		max_level = 80
 	end
 	if Hardcore_Character.team ~= nil then
@@ -909,15 +909,15 @@ TradeFrameTradeButton:SetScript("OnClick", function()
 		end
 	end
 	if duo_trio_partner == true then
-        AcceptTrade()        
-    else
+		AcceptTrade()
+	else
 		if level < max_level then
-        	Hardcore:Print("|cFFFF0000BLOCKED:|r You may not trade outside of duos/trios.")
+			Hardcore:Print("|cFFFF0000BLOCKED:|r You may not trade outside of duos/trios.")
 		else
 			table.insert(Hardcore_Character.trade_partners, target_trader)
-        	Hardcore_Character.trade_partners = Hardcore_FilterUnique(Hardcore_Character.trade_partners)
+			Hardcore_Character.trade_partners = Hardcore_FilterUnique(Hardcore_Character.trade_partners)
 		end
-    end
+	end
 end)
 
 --[[ Startup ]]

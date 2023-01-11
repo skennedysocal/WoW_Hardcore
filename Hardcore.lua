@@ -916,6 +916,7 @@ TradeFrameTradeButton:SetScript("OnClick", function()
 		else
 			table.insert(Hardcore_Character.trade_partners, target_trader)
 			Hardcore_Character.trade_partners = Hardcore_FilterUnique(Hardcore_Character.trade_partners)
+			AcceptTrade()
 		end
 	end
 end)

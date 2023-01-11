@@ -901,11 +901,11 @@ TradeFrameTradeButton:SetScript("OnClick", function()
 			end
 		end
 	end
-	if duo_trio_partner == false then
-		table.insert(Hardcore_Character.trade_partners, target_trader)
-		Hardcore_Character.trade_partners = Hardcore_FilterUnique(Hardcore_Character.trade_partners)
-	end
-	AcceptTrade()
+	if duo_trio_partner == true then
+        AcceptTrade()        
+    else
+        Hardcore:Print("|cFFFF0000BLOCKED:|r You may not trade outside of duos/trios.")        
+    end
 end)
 
 --[[ Startup ]]

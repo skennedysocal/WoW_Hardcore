@@ -11,6 +11,7 @@ _achievement.level_cap = 26
 _achievement.quest_num = 247
 _achievement.quest_name = "The Hunt Completed"
 _achievement.zone = "Darkshore"
+_achievement.faction = "Horde"
 _achievement.description = HCGeneratePassiveAchievementBasicQuestDescription(_achievement.quest_name, _achievement.zone, _achievement.level_cap, "Horde")
 _achievement.restricted_game_versions = {
 	["WotLK"] = 1,

@@ -12,6 +12,7 @@ _achievement.quest_num = 717
 _achievement.quest_name = "Tremors of the Earth"
 _achievement.zone = "Badlands"
 _achievement.kill_target = "Boss Tho'grun"
+_achievement.faction = "Alliance"
 _achievement.description = HCGeneratePassiveAchievementKillDescription(_achievement.kill_target, _achievement.quest_name, _achievement.zone, _achievement.level_cap, "Alliance")
 _achievement.restricted_game_versions = {
 	["WotLK"] = 1,

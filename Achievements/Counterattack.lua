@@ -12,6 +12,7 @@ _achievement.quest_num = 4021
 _achievement.quest_name = "Counterattack!"
 _achievement.zone = "The Barrens"
 _achievement.kill_target = "Warlord Krom'zar"
+_achievement.faction = "Horde"
 _achievement.description = HCGeneratePassiveAchievementKillDescription(_achievement.kill_target, _achievement.quest_name, _achievement.zone, _achievement.level_cap, "Horde")
 _achievement.restricted_game_versions = {
 	["WotLK"] = 1,

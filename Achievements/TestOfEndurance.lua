@@ -12,6 +12,7 @@ _achievement.quest_num = 1150
 _achievement.quest_name = "Test of Endurance"
 _achievement.zone = "Thousand Needles"
 _achievement.kill_target = "Grenka Bloodscreech"
+_achievement.faction = "Horde"
 _achievement.description = HCGeneratePassiveAchievementKillDescription(_achievement.kill_target, _achievement.quest_name, _achievement.zone, _achievement.level_cap, "Horde")
 _achievement.restricted_game_versions = {
 	["WotLK"] = 1,

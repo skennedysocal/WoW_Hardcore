@@ -98,6 +98,23 @@ Achievements/KimjaelIndeed.lua
 Achievements/Counterattack.lua
 Achievements/TidalCharmAcquired.lua
 Achievements/MasterLeatherworker.lua
+Achievements/MasterBlacksmith.lua
+Achievements/MasterAlchemist.lua
+Achievements/MasterEnchanter.lua
+Achievements/MasterTailoring.lua
+Achievements/MasterEngineering.lua
+Achievements/MasterSkinner.lua
+Achievements/MasterMiner.lua
+Achievements/MasterHerbalism.lua
+Achievements/MasterFishing.lua
+Achievements/MasterCooking.lua
+Achievements/MasterFirstAid.lua
+Achievements/Tainted.lua
+Achievements/TheDungeonCrawler.lua
+Achievements/SpeedrunnerFifteen.lua
+Achievements/SpeedrunnerThirty.lua
+Achievements/SpeedrunnerFortyFive.lua
+Achievements/SpeedrunnerSixty.lua
 Achievements/DarkHeart.lua
 Achievements/AgainstLordShalzaru.lua
 Achievements/TestOfEndurance.lua
@@ -127,8 +144,11 @@ Achievements/StinkysEscape.lua
 
 CharacterStatusScreen.lua
 InspectStatusScreen.lua
+AchievementTab.lua
 FirstMenuScreen.lua
 MainMenu.lua
+TextureUtils.lua
+TextureInfo.lua
 AchievementAlertFrame.lua
 Hardcore.lua
 

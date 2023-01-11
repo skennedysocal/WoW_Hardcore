@@ -111,6 +111,23 @@ _G.pa_id = {
 	HighChiefWinterfall = 41,
 	TidalCharmAcquired = 42,
 	MasterLeatherworker = 43,
+	MasterBlacksmith = 44,
+	MasterAlchemist = 45,
+	MasterEnchanter = 46,
+	MasterTailoring = 47,
+	MasterEngineering = 48,
+	MasterSkinner = 49,
+	MasterMiner = 50,
+	MasterHerbalism = 51,
+	MasterFishing = 52,
+	MasterCooking = 53,
+	MasterFirstAid = 54,
+	Tainted = 55,
+	TheDungeonCrawler = 56,
+	SpeedrunnerFifteen = 57,
+	SpeedrunnerThirty = 58,
+	SpeedrunnerFortyFive = 59,
+	SpeedrunnerSixty = 60,
 }
 _G.id_pa = {}
 for k, v in pairs(_G.pa_id) do
@@ -185,7 +202,7 @@ function HCGeneratePassiveAchievementCraftedDescription(set_name, level_cap, fac
 	    faction_info = "\r|cff004a93Alliance Only|r"
 	  end
 	end
-	return "Complete the Hardcore challenge after crafting the |cff00FF00" .. set_name .. "|r before reaching level " .. level_cap + 1 .. faction_info
+	return "Complete the Hardcore challenge after crafting " .. set_name .. " before reaching level " .. level_cap + 1 .. faction_info
 end
 
 function HCGeneratePassiveAchievementItemAcquiredDescription(item, rarity, level_cap, faction)
@@ -224,8 +241,16 @@ function HCGeneratePassiveAchievementKillDescription(kill_target, quest_name, zo
 	return "Complete the Hardcore challenge after killing |cffFFB9AA" .. kill_target .. "|r and having completed the |cffffff00" .. quest_name .. "|r quest before reaching level " .. level_cap + 1 .. "\n\n|cff808080" .. zone .. "|r" .. faction_info
 end
 
+function HCGeneratePassiveAchievementProfLevelDescription(profession_name, profession_threshold, level_cap)
+	return "Complete the Hardcore challenge after reaching |cff00FF00" .. profession_threshold .. "|r in " .. profession_name .. " before reaching level " .. level_cap + 1 .. "."
+end
+
 local passive_achievement_kill_handler = CreateFrame("Frame") 
 passive_achievement_kill_handler:RegisterEvent("CHAT_MSG_COMBAT_XP_GAIN")
+
+local registered_kill_event_achievements = {}
+function passive_achievement_kill_handler:RegisterKillEvent(achievement_name)
+end
 
 passive_achievement_kill_handler:SetScript("OnEvent", function(self, event, ...)
 	local arg = { ... }
@@ -241,6 +266,9 @@ passive_achievement_kill_handler:SetScript("OnEvent", function(self, event, ...)
 		    if Hardcore_Character.kill_list_dict[v] == nil then
 		      if _G.passive_achievements[kill_list_dict[v]] then
 			Hardcore:Print("[" .. _G.passive_achievements[kill_list_dict[v]].title .. "] You have slain " .. v .. "!  Remember to /reload when convenient to save your progress.")
+		      end
+		      for _, registered_kill_event_achievement in ipairs(registered_kill_event_achievements) do
+				registered_kill_event_achievement:HandleKillEvent(v)
 		      end
 		    end
 		    Hardcore_Character.kill_list_dict[v] = 1
@@ -293,6 +321,19 @@ function HCCommonPassiveAchievementCraftedCheck(_achievement, _event, _args)
 				  end
 				  _achievement.succeed_function_executor.Succeed(_achievement.name)
 				end
+			end
+		end
+	end
+end
+
+function HCCommonPassiveAchievementProfLevelCheck(_achievement, _event, _args)
+	if _event == "SKILL_LINES_CHANGED" then
+		for i = 1, GetNumSkillLines() do
+			local arg = GetSkillLineInfo(i)
+			if arg[1] == _achievement.profession_name then
+				  if arg[4] >= _achievement.profession_threshold then
+					  _achievement.succeed_function_executor.Succeed(_achievement.name)
+				  end
 			end
 		end
 	end

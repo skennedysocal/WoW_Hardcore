@@ -12,6 +12,7 @@ _achievement.quest_num = 3062
 _achievement.quest_name = "Dark Heart"
 _achievement.zone = "Feralas"
 _achievement.kill_target = "Edana Hatetalon"
+_achievement.faction = "Horde"
 _achievement.description = HCGeneratePassiveAchievementKillDescription(_achievement.kill_target, _achievement.quest_name, _achievement.zone, _achievement.level_cap, "Horde")
 _achievement.restricted_game_versions = {
 	["WotLK"] = 1,

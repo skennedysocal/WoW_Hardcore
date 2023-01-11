@@ -12,6 +12,7 @@ _achievement.quest_num = 1017
 _achievement.quest_name = "Mage Summoner"
 _achievement.zone = "Ashenvale"
 _achievement.kill_target = "Sarilus Foulborne"
+_achievement.faction = "Alliance"
 _achievement.description = HCGeneratePassiveAchievementKillDescription(_achievement.kill_target, _achievement.quest_name, _achievement.zone, _achievement.level_cap, "Alliance")
 _achievement.restricted_game_versions = {
 	["WotLK"] = 1,

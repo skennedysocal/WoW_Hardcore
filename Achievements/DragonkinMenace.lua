@@ -11,6 +11,7 @@ _achievement.level_cap = 57
 _achievement.quest_num = 4182
 _achievement.quest_name = "Dragonkin Menace"
 _achievement.zone = "Burning Steppes"
+_achievement.faction = "Alliance"
 _achievement.description = HCGeneratePassiveAchievementBasicQuestDescription(_achievement.quest_name, _achievement.zone, _achievement.level_cap, "Alliance")
 _achievement.restricted_game_versions = {
 	["WotLK"] = 1,

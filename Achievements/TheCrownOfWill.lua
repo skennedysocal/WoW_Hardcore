@@ -12,6 +12,7 @@ _achievement.quest_num = 521
 _achievement.quest_name = "The Crown of Will"
 _achievement.zone = "Alterac Mountains"
 _achievement.kill_target = "Mug'thol"
+_achievement.faction = "Alliance"
 _achievement.description = HCGeneratePassiveAchievementKillDescription(_achievement.kill_target, _achievement.quest_name, _achievement.zone, _achievement.level_cap, "Alliance")
 _achievement.restricted_game_versions = {
 	["WotLK"] = 1,

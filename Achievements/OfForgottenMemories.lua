@@ -9,7 +9,6 @@ of_forgotten_memories.class = "All"
 of_forgotten_memories.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_grave_digger.blp"
 of_forgotten_memories.level_cap = 57
 of_forgotten_memories.quest_num = 5781
-
 of_forgotten_memories.zone = "Eastern Plaguelands"
 of_forgotten_memories.quest_name = "Of Forgotten Memories"
 of_forgotten_memories.kill_target = "Mercutio Filthgorger"

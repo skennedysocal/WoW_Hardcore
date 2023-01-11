@@ -1,19 +1,18 @@
 local _G = _G
 local _achievement = CreateFrame("Frame")
-_G.passive_achievements.MasterLeatherworker = _achievement
+_G.passive_achievements.MasterEngineering = _achievement
 
 -- General info
-_achievement.name = "MasterLeatherworker"
-_achievement.title = "Master Leatherworker"
+_achievement.name = "MasterEngineering"
+_achievement.title = "Master Engineering"
 _achievement.class = "All"
-_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_master_leatherworking.blp"
-_achievement.level_cap = 59
-_achievement.craft_set = {
-  ["Devilsaur Leggings"] = 1,
-  ["Devilsaur Gauntlets"] = 1,
-}
+_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_master_engineering.blp"
+_achievement.level_cap = 50
 _achievement.category = "Profession"
-_achievement.craft_name = "|cff0070dd[Devilsaur Leggings]|r and |cff0070dd[Devilsaur Gauntlets]|r"
+_achievement.craft_set = {
+  ["Masterwork Target Dummy"] = 1,
+}
+_achievement.craft_name = "[Masterwork Target Dummy]"
 _achievement.description = HCGeneratePassiveAchievementCraftedDescription(_achievement.craft_name, _achievement.level_cap)
 _achievement.restricted_game_versions = {
 	["WotLK"] = 1,

@@ -11,6 +11,7 @@ _achievement.level_cap = 19
 _achievement.quest_num = 731
 _achievement.quest_name = "Absent Minded Prospector"
 _achievement.zone = "Darkshore"
+_achievement.faction = "Alliance"
 _achievement.description = HCGeneratePassiveAchievementBasicQuestDescription(_achievement.quest_name, _achievement.zone, _achievement.level_cap, "Alliance")
 _achievement.restricted_game_versions = {
 	["WotLK"] = 1,

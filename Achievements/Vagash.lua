@@ -12,6 +12,7 @@ _achievement.quest_num = 314
 _achievement.quest_name = "Protecting the Herd"
 _achievement.zone = "Dun Morogh"
 _achievement.kill_target = "Vagash"
+_achievement.faction = "Alliance"
 _achievement.description = HCGeneratePassiveAchievementKillDescription(_achievement.kill_target, _achievement.quest_name, _achievement.zone, _achievement.level_cap, "Alliance")
 _achievement.restricted_game_versions = {
 	["WotLK"] = 1,

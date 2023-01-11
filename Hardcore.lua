@@ -88,6 +88,12 @@ Hardcore_Character = {
 --[[ Local variables ]]
 --
 _G.hc_online_player_ranks = {}
+local speedrun_levels = {
+  [15] = 1,
+  [30] = 1,
+  [45] = 1,
+  [60] = 1,
+}
 local last_received_xguild_chat = ""
 local debug = false
 local expecting_achievement_appeal = false
@@ -2101,6 +2107,15 @@ function Hardcore:TIME_PLAYED_MSG(...)
 		local totalTimePlayed, timePlayedThisLevel = ...
 		local playerName, _ = UnitName("player")
 
+		local function CalculateAdjustedTime(_timeplayed, _irl_time)
+			local adjusted_time = _timeplayed
+			if _irl_time / 86400 > 30 then
+			  adjusted_time = adjusted_time + (_irl_time  - (86400 * 30)) * 13.5/86400*60
+			end
+			return adjusted_time
+		end
+
+
 		-- create the record
 		local mylevelup = {}
 		mylevelup["level"] = recent
@@ -2108,6 +2123,12 @@ function Hardcore:TIME_PLAYED_MSG(...)
 		mylevelup["realm"] = GetRealmName()
 		mylevelup["player"] = playerName
 		mylevelup["localtime"] = date()
+		if Hardcore_Character.first_recorded then
+			mylevelup["adjustedtime"] = CalculateAdjustedTime(totalTimePlayed, GetServerTime() - Hardcore_Character.first_recorded)
+			if speedrun_levels[recent] then 
+			  Hardcore_Character["adjusted_time" .. tostring(recent)] = mylevelup["adjustedtime"]
+			end
+		end
 
 		-- clear existing records if someone deleted / remade character
 		-- since this is level 2, this must be a brand new character
@@ -2552,6 +2573,8 @@ function Hardcore:ShowPassiveAchievementFrame(icon_path, message, delay)
 	achievement_alert_handler:SetIcon(icon_path)
 	achievement_alert_handler:SetMsg(message)
 	achievement_alert_handler:ShowTimed(delay)
+	-- PlaySound(12891)
+	PlaySoundFile("Interface\\Addons\\Hardcore\\Media\\achievement_sound.ogg")
 
 	if alertSound then
 		PlaySound(alertSound)
@@ -3715,6 +3738,90 @@ local options = {
 				},
 			},
 		},
+		achievement_alert_pos_group = {
+			type = "group",
+			name = "Achievement alert position and scale",
+			inline = true,
+			order = 5,
+			args = {
+				alerts_x_pos = {
+					type = "range",
+					name = "X-offset",
+					desc = "Modify achievement alert frame's x-offset.",
+					min = -100,
+					max = 100,
+					get = function()
+						local _x_offset = Hardcore_Settings.achievement_alert_frame_x_offset or 0
+						return _x_offset / 10
+					end,
+					set = function(info, value)
+						Hardcore_Settings.achievement_alert_frame_x_offset = value * 10
+						local _x_offset = Hardcore_Settings.achievement_alert_frame_x_offset or 0
+						local _y_offset = Hardcore_Settings.achievement_alert_frame_y_offset or 0
+						local _scale = Hardcore_Settings.achievement_alert_frame_scale or 1
+						achievement_alert_handler:ApplySettings(_x_offset, _y_offset, _scale)
+					end,
+					order = 4,
+				},
+				alerts_y_pos = {
+					type = "range",
+					name = "Y-offset",
+					desc = "Modify achievement alert frame's y-offset.",
+					min = -100,
+					max = 100,
+					get = function()
+						local _y_offset = Hardcore_Settings.achievement_alert_frame_y_offset or 0
+						return _y_offset / 10
+					end,
+					set = function(info, value)
+						Hardcore_Settings.achievement_alert_frame_y_offset = value * 10
+						local _x_offset = Hardcore_Settings.achievement_alert_frame_x_offset or 0
+						local _y_offset = Hardcore_Settings.achievement_alert_frame_y_offset or 0
+						local _scale = Hardcore_Settings.achievement_alert_frame_scale or 1
+						achievement_alert_handler:ApplySettings(_x_offset, _y_offset, _scale)
+					end,
+					order = 4,
+				},
+				alerts_scale = {
+					type = "range",
+					name = "Scale",
+					desc = "Modify achievement alert frame's scale.",
+					min = 0.1,
+					max = 2,
+					get = function()
+						return Hardcore_Settings.achievement_alert_frame_scale or 1.0
+					end,
+					set = function(info, value)
+						if value < 0.1 then
+							value = 0.1
+						end
+						Hardcore_Settings.achievement_alert_frame_scale = value
+						local _x_offset = Hardcore_Settings.achievement_alert_frame_x_offset or 0
+						local _y_offset = Hardcore_Settings.achievement_alert_frame_y_offset or 0
+						local _scale = Hardcore_Settings.achievement_alert_frame_scale or 1
+						achievement_alert_handler:ApplySettings(_x_offset, _y_offset, _scale)
+					end,
+					order = 4,
+				},
+				alert_sample = {
+					type = "execute",
+					name = "show",
+					desc = "Show sample achievement alert.",
+					func = function(info, value)
+						local _x_offset = Hardcore_Settings.achievement_alert_frame_x_offset or 0
+						local _y_offset = Hardcore_Settings.achievement_alert_frame_y_offset or 0
+						local _scale = Hardcore_Settings.achievement_alert_frame_scale or 1
+						achievement_alert_handler:ApplySettings(_x_offset, _y_offset, _scale)
+						Hardcore:ShowPassiveAchievementFrame(
+							_G.passive_achievements["MasterHerbalism"].icon_path,
+							"Achieved " .. _G.passive_achievements["MasterHerbalism"].title	.. "!",
+							25.0
+						)
+					end,
+					order = 5,
+				},
+			},
+		},
 		chat_filter_header = {
 			type = "group",
 			name = "Chat filters",
@@ -3856,6 +3963,9 @@ local options = {
 				Hardcore_Settings.alert_frame_x_offset = 0
 				Hardcore_Settings.alert_frame_y_offset = -150
 				Hardcore_Settings.alert_frame_scale = 0.7
+				Hardcore_Settings.achievement_alert_frame_x_offset = nil
+				Hardcore_Settings.achievement_alert_frame_y_offset = nil
+				Hardcore_Settings.achievement_alert_frame_scale = nil
 				Hardcore_Settings.show_minimap_mailbox_icon = false
 				Hardcore_Settings.ignore_xguild_alerts = false
 				Hardcore_Settings.ignore_xguild_chat = false

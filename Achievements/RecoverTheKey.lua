@@ -12,6 +12,7 @@ _achievement.quest_num = 7846
 _achievement.quest_name = "Recover the Key"
 _achievement.zone = "Hinterlands"
 _achievement.kill_target = "Hitah'ya the Keeper"
+_achievement.faction = "Horde"
 _achievement.description = HCGeneratePassiveAchievementKillDescription(_achievement.kill_target, _achievement.quest_name, _achievement.zone, _achievement.level_cap, "Horde")
 _achievement.restricted_game_versions = {
 	["WotLK"] = 1,

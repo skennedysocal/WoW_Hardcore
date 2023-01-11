@@ -280,7 +280,7 @@ function UpdateCharacterHC(
 	local achievements_title = AceGUI:Create("HardcoreClassTitleLabel")
 	achievements_title:SetRelativeWidth(1.0)
 	achievements_title:SetHeight(40)
-	achievements_title:SetText("Active Achievements")
+	achievements_title:SetText("Achievements")
 	achievements_title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 16)
 	achievements_container:AddChild(achievements_title)
 	if _hardcore_character.achievements ~= nil then

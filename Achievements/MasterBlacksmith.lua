@@ -1,17 +1,19 @@
 local _G = _G
 local _achievement = CreateFrame("Frame")
-_G.passive_achievements.TidalCharmAcquired = _achievement
+_G.passive_achievements.MasterBlacksmith = _achievement
 
 -- General info
-_achievement.name = "TidalCharmAcquired"
-_achievement.title = "Tidal Charm Acquired"
+_achievement.name = "MasterBlacksmith"
+_achievement.title = "Master Blacksmith"
 _achievement.class = "All"
-_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_tidal_charm.blp"
+_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_master_blacksmithing.blp"
 _achievement.level_cap = 59
-_achievement.item = "Tidal Charm"
-_achievement.item_rarity = "Uncommon"
-_achievement.category = "Miscellaneous"
-_achievement.description = HCGeneratePassiveAchievementItemAcquiredDescription(_achievement.item, _achievement.item_rarity, _achievement.level_cap)
+_achievement.craft_set = {
+  ["Truesilver Champion"] = 1,
+}
+_achievement.category = "Profession"
+_achievement.craft_name = "|cff0070dd[Truesilver Champion]|r"
+_achievement.description = HCGeneratePassiveAchievementCraftedDescription(_achievement.craft_name, _achievement.level_cap)
 _achievement.restricted_game_versions = {
 	["WotLK"] = 1,
 }
@@ -29,5 +31,5 @@ end
 -- Register Definitions
 _achievement:SetScript("OnEvent", function(self, event, ...)
 	local arg = { ... }
-	HCCommonPassiveAchievementItemAcquiredCheck(_achievement, event, arg)
+	HCCommonPassiveAchievementCraftedCheck(_achievement, event, arg)
 end)

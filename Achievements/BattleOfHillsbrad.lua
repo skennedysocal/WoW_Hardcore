@@ -12,6 +12,7 @@ _achievement.quest_num = 550
 _achievement.quest_name = "Battle of Hillsbrad"
 _achievement.zone = "Hillsbrad Foothills"
 _achievement.kill_target = "Captain Ironhill"
+_achievement.faction = "Horde"
 _achievement.description = HCGeneratePassiveAchievementKillDescription(_achievement.kill_target, _achievement.quest_name, _achievement.zone, _achievement.level_cap, "Horde")
 _achievement.restricted_game_versions = {
 	["WotLK"] = 1,

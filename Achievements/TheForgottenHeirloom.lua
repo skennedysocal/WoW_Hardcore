@@ -11,6 +11,7 @@ _achievement.level_cap = 12
 _achievement.quest_num = 64
 _achievement.quest_name = "The Forgotten Heirloom"
 _achievement.zone = "Westfall"
+_achievement.faction = "Alliance"
 _achievement.kill_target = "Benny Blaanco"
 _achievement.description = HCGeneratePassiveAchievementKillDescription(_achievement.kill_target, _achievement.quest_name, _achievement.zone, _achievement.level_cap, "Alliance")
 _achievement.restricted_game_versions = {

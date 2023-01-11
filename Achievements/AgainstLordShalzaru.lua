@@ -10,6 +10,7 @@ _achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_against_lord_
 _achievement.level_cap = 43
 _achievement.quest_num = 2870
 _achievement.quest_name = "Against Lord Shalrazu"
+_achievement.faction = "Alliance"
 _achievement.zone = "Feralas"
 _achievement.kill_target = "Lord Shalrazu"
 _achievement.description = HCGeneratePassiveAchievementKillDescription(_achievement.kill_target, _achievement.quest_name, _achievement.zone, _achievement.level_cap, "Alliance")

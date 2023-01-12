@@ -6,6 +6,7 @@ _G.achievements.NoHit = no_hit_achievement
 no_hit_achievement.name = "NoHit"
 no_hit_achievement.title = "Stadic's Challenge"
 no_hit_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_no_hit.blp"
+no_hit_achievement.pts = 50
 no_hit_achievement.description =
 	"Complete the hardcore challenge without taking a point of damage.  Falling, drowning, fatigue and other such sources that count as “Environmental Damage” according to the Combat Log are, as such, Damage. This also means that spells that expend life as a resource, such as the Warlock’s Life Tap, do not cause any 'damage' and are as such perfectly viable.  Futhermore, you must accumulate over 30,000 reputation across the four main factions."
 no_hit_achievement.class = "All"

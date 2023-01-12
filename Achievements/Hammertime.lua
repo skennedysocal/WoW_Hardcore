@@ -7,6 +7,8 @@ hammertime_achievement.name = "Hammertime"
 hammertime_achievement.title = "Hammertime"
 hammertime_achievement.class = "Paladin"
 hammertime_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_hammertime.blp"
+hammertime_achievement.bl_text = "Starting Achievement"
+hammertime_achievement.pts = 10
 hammertime_achievement.description =
 	"Complete the Hardcore challenge without at any point equpping a melee weapon other than a two-handed mace. Fishing Pole is acceptable"
 

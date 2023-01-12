@@ -6,6 +6,7 @@ _G.achievements.TrueBeliever = true_believer_achievement
 true_believer_achievement.name = "TrueBeliever"
 true_believer_achievement.title = "True Believer"
 true_believer_achievement.class = "Priest"
+true_believer_achievement.pts = 10
 true_believer_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_true_believer.blp"
 true_believer_achievement.description =
 	"Complete the Hardcore challenge without at any point using an ability within the “Shadow Magic” tab of your spellbook. Only spells listed under “Holy”, “Discipline”, or “General” are allowed. You are allowed to put points into all talent trees, but active abilities thus unlocked that are in the “Shadow Magic” tab of your spellbook are not allowed to be used."

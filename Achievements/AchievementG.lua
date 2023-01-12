@@ -186,6 +186,12 @@ function reorderPassiveAchievements()
 	  if _G.passive_achievements[v].kill_target then
 	    kill_list_dict[_G.passive_achievements[v].kill_target] = v
 	  end
+
+	  if _G.passive_achievements[v].kill_targets then
+	    for target, _ in pairs(_G.passive_achievements[v].kill_targets) do
+	      kill_list_dict[target] = v
+	    end
+	  end
 	end
   end
   _G.passive_achievements_order = order
@@ -226,7 +232,7 @@ function HCGeneratePassiveAchievementBasicQuestDescription(quest_name, zone, lev
 	    faction_info = "\r|cff004a93Alliance Only|r"
 	  end
 	end
-	return "Complete the Hardcore challenge after having completed the |cffffff00" .. quest_name .. "|r quest before reaching level " .. level_cap + 1 .. "\n\n|cff808080" .. zone .. "|r" .. faction_info
+	return "Complete the Hardcore challenge after having completed the |cffffff00" .. quest_name .. "|r quest before reaching level " .. level_cap + 1 .. ".\n" .. faction_info
 end
 
 function HCGeneratePassiveAchievementKillDescription(kill_target, quest_name, zone, level_cap, faction)
@@ -245,11 +251,14 @@ function HCGeneratePassiveAchievementProfLevelDescription(profession_name, profe
 	return "Complete the Hardcore challenge after reaching |cff00FF00" .. profession_threshold .. "|r in " .. profession_name .. " before reaching level " .. level_cap + 1 .. "."
 end
 
-local passive_achievement_kill_handler = CreateFrame("Frame") 
+passive_achievement_kill_handler = CreateFrame("Frame") 
 passive_achievement_kill_handler:RegisterEvent("CHAT_MSG_COMBAT_XP_GAIN")
 
 local registered_kill_event_achievements = {}
 function passive_achievement_kill_handler:RegisterKillEvent(achievement_name)
+  if _G.passive_achievements[achievement_name] then
+    registered_kill_event_achievements[achievement_name] = _G.passive_achievements[achievement_name]
+  end
 end
 
 passive_achievement_kill_handler:SetScript("OnEvent", function(self, event, ...)
@@ -267,8 +276,8 @@ passive_achievement_kill_handler:SetScript("OnEvent", function(self, event, ...)
 		      if _G.passive_achievements[kill_list_dict[v]] then
 			Hardcore:Print("[" .. _G.passive_achievements[kill_list_dict[v]].title .. "] You have slain " .. v .. "!  Remember to /reload when convenient to save your progress.")
 		      end
-		      for _, registered_kill_event_achievement in ipairs(registered_kill_event_achievements) do
-				registered_kill_event_achievement:HandleKillEvent(v)
+		      for _, registered_kill_event_achievement in pairs(registered_kill_event_achievements) do
+				registered_kill_event_achievement:HandleKillEvent(v, Hardcore_Character)
 		      end
 		    end
 		    Hardcore_Character.kill_list_dict[v] = 1
@@ -338,3 +347,32 @@ function HCCommonPassiveAchievementProfLevelCheck(_achievement, _event, _args)
 		end
 	end
 end
+
+function CalculateHCAchievementPts(_hardcore_character)
+  local pts = 0
+  for _,achievement in ipairs(_hardcore_character.achievements) do
+    if _G.achievements[achievement] and _G.achievements[achievement].pts then
+      pts = pts +_G.achievements[achievement].pts 
+    end
+  end
+  for _,achievement in ipairs(_hardcore_character.passive_achievements) do
+    if _G.passive_achievements[achievement] and _G.passive_achievements[achievement].pts then
+      pts = pts +_G.passive_achievements[achievement].pts 
+    end
+  end
+  return pts
+end
+
+function SetAchievementTooltip(achievement_icon, achievement, _player_name)
+				achievement_icon:SetCallback("OnEnter", function(widget)
+					if UnitName("player") == _player_name and achievement.UpdateDescription then achievement:UpdateDescription() end
+					GameTooltip:SetOwner(WorldFrame, "ANCHOR_CURSOR")
+					GameTooltip:AddLine(achievement.title)
+					GameTooltip:AddLine(achievement.description, 1, 1, 1, true)
+					GameTooltip:AddDoubleLine(achievement.bl_text or "Starting Achievement", (achievement.pts or tostring(0)) .. "pts", 1, .82, 0, 1 ,.82, 0);
+					GameTooltip:Show()
+				end)
+				achievement_icon:SetCallback("OnLeave", function(widget)
+					GameTooltip:Hide()
+				end)
+  end

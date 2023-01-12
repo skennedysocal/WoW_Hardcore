@@ -7,6 +7,8 @@ bloodbath_achievement.name = "Bloodbath"
 bloodbath_achievement.title = "Bloodbath"
 bloodbath_achievement.class = "All"
 bloodbath_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_bloodbath.blp"
+bloodbath_achievement.bl_text = "Starting Achievement"
+bloodbath_achievement.pts = 50
 bloodbath_achievement.description =
 	"Complete the Hardcore challenge without at any point completing a quest. No exceptions."
 local class_eng, _, _ = UnitClass("player")

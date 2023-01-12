@@ -741,6 +741,9 @@ function Hardcore:ForceResetSavedVariables()
 	for i, v in ipairs(saved_variable_meta) do
 		Hardcore_Character[v.key] = v.initial_data
 	end
+	Hardcore_Character.dungeon_kill_targets = nil
+	Hardcore_Character.dungeon_kill_targets_solo = nil
+	Hardcore_Character.kill_list_dict = nil
 end
 
 function Hardcore:InitializeSettingsSavedVariables()

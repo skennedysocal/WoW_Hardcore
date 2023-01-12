@@ -6,6 +6,7 @@ _G.achievements.NotSoTalented = not_so_talented_achievement
 not_so_talented_achievement.name = "NotSoTalented"
 not_so_talented_achievement.title = "Not So Talented"
 not_so_talented_achievement.class = "All"
+not_so_talented_achievement.pts = 50
 not_so_talented_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_not_so_talented.blp"
 not_so_talented_achievement.description =
 	"Complete the Hardcore challenge without at any point applying a talent point. No talents are allowed."

@@ -6,6 +6,7 @@ _G.achievements.WhiteKnight = white_knight_achievement
 white_knight_achievement.name = "WhiteKnight"
 white_knight_achievement.title = "White Knight"
 white_knight_achievement.class = "All"
+white_knight_achievement.pts = 15
 white_knight_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_white_knight.blp"
 white_knight_achievement.description =
 	"Complete the Hardcore challenge without at any point equipping an item that is of Green, Blue, or Purple quality. Only White and Gray items are allowed. Bags are equipped items."

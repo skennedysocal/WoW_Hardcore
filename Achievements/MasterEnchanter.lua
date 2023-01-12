@@ -12,6 +12,8 @@ _achievement.profession_name = "Enchanting"
 _achievement.profession_threshold = 226
 _achievement.category = "Profession"
 _achievement.description = HCGeneratePassiveAchievementProfLevelDescription(_achievement.profession_name, _achievement.profession_threshold, _achievement.level_cap)
+_achievement.bl_text = "Profession"
+_achievement.pts = 10
 _achievement.restricted_game_versions = {
 	["WotLK"] = 1,
 }

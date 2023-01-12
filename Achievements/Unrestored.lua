@@ -5,6 +5,7 @@ _G.achievements.Unrestored = unrestored_achievement
 -- General info
 unrestored_achievement.name = "Unrestored"
 unrestored_achievement.title = "Unrestored"
+unrestored_achievement.pts = 10
 unrestored_achievement.class = "Druid"
 unrestored_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_unrestored.blp"
 unrestored_achievement.description =

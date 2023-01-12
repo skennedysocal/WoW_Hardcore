@@ -185,15 +185,7 @@ local function DrawPassiveAchievementsPageIconForm(container, scroll_container, 
 				achievement_icon:SetImage(v.icon_path)
 				achievement_icon:SetImageSize(size, size)
 				achievement_icon.image:SetVertexColor(1, 1, 1)
-				achievement_icon:SetCallback("OnEnter", function(widget)
-					GameTooltip:SetOwner(WorldFrame, "ANCHOR_CURSOR")
-					GameTooltip:AddLine(v.title)
-					GameTooltip:AddLine(v.description, 1, 1, 1, true)
-					GameTooltip:Show()
-				end)
-				achievement_icon:SetCallback("OnLeave", function(widget)
-					GameTooltip:Hide()
-				end)
+				SetAchievementTooltip(achievement_icon, _G.passive_achievements[id], _player_name)
 				class_container:AddChild(achievement_icon)
 			end
 		end
@@ -510,15 +502,7 @@ local function DrawStartingAchievementsPageIconForm(container, scroll_container,
 					  end
 				  end)
 				end
-				achievement_icon:SetCallback("OnEnter", function(widget)
-					GameTooltip:SetOwner(WorldFrame, "ANCHOR_CURSOR")
-					GameTooltip:AddLine(achievement.title)
-					GameTooltip:AddLine(achievement.description, 1, 1, 1, true)
-					GameTooltip:Show()
-				end)
-				achievement_icon:SetCallback("OnLeave", function(widget)
-					GameTooltip:Hide()
-				end)
+				SetAchievementTooltip(achievement_icon, achievement, _player_name)
 				class_container:AddChild(achievement_icon)
 			end
 		end

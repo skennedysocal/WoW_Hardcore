@@ -13,6 +13,8 @@ _achievement.craft_set = {
 }
 _achievement.craft_name = "[Major Healing Potion]"
 _achievement.category = "Profession"
+_achievement.bl_text = "Profession"
+_achievement.pts = 10
 _achievement.description = HCGeneratePassiveAchievementCraftedDescription(_achievement.craft_name, _achievement.level_cap)
 _achievement.restricted_game_versions = {
 	["WotLK"] = 1,

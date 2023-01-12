@@ -13,6 +13,8 @@ _achievement.craft_set = {
 }
 _achievement.category = "Profession"
 _achievement.craft_name = "|cff0070dd[Truesilver Champion]|r"
+_achievement.bl_text = "Profession"
+_achievement.pts = 10
 _achievement.description = HCGeneratePassiveAchievementCraftedDescription(_achievement.craft_name, _achievement.level_cap)
 _achievement.restricted_game_versions = {
 	["WotLK"] = 1,

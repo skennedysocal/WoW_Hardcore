@@ -9,6 +9,8 @@ _achievement.class = "All"
 _achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_master_engineering.blp"
 _achievement.level_cap = 50
 _achievement.category = "Profession"
+_achievement.bl_text = "Profession"
+_achievement.pts = 10
 _achievement.craft_set = {
   ["Masterwork Target Dummy"] = 1,
 }

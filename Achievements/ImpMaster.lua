@@ -15,6 +15,8 @@ imp_master_achievement.name = "ImpMaster"
 imp_master_achievement.title = "Imp Master"
 imp_master_achievement.class = "Warlock"
 imp_master_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_imp_master.blp"
+imp_master_achievement.bl_text = "Starting Achievement"
+imp_master_achievement.pts = 10
 imp_master_achievement.description =
 	"Complete the Hardcore challenge without at any point summoning a demon other than the Imp."
 

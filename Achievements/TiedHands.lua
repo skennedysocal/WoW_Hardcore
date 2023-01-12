@@ -12,6 +12,7 @@ tied_hands_achievement.name = "TiedHands"
 tied_hands_achievement.title = "Tied Hands"
 tied_hands_achievement.class = "Warrior"
 tied_hands_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_tied_hands.blp"
+tied_hands_achievement.pts = 10
 tied_hands_achievement.description =
 	"Complete the Hardcore challenge without at any point using a stance other than Battle Stance. Switching to Defensive Stance or Berserker Stance is not allowed."
 

@@ -9,6 +9,7 @@ _achievement.class = "All"
 _achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_speedrunner.blp"
 _achievement.category = "Miscellaneous"
 _achievement.level_cap = 45
+_achievement.bl_text = "Miscellaneous"
 _achievement.description = "Reach level 45 by x time"
 _achievement.restricted_game_versions = {
 	["WotLK"] = 1,

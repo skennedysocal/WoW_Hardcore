@@ -31,6 +31,7 @@ local blacklist_spells_named = {
 totemic_misery_achievement.name = "TotemicMisery"
 totemic_misery_achievement.title = "Totemic Misery"
 totemic_misery_achievement.class = "Shaman"
+totemic_misery_achievement.pts = 10
 totemic_misery_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_totemic_misery.blp"
 totemic_misery_achievement.description = "Complete the Hardcore challenge without at any point summoning a Totem."
 

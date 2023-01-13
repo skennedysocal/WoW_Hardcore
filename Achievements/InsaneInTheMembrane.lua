@@ -5,6 +5,7 @@ _G.achievements.InsaneInTheMembrane = insane_in_the_membrane_achievement
 -- General info
 insane_in_the_membrane_achievement.name = "InsaneInTheMembrane"
 insane_in_the_membrane_achievement.title = "Insane In The Membrane"
+insane_in_the_membrane_achievement.pts = 25
 insane_in_the_membrane_achievement.class = "All"
 insane_in_the_membrane_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_insane_in_the_membrane.blp"
 insane_in_the_membrane_achievement.description =

@@ -6,6 +6,7 @@ _G.achievements.SwordAndBoard = sword_and_board_achievement
 sword_and_board_achievement.name = "SwordAndBoard"
 sword_and_board_achievement.title = "Sword & Board"
 sword_and_board_achievement.class = "Warrior"
+sword_and_board_achievement.pts = 10
 sword_and_board_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_sword_and_board.blp"
 sword_and_board_achievement.description =
 	"Complete the Hardcore challenge without at any point wielding a two-handed melee weapon or dual wielding (Fishing Pole is acceptable). If your race starts with a two-handed weapon, unequip it upon logging in."

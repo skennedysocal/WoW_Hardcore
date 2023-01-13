@@ -4,13 +4,17 @@ _G.passive_achievements.DragonkinMenace = _achievement
 
 -- General info
 _achievement.name = "DragonkinMenace"
-_achievement.title = "Dragonkin Menace"
+_achievement.title = "Pushing Back the Dragonkin"
 _achievement.class = "All"
 _achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_dragonkin_menace.blp"
 _achievement.level_cap = 57
 _achievement.quest_num = 4182
-_achievement.description =
-	"Complete |cffffff00Dragonkin Menace|r before reaching level " .. _achievement.level_cap .. "."
+_achievement.quest_name = "Dragonkin Menace"
+_achievement.zone = "Burning Steppes"
+_achievement.faction = "Alliance"
+_achievement.bl_text = "Burning Steppes Quest"
+_achievement.pts = 10 
+_achievement.description = HCGeneratePassiveAchievementBasicQuestDescription(_achievement.quest_name, _achievement.zone, _achievement.level_cap, "Alliance")
 _achievement.restricted_game_versions = {
 	["WotLK"] = 1,
 }
@@ -28,10 +32,5 @@ end
 -- Register Definitions
 _achievement:SetScript("OnEvent", function(self, event, ...)
 	local arg = { ... }
-	if event == "QUEST_TURNED_IN" then
-		if arg[1] == _achievement.quest_num and UnitLevel("player") <= _achievement.level_cap then
-			Hardcore:Print("Congrats! You have achieved " .. _achievement.title)
-			_achievement.succeed_function_executor.Succeed(_achievement.name)
-		end
-	end
+	HCCommonPassiveAchievementBasicQuestCheck(_achievement, event, arg)
 end)

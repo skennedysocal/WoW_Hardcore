@@ -7,10 +7,15 @@ _achievement.name = "HintsOfANewPlague"
 _achievement.title = "Hints of a New Plague"
 _achievement.class = "All"
 _achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_hints_of_a_new_plague.blp"
-_achievement.level_cap = 33
-_achievement.quest_num = 661
-_achievement.description =
-	"Complete |cffffff00Hints of a New Plague|r before reaching level " .. _achievement.level_cap .. "."
+_achievement.level_cap = 34
+_achievement.quest_num = 658
+_achievement.quest_name = "Hints of a New Plague"
+_achievement.zone = "Hillsbrad Foothills"
+_achievement.kill_target = "Forsaken Courier"
+_achievement.bl_text = "Hillsbrad Foothills Quest"
+_achievement.pts = 10 
+_achievement.faction = "Alliance"
+_achievement.description = HCGeneratePassiveAchievementKillDescription(_achievement.kill_target, _achievement.quest_name, _achievement.zone, _achievement.level_cap, "Alliance")
 _achievement.restricted_game_versions = {
 	["WotLK"] = 1,
 }
@@ -28,10 +33,5 @@ end
 -- Register Definitions
 _achievement:SetScript("OnEvent", function(self, event, ...)
 	local arg = { ... }
-	if event == "QUEST_TURNED_IN" then
-		if arg[1] == _achievement.quest_num and UnitLevel("player") <= _achievement.level_cap then
-			Hardcore:Print("Congrats! You have achieved " .. _achievement.title)
-			_achievement.succeed_function_executor.Succeed(_achievement.name)
-		end
-	end
+	HCCommonPassiveAchievementKillCheck(_achievement, event, arg)
 end)

@@ -6,7 +6,9 @@ _G.achievements.Arcanist = arcanist_achievement
 arcanist_achievement.name = "Arcanist"
 arcanist_achievement.title = "Arcanist"
 arcanist_achievement.class = "Mage"
+arcanist_achievement.pts = 10
 arcanist_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_arcanist.blp"
+arcanist_achievement.bl_text = "Starting Achievement"
 arcanist_achievement.description =
 	"Complete the Hardcore challenge using only abilities within the “Arcane” (and “General”) tab of your spellbook. No spells outside of those listed under “Arcane” or “General” are allowed. You are allowed to put points into all talent trees, but active abilities thus unlocked that are not in the “Arcane” tab of your spellbook are not allowed to be used."
 

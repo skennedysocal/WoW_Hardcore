@@ -13,6 +13,7 @@ local blacklist_spells_named = {
 
 -- General info
 not_so_deadly_achievement.name = "NotSoDeadly"
+not_so_deadly_achievement.pts = 10
 not_so_deadly_achievement.title = "Not So Deadly"
 not_so_deadly_achievement.class = "Rogue"
 not_so_deadly_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_not_so_deadly.blp"

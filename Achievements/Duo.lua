@@ -13,6 +13,7 @@ duo_rules.description = ""
 duo_rules.minimap_button_info = {}
 duo_rules.minimap_button = nil
 duo_rules.warn_reason = ""
+duo_rules.bl_text = "Party Tag"
 
 local minimap_button = LibStub("LibDataBroker-1.1"):NewDataObject("Duo", {
 	type = "data source",

@@ -5,6 +5,7 @@ _G.achievements.VoidServant = void_servant_achievement
 -- General info
 void_servant_achievement.name = "VoidServant"
 void_servant_achievement.title = "Void Servant"
+void_servant_achievement.pts = 10
 void_servant_achievement.class = "Priest"
 void_servant_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_void_servant.blp"
 void_servant_achievement.description =

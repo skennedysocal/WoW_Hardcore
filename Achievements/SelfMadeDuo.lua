@@ -7,6 +7,7 @@ local player = UnitName("Player")
 self_made_duo_achievement.name = "DuoMade"
 self_made_duo_achievement.title = "Duo-Made"
 self_made_duo_achievement.class = "All"
+self_made_duo_achievement.pts = 10
 self_made_duo_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_self_made.blp"
 self_made_duo_achievement.description =
 	"Complete the Hardcore challenge without at any point equipping an item that you or your Duo have not crafted yourselves. Items your character has conjured (e.g. Firestones) are considered crafted. No items bought, dropped, or rewarded by quests are allowed to be equipped, fishing poles MAY be equipped. The items your character starts with are allowed to be equipped. Bags are equipped items."

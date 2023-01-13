@@ -22,6 +22,7 @@ local profession_names = {
 
 -- General info
 nobody_got_time_for_that_achievement.name = "NobodyGotTimeForThat"
+nobody_got_time_for_that_achievement.pts = 25
 nobody_got_time_for_that_achievement.title = "Nobody Got Time For That"
 nobody_got_time_for_that_achievement.class = "All"
 nobody_got_time_for_that_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_nobody_got_time_for_that.blp"

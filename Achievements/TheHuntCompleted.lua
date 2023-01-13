@@ -4,13 +4,17 @@ _G.passive_achievements.TheHuntCompleted = _achievement
 
 -- General info
 _achievement.name = "TheHuntCompleted"
-_achievement.title = "The Hunt Completed"
+_achievement.title = "Eradicate the Beasts"
 _achievement.class = "All"
 _achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_the_hunt_completed.blp"
 _achievement.level_cap = 26
 _achievement.quest_num = 247
-_achievement.description =
-	"Complete |cffffff00The Hunt Completed|r before reaching level " .. _achievement.level_cap .. "."
+_achievement.quest_name = "The Hunt Completed"
+_achievement.zone = "Darkshore"
+_achievement.faction = "Horde"
+_achievement.bl_text = "Darkshore Quest"
+_achievement.pts = 10 
+_achievement.description = HCGeneratePassiveAchievementBasicQuestDescription(_achievement.quest_name, _achievement.zone, _achievement.level_cap, "Horde")
 _achievement.restricted_game_versions = {
 	["WotLK"] = 1,
 }
@@ -28,10 +32,5 @@ end
 -- Register Definitions
 _achievement:SetScript("OnEvent", function(self, event, ...)
 	local arg = { ... }
-	if event == "QUEST_TURNED_IN" then
-		if arg[1] == _achievement.quest_num and UnitLevel("player") <= _achievement.level_cap then
-			Hardcore:Print("Congrats! You have achieved " .. _achievement.title)
-			_achievement.succeed_function_executor.Succeed(_achievement.name)
-		end
-	end
+	HCCommonPassiveAchievementBasicQuestCheck(_achievement, event, arg)
 end)

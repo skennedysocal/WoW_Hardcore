@@ -1,10 +1,10 @@
 ## Interface: 30400
-## Title: Hardcore 0.10.5 + Greenwall 1.11.5+classic
+## Title: Hardcore 0.11.0b + Greenwall 1.11.5+classic
 ## Notes: Supports Classic Hardcore
 ## Author: The Classic Hardcore team, Molikar (Sean Kennedy), Mark Rogaski <stigg@aie-guild.org> as GreenWall author 
 ## X-License: All Rights Reserved
 ## X-Category: Leveling,Guild
-## Version: 0.10.5
+## Version: 0.11.0b
 
 
 ## DefaultState: enabled
@@ -80,7 +80,8 @@ Achievements/SelfMadeTrio.lua
 
 #Start passive achievements
 Achievements/KingOfTheJungle.lua
-Achievements/ShyRotam.lua
+#Achievements/ShyRotam.lua
+Achievements/HighChiefWinterfall.lua
 Achievements/OfForgottenMemories.lua
 Achievements/Maltorious.lua
 Achievements/PawnCapturesQueen.lua
@@ -95,6 +96,28 @@ Achievements/GetMeOutOfHere.lua
 Achievements/RitesOfTheEarthmother.lua
 Achievements/KimjaelIndeed.lua
 Achievements/Counterattack.lua
+Achievements/TidalCharmAcquired.lua
+Achievements/MasterLeatherworker.lua
+Achievements/MasterBlacksmith.lua
+Achievements/MasterAlchemist.lua
+Achievements/MasterEnchanter.lua
+Achievements/MasterTailoring.lua
+Achievements/MasterEngineering.lua
+Achievements/MasterSkinner.lua
+Achievements/MasterMiner.lua
+Achievements/MasterHerbalism.lua
+Achievements/MasterFishing.lua
+Achievements/MasterCooking.lua
+Achievements/MasterFirstAid.lua
+Achievements/Tainted.lua
+Achievements/TheDungeonCrawler.lua
+Achievements/SpeedrunnerTen.lua
+Achievements/SpeedrunnerTwenty.lua
+Achievements/SpeedrunnerThirty.lua
+Achievements/SpeedrunnerForty.lua
+Achievements/SpeedrunnerFifty.lua
+Achievements/SpeedrunnerSixty.lua
+#Achievements/SpeedrunnerFifteen.lua
 Achievements/DarkHeart.lua
 Achievements/AgainstLordShalzaru.lua
 Achievements/TestOfEndurance.lua
@@ -120,12 +143,17 @@ Achievements/TheFamilyCrypt.lua
 Achievements/HintsOfANewPlague.lua
 Achievements/RecoverTheKey.lua
 Achievements/StinkysEscape.lua
+Achievements/BurningShadows.lua
 #End passive achievements
 
 CharacterStatusScreen.lua
 InspectStatusScreen.lua
+AchievementTab.lua
 FirstMenuScreen.lua
 MainMenu.lua
+TextureUtils.lua
+TextureInfo.lua
+AchievementAlertFrame.lua
 Hardcore.lua
 
 Libs/GreenWall/Constants.lua

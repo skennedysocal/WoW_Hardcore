@@ -7,6 +7,7 @@ thunderstruck_achievement.name = "Thunderstruck"
 thunderstruck_achievement.title = "Thunderstruck"
 thunderstruck_achievement.class = "Shaman"
 thunderstruck_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_thunderstruck.blp"
+thunderstruck_achievement.pts = 10
 thunderstruck_achievement.description =
 	"Complete the Hardcore challenge without at any point using an ability that deals damage other than Nature. Spells, weapon enhancements, or totems that deal Fire or Frost damage are not allowed. All items and consumables that deal damage other than Nature are allowed."
 

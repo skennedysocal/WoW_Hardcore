@@ -8,6 +8,8 @@ humanist_achievement.name = "Humanist"
 humanist_achievement.title = "Humanist"
 humanist_achievement.class = "All"
 humanist_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_humanist.blp"
+humanist_achievement.bl_text = "Starting Achievement"
+humanist_achievement.pts = 15
 humanist_achievement.description =
 	"Complete the Hardcore challenge without at any point killing an NPC of the type Humanoid. Killing is considered any action that gives your character kill credit (experience, eligibility to loot, or quest progress)."
 

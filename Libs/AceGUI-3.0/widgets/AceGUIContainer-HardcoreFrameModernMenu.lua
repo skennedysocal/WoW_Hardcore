@@ -198,7 +198,7 @@ local function Constructor()
 
 	local closebutton = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
 	closebutton:SetScript("OnClick", Button_OnClick)
-	closebutton:SetPoint("BOTTOMRIGHT", -9, 462)
+	closebutton:SetPoint("BOTTOMRIGHT", -9, 562)
 	closebutton:SetHeight(30)
 	closebutton:SetWidth(30)
 	closebutton:SetText("X")

@@ -5,6 +5,7 @@ _G.achievements.Vagrant = vagrant_achievement
 -- General info
 vagrant_achievement.name = "Vagrant"
 vagrant_achievement.title = "Vagrant"
+vagrant_achievement.pts = 10
 vagrant_achievement.class = "All"
 vagrant_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_vagrant.blp"
 vagrant_achievement.description =

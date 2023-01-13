@@ -4,13 +4,18 @@ _G.passive_achievements.Vagash = _achievement
 
 -- General info
 _achievement.name = "Vagash"
-_achievement.title = "Vagash"
+_achievement.title = "Vagash Goes Down!"
 _achievement.class = "All"
 _achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_vagash.blp"
 _achievement.level_cap = 10
 _achievement.quest_num = 314
-_achievement.description =
-	"Complete |cffffff00Vagash|r before reaching level " .. _achievement.level_cap .. "."
+_achievement.quest_name = "Protecting the Herd"
+_achievement.zone = "Dun Morogh"
+_achievement.pts = 10 
+_achievement.kill_target = "Vagash"
+_achievement.faction = "Alliance"
+_achievement.bl_text = "Vagash Quest"
+_achievement.description = HCGeneratePassiveAchievementKillDescription(_achievement.kill_target, _achievement.quest_name, _achievement.zone, _achievement.level_cap, "Alliance")
 _achievement.restricted_game_versions = {
 	["WotLK"] = 1,
 }
@@ -28,10 +33,5 @@ end
 -- Register Definitions
 _achievement:SetScript("OnEvent", function(self, event, ...)
 	local arg = { ... }
-	if event == "QUEST_TURNED_IN" then
-		if arg[1] == _achievement.quest_num and UnitLevel("player") <= _achievement.level_cap then
-			Hardcore:Print("Congrats! You have achieved " .. _achievement.title)
-			_achievement.succeed_function_executor.Succeed(_achievement.name)
-		end
-	end
+	HCCommonPassiveAchievementKillCheck(_achievement, event, arg)
 end)

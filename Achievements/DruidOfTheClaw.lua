@@ -7,6 +7,8 @@ druid_of_the_claw_achievement.name = "DruidOfTheClaw"
 druid_of_the_claw_achievement.title = "Druid of the Claw"
 druid_of_the_claw_achievement.class = "Druid"
 druid_of_the_claw_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_druid_of_the_claw.blp"
+druid_of_the_claw_achievement.bl_text = "Starting Achievement"
+druid_of_the_claw_achievement.pts = 10
 druid_of_the_claw_achievement.description =
 	"Complete the Hardcore challenge without at any point using an ability within the “Balance” tab of your spellbook or using any form other than Bear Form or Dire Bear Form. Only spells listed under “Feral Combat”, “Restoration”, or “General” are allowed. You are allowed to put points into all talent trees, but active abilities thus unlocked that are in the “Balance” tab of your spellbook are not allowed to be used. Teleport: Moonglade is allowed to be used. Travel Form and Aquatic Form are not allowed."
 

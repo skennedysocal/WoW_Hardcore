@@ -15,6 +15,7 @@ local blacklist_spells_named = {
 -- General info
 no_way_out_achievement.name = "NoWayOut"
 no_way_out_achievement.title = "No Way Out"
+no_way_out_achievement.pts = 10
 no_way_out_achievement.class = "Paladin"
 no_way_out_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_no_way_out.blp"
 no_way_out_achievement.description =

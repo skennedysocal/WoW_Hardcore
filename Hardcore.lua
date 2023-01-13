@@ -672,7 +672,39 @@ local function SlashHandler(msg, editbox)
 		else
 		  Hardcore:Print("Incorrect code. Double check with a moderator." .. GetCode(-1) .. " " .. code)
 		end
+	elseif cmd == "AppealDuoTrio" then
+		local code = nil
+		local ach_num = nil
+		local iters = 0
+		for substring in args:gmatch("%S+") do
+		  if iters == 0 then
+			code = substring
+		  elseif iters == 1 then
+			ach_num = substring
+		  end
+		  iters = iters + 1
+		end
+		if code == nil then
+			Hardcore:Print("Wrong syntax: Missing first argument")
+			return
+		end
+		if ach_num == nil or _G.ach then
+			Hardcore:Print("Wrong syntax: Missing second argument")
+			return
+		end
 
+		if tostring(GetCode(-1)):sub(1,10) == tostring(tonumber(code)):sub(1,10) then
+		  if Hardcore_Character.party_mode == "Failed Duo" then
+			  Hardcore_Character.party_mode = "Duo"
+			  Hardcore:Print("Appealed Duo status")
+		  end
+		  if Hardcore_Character.party_mode == "Failed Trio" then
+			  Hardcore_Character.party_mode = "Trio"
+			  Hardcore:Print("Appealed Trio status")
+		  end
+		else
+		  Hardcore:Print("Incorrect code. Double check with a moderator." .. GetCode(-1) .. " " .. code)
+		end
 	else
 		-- If not handled above, display some sort of help message
 		Hardcore:Print("|cff00ff00Syntax:|r/hardcore [command] [options]")

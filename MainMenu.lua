@@ -298,6 +298,24 @@ local function DrawGeneralTab(container)
 
 	local changelog_title = AceGUI:Create("Label")
 	changelog_title:SetWidth(500)
+	changelog_title:SetText("11.0")
+	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16)
+	scroll_frame:AddChild(changelog_title)
+
+	local changelog_description = AceGUI:Create("Label")
+	changelog_description:SetWidth(_menu_width)
+	changelog_description:SetText(
+		"- Added a dungeon tab for tracking dungeon stats and completion.\n- Changes to actively prevent illegal trades (addon will block trades from non-trade partners unless you are lvl 60).\n- Increased rep. requirement for Stadic's to 50,000\n- Added 50+ new achievements.  New achievements do not need to be selected at level 1.  See the Achievements tab for more information.\n- Added Duo/Trio appeal codes"
+	)
+	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	scroll_frame:AddChild(changelog_description)
+
+
+
+	---
+
+	local changelog_title = AceGUI:Create("Label")
+	changelog_title:SetWidth(500)
 	changelog_title:SetText("10.5")
 	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16)
 	scroll_frame:AddChild(changelog_title)
@@ -1172,7 +1190,7 @@ local function DrawDungeonsTab(container, _hardcore_character)
 
 	local scroll_frame = AceGUI:Create("ScrollFrame")
 	scroll_frame:SetLayout("Flow")
-	scroll_frame:SetHeight(372)
+	scroll_frame:SetHeight(500)
 	scroll_container:AddChild(scroll_frame)
 
 	-- Row header
@@ -1182,7 +1200,7 @@ local function DrawDungeonsTab(container, _hardcore_character)
 	scroll_frame:AddChild(row_header)
 
 	local name_label = AceGUI:Create("Label")
-	name_label:SetWidth(250)
+	name_label:SetWidth(530)
 	name_label:SetText("|c00FFFF00Dungeon|r")
 	name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
 	row_header:AddChild(name_label)
@@ -1206,7 +1224,7 @@ local function DrawDungeonsTab(container, _hardcore_character)
 	row_header:AddChild(date_label)
 
 	-- Rest of the data
-	DrawNameColumn(scroll_frame, _hardcore_character.dt.runs, _hardcore_character.dt.pending, _hardcore_character.dt.current, 250)
+	DrawNameColumn(scroll_frame, _hardcore_character.dt.runs, _hardcore_character.dt.pending, _hardcore_character.dt.current, 530)
 	DrawLevelColumn(scroll_frame, _hardcore_character.dt.runs, _hardcore_character.dt.pending, _hardcore_character.dt.current, 50)
 	DrawPlayedColumn(scroll_frame, _hardcore_character.dt.runs, _hardcore_character.dt.pending, _hardcore_character.dt.current, 125)
 	DrawDateColumn(scroll_frame, _hardcore_character.dt.runs, _hardcore_character.dt.pending, _hardcore_character.dt.current, 125)

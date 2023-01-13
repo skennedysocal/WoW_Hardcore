@@ -69,6 +69,7 @@ Hardcore_Character = {
 	tracked_played_percentage = 0,
 	deaths = {},
 	bubble_hearth_incidents = {},
+	dt = {},
 	played_time_gap_warnings = {},
 	trade_partners = {},
 	grief_warning_conditions = GRIEF_WARNING_BOTH_FACTIONS,
@@ -108,6 +109,9 @@ local guild_versions_status = {}
 local guild_online = {}
 local guild_highest_version = "0.0.0"
 local guild_roster_loading = false
+
+-- For dungeon tracking
+local dt_forbidden = false
 
 local bubble_hearth_vars = {
 	spell_id = 8690,
@@ -197,6 +201,14 @@ local MOD_CHAR_NAMES = {
 	["Letmefixit"] = 1,
 	["Unarchiver"] = 1,
 }
+
+-- dungeon tracking
+local DT_WARN_INTERVAL			  = 10		-- Warn every 10 seconds about repeated run (while in dungeon)
+local DT_INSIDE_MAX_TIME          = 61		-- Maximum time inside a dungeon without it being logged (61 looks nicer than 60 in-game)
+local DT_OUTSIDE_MAX_TRACKED_TIME = 900		-- If seen outside, how many seconds seen outside before finalization (900 = 15m)
+local DT_OUTSIDE_MAX_REAL_TIME    = 1800	-- If seen outside, how many seconds since last seen inside before finalization (1800 = 30m)
+local DT_OUTSIDE_MAX_RUN_TIME     = 21600	-- If seen outside, how many seconds since start of run before finalization (21600 = 6 hrs)
+local DT_TIME_STEP			      = 1
 
 -- frame display
 local display = "Rules"
@@ -662,6 +674,7 @@ local saved_variable_meta = {
 	{ key = "tracked_played_percentage", initial_data = 0 },
 	{ key = "deaths", initial_data = {} },
 	{ key = "bubble_hearth_incidents", initial_data = {} },
+	{ key = "dt", initial_data = {} },
 	{ key = "played_time_gap_warnings", initial_data = {} },
 	{ key = "trade_partners", initial_data = {} },
 	{ key = "grief_warning_conditions", initial_data = GRIEF_WARNING_BOTH_FACTIONS },
@@ -940,6 +953,13 @@ end
 --[[ Events ]]
 --
 
+-- Function to do the unitscan trick of seeing nearby NPC for dungeon tracking
+function Hardcore:ADDON_ACTION_FORBIDDEN(arg1)
+	if arg1 == 'Hardcore' then
+		dt_forbidden = true
+	end
+end
+
 function Hardcore:PLAYER_LOGIN()
 	Hardcore:HandleLegacyDeaths()
 	Hardcore_Character.hardcore_player_name = Hardcore_Settings.hardcore_player_name or ""
@@ -1038,6 +1058,9 @@ function Hardcore:PLAYER_LOGIN()
 	self:RegisterEvent("INSPECT_READY")
 	self:RegisterEvent("UNIT_TARGET")
 	self:RegisterEvent("UPDATE_MOUSEOVER_UNIT")
+
+	-- For dungeon tracking targetting of door npcs
+	self:RegisterEvent("ADDON_ACTION_FORBIDDEN")
 
 	Hardcore:InitializeSavedVariables()
 	Hardcore:InitializeSettingsSavedVariables()
@@ -1520,6 +1543,487 @@ function Hardcore:PLAYER_LEVEL_UP(...)
 		startXGuildChatMsgRelay(messageString)
 	end
 end
+
+--------------------------
+-- DUNGEON RUN TRACKING --
+--------------------------
+
+function Hardcore:DungeonTrackerGetDungeonMaxLevel( name )
+
+	-- TODO: use a common data source with the info in MainMenu.lua
+	local max_levels = {
+		["Ragefire Chasm"] = {18, 20},
+		["The Deadmines"] = {26, 24},
+		["Wailing Caverns"] = {24, 24},
+		["Shadowfang Keep"] = {30, 25},
+		["Blackfathon Deeps"] = {32, 28},
+		["The Stockade"] = {32, 29},
+		["Razorfen Kraul"] = {38, 31},
+		["Gnomeregan"] = {38, 32},
+		["Razorfen Downs"] = {46, 41},
+		["Scarlet Monastery"] = {45, 44},
+		["Scarlet Monastery (GY)"] = {45, 44},		-- Lazy way to make sure it works on any wing
+		["Scarlet Monastery (Lib)"] = {45, 44},		-- Lazy way to make sure it works on any wing
+		["Scarlet Monastery (Cath)"] = {45, 44},	-- Lazy way to make sure it works on any wing
+		["Scarlet Monastery (Arm)"] = {45, 44},		-- Lazy way to make sure it works on any wing
+		["Uldaman"] = {51, 44},
+		["Zul'Farrak"] = {54, 50},
+		["Maraudon"] = {55, 52},
+		["Sunken Temple"] = {60, 54},
+		["Blackrock Depths"] = {60, 60},
+		["Lower Blackrock Spire"] = {60, 62},
+		["Scholomance"] = {60, 62},
+		["Dire Maul"] = {60, 62},
+		["Upper Blackrock Spire"] = {60, 62},
+		["Stratholme"] = {60, 62},
+		["Hellfire Ramparts"] = {1000,64},
+		["Blood Furnace"] = {1000,65},
+		["The Slave Pens"] = {1000,66},
+		["The Underbog"] = {1000,66},
+		["Mana Tombs"] = {1000,68},
+		["Utgarde Keep"] = {1000,74},
+		["Nexus"] = {1000,75},
+		["Azjol-Nerub"] = {1000,76},
+		["Ahn'kahet"] = {1000,77},
+		["Drak'Tharon Keep"] = {1000,78},
+		["Violet Hold"] = {1000,79},
+		["Grundrak"] = {1000,80},
+		["Halls of Stone"] = {1000,80},
+		["Halls of Lightning"] = {1000,80},
+		["The Culling of Stratholme"] = {1000,80},
+		["The Oculus"] = {1000,80},
+		["Utgarde Pinnacle"] = {1000,80},
+		["Forge of Souls"] = {1000,80},
+		["Pit of Saron"] = {1000,80},
+		["Halls of Reflection"] = {1000,80},
+		["Trial of the Champion"] = {1000,80}
+	}
+	local max_level = 1000		-- Default: if we can't find it, or game version not set: it doesn't have a max level
+
+	if max_levels[ name ] ~= nil then
+		if Hardcore_Character.game_version ~= nil then
+			if Hardcore_Character.game_version == "Era" or Hardcore_Character.game_version == "SoM" then
+				max_level = max_levels[ name ][ 1 ];
+			elseif Hardcore_Character.game_version == "WotLK" then
+				max_level = max_levels[ name ][ 2 ];
+			end
+		end
+	end
+	
+	return max_level
+
+end
+
+
+
+function Hardcore:DungeonTrackerPopulateFromQuests()
+
+	-- Try to guess the dungeon history prior to tracking by looking at the dungeon quests that have been 
+	-- finished. Only use the ones that can ONLY be done inside the dungeon! (So for instance, not 
+	-- WC/Serpentbloom or SM/Hearts of Zeal)
+	
+	-- Only run this when we have no other dungeon info, to prevent mix-ups between legacy and current dungeons
+	if next( Hardcore_Character.dt.runs) then
+		return
+	end
+	
+	-- Start looking for finished quests
+	local dungeon_quests = {
+	
+		["Ragefire Chasm"]  = { 5728, 5761, 5722, 5723, 5725 },		-- All 5 quests in RFC
+		["The Deadmines"] = { 2040, 166, 214, 373},					-- Underground Assault, The Defias Brotherhood, Red Silk Bandanas, The Unsent Letter
+		["Wailing Caverns"] = { 914, 1487, 3366},					-- Leaders of the Fang, Deviate Eradication, The Glowing Shard
+		["Shadowfang Keep"] = { 1013, 1098, 1014},					-- The Book of Ur, Deathstalkers in Shadowfang, Arugal Must Die
+		["Blackfathom Deeps"] = { 971, 1198, 1199, 1275, 6565, 6921, 1200, 6561, 6922 },
+		["The Stockade"] = { 387, 386, 378, 388, 377, 391},
+		["Razorfen Kraul"] = { 1221, 1102, 1109, 1101, 1144, 1142, 6522},
+		["Gnomeregan"] = { 2904, 2951, 2945, 2922, 2928, 2924, 2930, 2929, 2841 },
+		["Razorfen Downs"] = { 3636, 3341, 3525 },
+		--["Scarlet Monastery (GY)"] = {},							-- No quests here
+		["Scarlet Monastery (Lib)"] = { 1050, 1053, 1049, 1048, 1160, 1951},	-- 1048+1053: kill 4 bosses needs Lib+Cath+Arm
+		["Scarlet Monastery (Cath)"] = { 1053, 1048 },
+		["Scarlet Monastery (Arm)"] = { 1053, 1048 },
+		["Uldaman"] = { 1360, 722, 2240, 17, 1139, 2204, 2342, 709, 2278, },
+		["Zul'Farrak"] = { 3042, 2865, 2846, 2768, 2770, 3527, 2991, 2936 },
+		["Maraudon"] = { 7041, 7029, 7065, 7064, 7067, 7044, 7046},
+		-- TODO: add more dungeons here
+		["Sunken Temple"] = {},
+		["Blackrock Depths"] = {},
+		["Lower Blackrock Spire"] = {},
+		["Scholomance"] = {},
+		["Dire Maul"] = {},
+		["Upper Blackrock Spire"] = {},
+		["Stratholme"] = {},
+		["Hellfire Ramparts"] = {},
+		["Blood Furnace"] = {},
+		["The Slave Pens"] = {},
+		["The Underbog"] = {},
+		["Mana Tombs"] = {},
+		["Utgarde Keep"] = {},
+		["Nexus"] = {},
+		["Azjol-Nerub"] = {},
+		["Ahn'kahet"] = {},
+		["Drak'Tharon Keep"] = {},
+		["Violet Hold"] = {},
+		["Grundrak"] = {},
+		["Halls of Stone"] = {},
+		["Halls of Lightning"] = {},
+		["The Culling of Stratholme"] = {},
+		["The Oculus"] = {},
+		["Utgarde Pinnacle"] = {},
+		["Forge of Souls"] = {},
+		["Pit of Saron"] = {},
+		["Halls of Reflection"] = {},
+		["Trial of the Champion"] = {}
+	}
+	Hardcore:Print( "Logging legacy runs.." )
+
+	-- Go through the list and log a run for each dungeon for which one or more quests are flagged as completed
+	for name, q_ids in pairs( dungeon_quests ) do
+		local dungeon_done = false
+		for _, id in pairs( q_ids ) do
+			if C_QuestLog.IsQuestFlaggedCompleted(id) then
+				Hardcore:Print( "Found legacy quest " .. id )
+				dungeon_done = true
+				break
+			end
+		end
+		if dungeon_done == true then
+			DUNGEON_RUN = {}
+			DUNGEON_RUN.name   		 = name
+			DUNGEON_RUN.date   		 = "(legacy)"
+			DUNGEON_RUN.time_inside  = 0
+			DUNGEON_RUN.level        = 0
+			DUNGEON_RUN.quest_id     = id
+			Hardcore:Print( "Logging legacy run in " .. DUNGEON_RUN.name )
+			table.insert( Hardcore_Character.dt.runs, DUNGEON_RUN )
+		
+		end
+	end
+end
+
+
+-- DungeonTrackerUpdateInfractions()
+--
+-- Updates the dt.overleveled_runs and dt.repeated_runs variables
+-- from the list of finalized runs. This can be called after a Mod command to
+-- recalculate the infraction statistics
+
+function Hardcore:DungeonTrackerUpdateInfractions()
+
+	local repeated = 0 
+	local over_leveled = 0
+
+	for i = 1, #Hardcore_Character.dt.runs do
+		-- Check overleveled run
+		if Hardcore_Character.dt.runs[ i ].level > Hardcore:DungeonTrackerGetDungeonMaxLevel( Hardcore_Character.dt.runs[ i ].name ) then
+			over_leveled = over_leveled + 1
+		end
+		-- Check if the run is repeated further down in the array (this prevents counting runs twice when i ends up at j)
+		for j = i + 1, #Hardcore_Character.dt.runs do
+			if Hardcore_Character.dt.runs[ i ].name == Hardcore_Character.dt.runs[ j ].name then
+				repeated_runs = repeated_runs + 1
+			end
+		end
+	end
+	
+	Hardcore_Character.dt.overleveled_runs = over_leveled
+	Hardcore_Character.dt.repeated_runs = repeated
+	
+end
+
+
+function Hardcore:DungeonTrackerWarnInfraction( name )
+
+	local time_left = DT_INSIDE_MAX_TIME - Hardcore_Character.dt.current.time_inside
+	-- We only warn if there is still chance to get out in time
+	if time_left <= 0 then
+		return
+	end
+	
+	-- Don't warn too frequently
+	if Hardcore_Character.dt.current.time_inside - Hardcore_Character.dt.current.last_warn < DT_WARN_INTERVAL then
+		return
+	end
+
+	-- See if the player's level is allowed in this dungeon
+	local max_level = Hardcore:DungeonTrackerGetDungeonMaxLevel( Hardcore_Character.dt.current.name )
+	if Hardcore_Character.dt.current.level > max_level then
+		Hardcore_Character.dt.current.last_warn = Hardcore_Character.dt.current.time_inside
+		message = "\124cffFF0000You are too high level for " .. name .. ", max level = " .. max_level .. 
+				  " -- leave the dungeon within " .. time_left .. " seconds!"
+		Hardcore:Print(message)
+	end	
+
+	-- See if this dungeon was already in the list of runs, and warn every so many seconds if that is so
+	for i, v in ipairs(Hardcore_Character.dt.runs) do
+		if v.name == name then
+			Hardcore_Character.dt.current.last_warn = Hardcore_Character.dt.current.time_inside
+			message = "\124cffFF0000You entered " .. v.name .. " already at date " .. v.date .. 
+					  " -- leave the dungeon within " .. time_left .. " seconds!"
+			Hardcore:Print(message)
+			break		-- No need to warn about 3rd and higher entries
+		end
+	end
+end
+
+
+function Hardcore:DungeonTrackerLogCurrentRun( run )
+
+	local message = "Logging run in " ..run.name
+
+	-- We don't log this run if the inside time is too small
+	if run.time_inside < DT_INSIDE_MAX_TIME then
+		Hardcore:Print( "Not logging short run in " .. run.name )
+		return
+	end
+	
+	-- Don't store an SM run without a wing -- if we didn't even run into any recognised mob, what's the point?
+	if run.name == "Scarlet Monastery" then
+		Hardcore:Print( "Not logging run in unidentified SM wing" )
+		return
+	end
+
+	-- Check if this is a repeated run and log
+	for i, v in ipairs(Hardcore_Character.dt.runs) do
+		if v.name == run.name then
+			message = "\124cffFF0000Player entered " .. run.name .. " already at date " .. v.date .. " -- logging repeated run"
+			break
+		end
+	end
+
+	-- Check if this is an overleveled run and log
+	local max_level = Hardcore:DungeonTrackerGetDungeonMaxLevel( run.name )
+	if run.level > max_level then
+		message = "\124cffFF0000Player was overleveled for " .. run.name .. " -- logging overleveled run"
+	end
+
+	-- Now actually log the run
+	Hardcore:Print( message )
+	table.insert( Hardcore_Character.dt.runs, run )
+
+	-- Update infraction statistics (involves a re-count)
+	Hardcore:DungeonTrackerUpdateInfractions()
+end
+
+
+function Hardcore:DungeonTrackerCheckChanged( name )
+
+	-- If there is no current, there is no change
+	if not next(Hardcore_Character.dt.current) then
+		return name
+	end
+
+	local SM = "Scarlet Monastery"
+
+	-- If this is Scarlet Monastery (any wing), we need to check if the wing changed
+	if name == SM then
+		
+		-- If we don't know which wing we are in, try to identify any of the dungeon wing's mobs
+		if Hardcore_Character.dt.current.name == SM then
+			-- List of door spawns; first try a couple of ones close to the door, then add a few from deeper
+			-- to make sure we're not missing anything; finally, add the bosses
+			-- Thanks to @Oats for compiling the list.
+			local door_spawns = {
+					["Scarlet Scryer"] = "GY",
+					["Scarlet Torturer"] = "GY",
+					["Scarlet Gallant"] = "Lib",
+					["Scarlet Adept"] = "Lib",
+					["Scarlet Soldier"] = "Arm",
+					["Scarlet Conjuror"] = "Arm",
+					["Scarlet Defender"] = "Cath",
+					--["Scarlet Myrmidon"] = "Cath",		-- Disabled pending @Oats double-check
+					-- One more round of deeper-in mobs
+					["Haunting Phantasm"] = "GY",
+					["Scarlet Beastmaster"] = "Lib",
+					["Scarlet Diviner"] = "Lib",
+					["Scarlet Evoker"] = "Arm",
+					["Scarlet Sorceror"] = "Cath",	
+					-- Bosses as a last resort
+					["Interrogator Vishas"] = "GY",
+					["Houndmaster Loksey"] = "Lib",
+					["Arcanist Doan"] = "Lib",
+					["Herod"] = "Arm",
+					["Scarlet Commander Mograine"] = "Cath",
+					["High Inquisitor Whitemane"] = "Cath"					
+			}
+			
+			local npc, wing
+			local reaction = 0
+			for npc, wing in pairs(door_spawns) do
+				dt_forbidden = false
+				TargetUnit( npc, true )				-- This throws an exception if the unit is found; we catch this and change dt_forbidden
+				if dt_forbidden == true then
+					--Hardcore:Print( "Found " .. npc .. " in " .. wing )
+					-- We know where we are now, so set the proper wing name as dungeon name
+					name = name .. " (" .. wing .. ")"
+					-- Now check if we knew the wing already
+					if Hardcore_Character.dt.current.name == SM then
+						-- We didn't know the wing, so we set it and assume it didn't change
+						Hardcore_Character.dt.current.name = name
+						Hardcore:Print( "Identified SM wing " .. wing )
+					end
+					break
+				end
+			end
+		else
+			-- We already know our wing -- just copy over what we already had
+			name = Hardcore_Character.dt.current.name
+		end
+		
+		-- At this point, either dt.current.name is "SM", or it is "SM (Wing)".
+		-- If it's "SM", the name can only be "SM", too. This happens if no door spawn was found yet.
+		-- If it's "SM (Wing)", then "name" has a wing too, which is either the same or different
+		
+	end
+
+	-- Now check if the name changed (whether it's SM or RFC or whatever)
+	-- This should normally not happen, as once we're outside, the current dungeon is queued
+	if Hardcore_Character.dt.current.name ~= name then
+		-- Change to the new dungeon, but we store only if we spent enough time
+		Hardcore:Print( "Left dungeon " .. Hardcore_Character.dt.current.name .. " for dungeon " .. name )
+		Hardcore:DungeonTrackerLogCurrentRun( Hardcore_Character.dt.current )
+		Hardcore_Character.dt.current = {}
+	end
+
+	return name
+
+end
+
+
+function Hardcore:DungeonTracker()
+
+	-- Era/Ogrimmar = Kalimdor, none, 0, , 0, 0, false, 1, 0, {nil}
+	-- Era/RFC = Ragefire Chasm, party, 1, Normal, 5, 0, false, 389, 5, {nil}
+	local name, instanceType, difficultyID, difficultyName, 
+		maxPlayers, dynamicDifficulty, isDynamic, instanceID, instanceGroupSize, LfgDungeonID = GetInstanceInfo()
+
+--	local message = "Instance:" .. name .. ", " .. instanceType .. ", " .. instanceID 
+--	Hardcore:Print( message )
+
+	-- Handle invalid or legacy data files
+	if Hardcore_Character.dt == nil then
+		Hardcore_Character.dt = {}
+	end
+	if not next( Hardcore_Character.dt ) then
+		Hardcore_Character.dt.current = {}
+		Hardcore_Character.dt.runs = {}
+		Hardcore_Character.dt.pending = {}
+		Hardcore_Character.dt.repeated_runs = 0
+		Hardcore_Character.dt.overleveled_runs = 0
+		Hardcore_Character.dt.legacy_runs_imported = false
+	end
+
+	-- If there are no logged runs yet, we try to figure out which dungeons were already done from the completed quests.
+	-- For some weird reason, this doesn't always work if you just came into an instance or back into the world, so
+	-- we do this on a timer. We only do this once, ever.
+	if Hardcore_Character.dt.legacy_runs_imported == false then
+		C_Timer.After( 5, function () Hardcore:DungeonTrackerPopulateFromQuests() end )
+		Hardcore_Character.dt.legacy_runs_imported = true
+	end
+
+	-- Quick check to see if there is no work to be done. We also store the group composition for later (only works outside the instance)
+	if instanceType == "none" then 
+		Hardcore_Character.dt.group_members = GetHomePartyInfo()
+		if (not next(Hardcore_Character.dt.current)) and (not next(Hardcore_Character.dt.pending)) then
+			return
+		end
+	end
+
+	-- At this point, we are either in a dungeon, or we just left one (dt.pending is still valid)
+	local now = GetServerTime()
+	
+	-- If we are no longer in a dungeon, move current to pending, and update timeouts
+	if instanceType == "none" then
+		-- Move current to pending
+		if next(Hardcore_Character.dt.current) then
+			Hardcore:Print( "Queuing active run in " .. Hardcore_Character.dt.current.name )
+			table.insert( Hardcore_Character.dt.pending, Hardcore_Character.dt.current )
+			Hardcore_Character.dt.current = {}
+		end
+		
+		-- Finalize any pending runs for which more than the timeout has passed. 
+		-- Do this backwards so deleting an element is safe.
+		for i=#Hardcore_Character.dt.pending,1,-1  do
+			Hardcore_Character.dt.pending[i].time_outside = Hardcore_Character.dt.pending[i].time_outside + DT_TIME_STEP
+			if Hardcore_Character.dt.pending[ i ].time_outside >= DT_OUTSIDE_MAX_TRACKED_TIME or 
+				(Hardcore_Character.dt.pending[ i ].last_seen - Hardcore_Character.dt.pending[ i ].start) >= DT_OUTSIDE_MAX_REAL_TIME or
+				(now - Hardcore_Character.dt.pending[ i ].start) >= DT_OUTSIDE_MAX_RUN_TIME
+			then
+				Hardcore:DungeonTrackerLogCurrentRun(Hardcore_Character.dt.pending[ i ])
+				table.remove( Hardcore_Character.dt.pending, i )
+			end
+		end
+		
+		return  -- nothing more to be done when outside
+	end
+	
+	-- Check if we are in a new dungeon (this has the special handling of Scarlet Monastery)
+	name = Hardcore:DungeonTrackerCheckChanged(name)
+			
+	-- See if we can reconnect to a pending run
+	local reconnected = false
+	for i = 1, #Hardcore_Character.dt.pending do
+		if( Hardcore_Character.dt.pending[i].name == name ) then
+			Hardcore_Character.dt.current = Hardcore_Character.dt.pending[ i ]
+			table.remove( Hardcore_Character.dt.pending, i )
+			Hardcore:Print( "Reconnected to pending run in " .. Hardcore_Character.dt.current.name )
+			reconnected = true
+			break
+		end
+	end
+	
+	-- If we didn't reconnnect or have a current run already, start a new run
+	if (reconnected == false) and (not next(Hardcore_Character.dt.current)) then
+		DUNGEON_RUN = {}
+		DUNGEON_RUN.name   		 = name
+		DUNGEON_RUN.date   		 = date("%m/%d/%y %H:%M:%S")
+		DUNGEON_RUN.time_inside  = 0
+		DUNGEON_RUN.time_outside = 0
+		DUNGEON_RUN.last_warn    = -1000
+		DUNGEON_RUN.start		 = now
+		--DUNGEON_RUN.last_seen	 = now
+		DUNGEON_RUN.level		 = UnitLevel("player")
+		local group_composition  = UnitName("player")
+		if Hardcore_Character.dt.group_members ~= nil then
+			for index, player in ipairs ( Hardcore_Character.dt.group_members ) do
+				group_composition = group_composition .. "," .. player 
+			end
+		end
+		DUNGEON_RUN.party = group_composition
+		
+		Hardcore_Character.dt.current = DUNGEON_RUN
+		Hardcore:Print( "Starting new run in " .. Hardcore_Character.dt.current.name )
+	end
+
+	-- Extend the current run (reconnected or new) by another time step and update the last_seen time
+	Hardcore_Character.dt.current.time_inside  = Hardcore_Character.dt.current.time_inside + DT_TIME_STEP
+	Hardcore_Character.dt.current.time_outside = 0			-- don't want to cumulate outside times
+	Hardcore_Character.dt.current.last_seen    = now
+
+	-- Warn the user if he is repeating this run or is overleveled
+	Hardcore:DungeonTrackerWarnInfraction(name)
+end
+
+
+
+-- DungeonTrackerHandleModCommand()
+--
+-- Handle a Mod command received through a coded string in chat
+function Hardcore:DungeonTrackerHandleModCommand( name )
+
+		-- TODO TODO TODO
+
+
+end
+
+
+------------------------------
+-- DUNGEON RUN TRACKING END --
+------------------------------
+
+
+
 
 function Hardcore:TIME_PLAYED_MSG(...)
 	local totalTimePlayed, _ = ...
@@ -2646,6 +3150,8 @@ function Hardcore:GenerateVerificationStatusStrings()
 	local perc = string.format("tracked_time=%.1f%%", Hardcore_Character.tracked_played_percentage)
 	local numTrades = #Hardcore_Character.trade_partners
 	local numBubs = #Hardcore_Character.bubble_hearth_incidents
+	local numRepRuns = Hardcore_Character.dt.repeated_runs
+	local numOverLevelRuns = Hardcore_Character.dt.overleveled_runs
 	local verdict = ""
 	local COLOR_WHITE = "|c00ffffff"
 	local reds = {}
@@ -2685,7 +3191,14 @@ function Hardcore:GenerateVerificationStatusStrings()
 	end
 
 	if numBubs > 0 then
-		table.insert(reds, "bub_hearth=" .. numBubs)
+		table.insert(reds, "bub-hrth=" .. numBubs)
+	end
+
+	if numRepRuns > 0 then
+		table.insert(reds, "repeat_dung=" .. numRepRuns)
+	end
+	if numOverLevelRuns > 0 then
+		table.insert(reds, "overlvl_dung=" .. numOverLevelRuns)
 	end
 
 	if #reds > 0 then
@@ -2835,6 +3348,7 @@ function Hardcore:InitiatePulsePlayed()
 	--time accumulator
 	C_Timer.NewTicker(TIME_TRACK_PULSE, function()
 		Hardcore_Character.time_tracked = Hardcore_Character.time_tracked + TIME_TRACK_PULSE
+		Hardcore:DungeonTracker()
 		if RECEIVED_FIRST_PLAYED_TIME_MSG == true then
 			Hardcore_Character.accumulated_time_diff = Hardcore_Character.time_played - Hardcore_Character.time_tracked
 		end

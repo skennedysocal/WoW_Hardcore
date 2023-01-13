@@ -89,9 +89,13 @@ Hardcore_Character = {
 --
 _G.hc_online_player_ranks = {}
 local speedrun_levels = {
+  [10] = 1,
   [15] = 1,
+  [20] = 1,
   [30] = 1,
+  [40] = 1,
   [45] = 1,
+  [50] = 1,
   [60] = 1,
 }
 local last_received_xguild_chat = ""

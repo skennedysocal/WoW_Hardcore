@@ -1,15 +1,15 @@
 local _G = _G
 local _achievement = CreateFrame("Frame")
-_G.passive_achievements.SpeedrunnerThirty = _achievement
+_G.passive_achievements.SpeedrunnerTwenty = _achievement
 
 -- General info
-_achievement.name = "SpeedrunnerThirty"
-_achievement.title = "Speedrunner (30)"
+_achievement.name = "SpeedrunnerTwenty"
+_achievement.title = "Speedrunner (20)"
 _achievement.class = "All"
 _achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_speedrunner.blp"
 _achievement.category = "Miscellaneous"
-_achievement.level_cap = 30
-_achievement.played_time_threshold = 27*60*60
+_achievement.level_cap = 20
+_achievement.played_time_threshold = 12*60*60
 _achievement.bl_text = "Miscellaneous"
 _achievement.pts = 10 
 _achievement.description = "Reach level " .. _achievement.level_cap .. " within " .. _achievement.played_time_threshold/60/60 .. " hours of play time."

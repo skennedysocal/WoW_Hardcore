@@ -111,10 +111,13 @@ Achievements/MasterCooking.lua
 Achievements/MasterFirstAid.lua
 Achievements/Tainted.lua
 Achievements/TheDungeonCrawler.lua
-Achievements/SpeedrunnerFifteen.lua
+Achievements/SpeedrunnerTen.lua
+Achievements/SpeedrunnerTwenty.lua
 Achievements/SpeedrunnerThirty.lua
-Achievements/SpeedrunnerFortyFive.lua
+Achievements/SpeedrunnerForty.lua
+Achievements/SpeedrunnerFifty.lua
 Achievements/SpeedrunnerSixty.lua
+#Achievements/SpeedrunnerFifteen.lua
 Achievements/DarkHeart.lua
 Achievements/AgainstLordShalzaru.lua
 Achievements/TestOfEndurance.lua
@@ -137,9 +140,10 @@ Achievements/TheCrownOfWill.lua
 Achievements/BattleOfHillsbrad.lua
 Achievements/TheWeaver.lua
 Achievements/TheFamilyCrypt.lua
-#Achievements/HintsOfANewPlague.lua
+Achievements/HintsOfANewPlague.lua
 Achievements/RecoverTheKey.lua
 Achievements/StinkysEscape.lua
+Achievements/BurningShadows.lua
 #End passive achievements
 
 CharacterStatusScreen.lua

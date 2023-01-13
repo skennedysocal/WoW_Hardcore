@@ -128,6 +128,11 @@ _G.pa_id = {
 	SpeedrunnerThirty = 58,
 	SpeedrunnerFortyFive = 59,
 	SpeedrunnerSixty = 60,
+	BurningShadows = 61,
+	SpeedrunnerTen = 62,
+	SpeedrunnerTwenty = 63,
+	SpeedrunnerForty = 64,
+	SpeedrunnerFifty = 65,
 }
 _G.id_pa = {}
 for k, v in pairs(_G.pa_id) do
@@ -244,7 +249,7 @@ function HCGeneratePassiveAchievementKillDescription(kill_target, quest_name, zo
 	    faction_info = "\r|cff004a93Alliance Only|r"
 	  end
 	end
-	return "Complete the Hardcore challenge after killing |cffFFB9AA" .. kill_target .. "|r and having completed the |cffffff00" .. quest_name .. "|r quest before reaching level " .. level_cap + 1 .. "\n\n|cff808080" .. zone .. "|r" .. faction_info
+	return "Complete the Hardcore challenge after killing |cffFFB9AA" .. kill_target .. "|r and having completed the |cffffff00" .. quest_name .. "|r quest before reaching level " .. level_cap + 1 .. ".\n" .. faction_info
 end
 
 function HCGeneratePassiveAchievementProfLevelDescription(profession_name, profession_threshold, level_cap)

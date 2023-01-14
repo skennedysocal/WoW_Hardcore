@@ -39,6 +39,12 @@ local function DrawPassiveAchievementRow(achievement, _scroll_frame)
 	achievement_icon.image:SetVertexColor(1, 1, 1)
 	btn_container:AddChild(achievement_icon)
 
+	-- achievement_icon:SetCallback("OnClick", function()
+	--   local link = "[".. achievement.name .."]"
+	--   ChatEdit_InsertLink(link)
+	-- end)
+
+
 	local buffer_frame = AceGUI:Create("SimpleGroup")
 	buffer_frame:SetWidth(30)
 	buffer_frame:SetHeight(30)

@@ -8,7 +8,7 @@ no_hit_achievement.title = "Stadics' Challenge"
 no_hit_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_no_hit.blp"
 no_hit_achievement.pts = 50
 no_hit_achievement.description =
-	"Complete the hardcore challenge without taking a point of damage.  Falling, drowning, fatigue and other such sources that count as “Environmental Damage” according to the Combat Log are, as such, Damage. This also means that spells that expend life as a resource, such as the Warlock’s Life Tap, do not cause any 'damage' and are as such perfectly viable.  Futhermore, you must accumulate over 50,000 reputation across the four main factions."
+	"Complete the hardcore challenge without taking a point of damage.  Falling, drowning, fatigue and other such sources that count as “Environmental Damage” according to the Combat Log are, as such, Damage. This also means that spells that expend life as a resource, such as the Warlock’s Life Tap, do not cause any 'damage' and are as such perfectly viable.  Futhermore, you must accumulate over 45,000 reputation across the four main factions."
 no_hit_achievement.class = "All"
 no_hit_achievement.alert_on_fail = 1
 
@@ -26,7 +26,7 @@ local starting_rep = {
 
 function no_hit_achievement:UpdateDescription()
 	no_hit_achievement.description =
-		"Complete the hardcore challenge without taking a point of damage.  Falling, drowning, fatigue and other such sources that count as “Environmental Damage” according to the Combat Log are, as such, Damage. This also means that spells that expend life as a resource, such as the Warlock’s Life Tap, do not cause any 'damage' and are as such perfectly viable.  Futhermore, you must accumulate over 50,000 reputation across the four main factions."
+		"Complete the hardcore challenge without taking a point of damage.  Falling, drowning, fatigue and other such sources that count as “Environmental Damage” according to the Combat Log are, as such, Damage. This also means that spells that expend life as a resource, such as the Warlock’s Life Tap, do not cause any 'damage' and are as such perfectly viable.  Futhermore, you must accumulate over 45,000 reputation across the four main factions."
 	local total_earned_value = 0
 	for _, idx in ipairs(faction_indices) do
 		local name, description, standingId, bottomValue, topValue, earnedValue, atWarWith, canToggleAtWar, isHeader, isCollapsed, hasRep, isWatched, isChild =
@@ -34,13 +34,13 @@ function no_hit_achievement:UpdateDescription()
 		total_earned_value = total_earned_value + earnedValue
 	end
 	total_earned_value = total_earned_value - starting_rep[UnitRace("player")]
-	if total_earned_value > 50000 then
+	if total_earned_value > 45000 then
 		no_hit_achievement.description = no_hit_achievement.description .. "\n|c0000FF00Progress: Complete!|r"
 	else
 		no_hit_achievement.description = no_hit_achievement.description
 			.. "\n|c00FFFF00Progress: "
 			.. total_earned_value
-			.. "/50,000|r"
+			.. "/45,000|r"
 	end
 end
 

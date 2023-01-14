@@ -1,34 +1,34 @@
 achievement_alert_handler = {}
 
 -- Animated border
-local test_frame = CreateFrame("Frame");
-test_frame:SetSize(400, 400)
-test_frame:SetHeight(200)
-test_frame:SetWidth(400)
-test_frame:SetPoint("CENTER", UIParent, 0, 0)
-local tex = test_frame:CreateTexture()
-tex:SetHeight(200)
-tex:SetWidth(400)
-tex:SetTexture("Interface\\Addons\\Hardcore\\Media\\test_sprite.blp")
-tex:SetHeight(200)
-tex:SetWidth(400)
-tex:SetSize(400,400)
-tex:SetDrawLayer("OVERLAY", 7)
-tex:SetAllPoints()
-tex:SetParent(UIParent)
+-- local test_frame = CreateFrame("Frame");
+-- test_frame:SetSize(400, 400)
+-- test_frame:SetHeight(200)
+-- test_frame:SetWidth(400)
+-- test_frame:SetPoint("CENTER", UIParent, 0, 0)
+-- local tex = test_frame:CreateTexture()
+-- tex:SetHeight(200)
+-- tex:SetWidth(400)
+-- tex:SetTexture("Interface\\Addons\\Hardcore\\Media\\test_sprite.blp")
+-- tex:SetHeight(200)
+-- tex:SetWidth(400)
+-- tex:SetSize(400,400)
+-- tex:SetDrawLayer("OVERLAY", 7)
+-- tex:SetAllPoints()
+-- tex:SetParent(UIParent)
 
-test_frame:Show()
-tex:Show()
-_G.HCTextureUtils:AddToAnimationFrames("TestFrame", tex, _G.HCTextureInfo.TestFrame.test_sprite.AnimationInfo)
+-- test_frame:Show()
+-- tex:Show()
+-- _G.HCTextureUtils:AddToAnimationFrames("TestFrame", tex, _G.HCTextureInfo.TestFrame.test_sprite.AnimationInfo)
 
-test_frame:HookScript("OnUpdate", function(self, elapsed)
-_G.HCTextureUtils.Animate_OnUpdate(elapsed)
-end)
+-- test_frame:HookScript("OnUpdate", function(self, elapsed)
+-- _G.HCTextureUtils.Animate_OnUpdate(elapsed)
+-- end)
 
-C_Timer.After(5.0, function()
-	test_frame:Hide()
-	tex:Hide()
-end)
+-- C_Timer.After(5.0, function()
+-- 	test_frame:Hide()
+-- 	tex:Hide()
+-- end)
 
 
 local static_offset_x = 0

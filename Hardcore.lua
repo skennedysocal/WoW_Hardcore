@@ -1041,6 +1041,26 @@ function Hardcore:PLAYER_LOGIN()
 		Hardcore_Character.passive_achievements = {}
 	end
 
+	-- ItemRefTooltip:HookScript("OnTooltipSetItem", function(tooltip, ...)
+	--     local name, link = tooltip:GetItem()
+	--     local _, _, Color, Ltype, Id, Enchant, Gem1, Gem2, Gem3, Gem4,
+    -- Suffix, Unique, LinkLvl, Name = string.find(link,
+    -- "|?c?f?f?(%x*)|?H?([^:]*):?(%d+):?(%d*):?(%d*):?(%d*):?(%d*):?(%d*):?(%-?%d*):?(%-?%d*):?(%d*):?(%d*):?(%-?%d*)|?h?%[?([^%[%]]*)%]?|?h?|?r?")
+	--     if Id == tostring(3299) then 
+	-- 	if Gem1 == tostring(1) then
+	-- 	    tooltip:ClearLines()
+	-- 	    if _G.id_pa[Enchant] and _G.passive_achievements[_G.id_pa[Enchant]] then
+	-- 		    SetAchievementTooltipB(tooltip, _G.passive_achievements[_G.id_pa[Enchant]])
+	-- 	    end
+	-- 	end
+	-- 	if Gem1 == tostring(2) then
+	-- 	    tooltip:ClearLines()
+	-- 	    if _G.id_a[Enchant] and _G.achievements[_G.id_a[Enchant]] then
+	-- 		    SetAchievementTooltipB(tooltip, _G.achievements[_G.id_a[Enchant]])
+	-- 	    end
+	-- 	end
+	--     end
+	-- end)
 	-- Adds HC character tab functionality
 	hooksecurefunc("CharacterFrameTab_OnClick", function(self, button)
 		local name = self:GetName()
@@ -3546,6 +3566,14 @@ function Hardcore:ApplyAlertFrameSettings()
 end
 
 ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", function(frame, event, message, sender, ...)
+
+-- 	word=message:match("%[(%a+)%]")
+-- 	if _G.passive_achievements[word] then
+-- 		message = message:gsub("%[(%a+)%]", "|cff00FFF3|Hitem:3299:".._G.pa_id[word]..":1:::::::20:257::::::|h[".._G.passive_achievements[word].title.."]|h|r")
+-- 	end
+-- 	if _G.achievements[word] then
+-- 		message = message:gsub("%[(%a+)%]", "|cff00FFF3|Hitem:3299:".._G.a_id[word]..":2:::::::20:257::::::|h[".._G.achievements[word].title.."]|h|r")
+-- 	end
 	local _name, _ = string.split("-", sender)
 	if _G.hc_online_player_ranks[_name] and _G.hc_online_player_ranks[_name] == "officer" then
 	  message = "\124cFFFF0000<MOD>\124r " .. message

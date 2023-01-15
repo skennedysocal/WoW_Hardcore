@@ -225,7 +225,7 @@ local function DrawPassiveAchievementsPageIconForm(container, scroll_container, 
 end
 
 
-local function DrawAchievementRow(achievement, _scroll_frame, _hardcore_character, _mutable)
+local function DrawAchievementRow(achievement, _scroll_frame, _hardcore_character, _mutable, _failure_function_executor)
 	local btn_container = AceGUI:Create("SimpleGroup")
 	btn_container:SetWidth(800)
 	btn_container:SetHeight(60)
@@ -387,14 +387,14 @@ local function DrawAchievementIntroductionPage(scroll_frame)
 	scroll_frame:AddChild(first_menu_description)
 end
 
-local function DrawStartingAchievementsPage(container, _scroll_frame, _hardcore_character, _mutable)
+local function DrawStartingAchievementsPage(container, _scroll_frame, _hardcore_character, _mutable, _failure_function_executor)
 	DrawClassTitleRowOffset(_scroll_frame, "General")
 
 	for k, achievement_name in pairs(_G.achievements_order) do
 		local achievement = _G.achievements[achievement_name]
 		if achievement ~= nil then
 			if achievement.class == "All" then
-				DrawAchievementRow(achievement, _scroll_frame, _hardcore_character, _mutable)
+				DrawAchievementRow(achievement, _scroll_frame, _hardcore_character, _mutable, _failure_function_executor)
 			end
 		end
 	end
@@ -405,7 +405,7 @@ local function DrawStartingAchievementsPage(container, _scroll_frame, _hardcore_
 		DrawClassTitleRow(_scroll_frame, class)
 		for k, achievement in pairs(_G.achievements) do
 			if achievement.class == class then
-				DrawAchievementRow(achievement, _scroll_frame, _hardcore_character, _mutable)
+				DrawAchievementRow(achievement, _scroll_frame, _hardcore_character, _mutable, _failure_function_executor)
 			end
 		end
 	end
@@ -416,7 +416,7 @@ local function DrawStartingAchievementsPage(container, _scroll_frame, _hardcore_
 	_scroll_frame:AddChild(bottom_buffer)
 end
 
-local function DrawStartingAchievementsPageIconForm(container, scroll_container, _hardcore_character, _mutable)
+local function DrawStartingAchievementsPageIconForm(container, scroll_container, _hardcore_character, _mutable, _failure_function_executor)
 	local function addEntry(_scroll_frame, _player_name, _self_name) end
 
 	local achievements_container = AceGUI:Create("SimpleGroup")
@@ -573,7 +573,7 @@ end
 
 
 
-function achievement_tab_handler:DrawAchievementTab(tabcontainer, _hardcore_character, _mutable)
+function achievement_tab_handler:DrawAchievementTab(tabcontainer, _hardcore_character, _mutable, _failure_function_executor)
 	local recently_selected_group = "Introduction"
 	local tree = { 
 	  { 
@@ -623,9 +623,9 @@ function achievement_tab_handler:DrawAchievementTab(tabcontainer, _hardcore_char
 			  DrawAchievementIntroductionPage(scroll_frame)
 		  elseif string.match(group, "StartingAchievements") then
 			  if row_form then
-				  DrawStartingAchievementsPage(_container, scroll_frame, _hardcore_character, _mutable)
+				  DrawStartingAchievementsPage(_container, scroll_frame, _hardcore_character, _mutable, _failure_function_executor)
 			  else
-				  DrawStartingAchievementsPageIconForm(container, scroll_frame, _hardcore_character, _mutable)
+				  DrawStartingAchievementsPageIconForm(container, scroll_frame, _hardcore_character, _mutable, _failure_function_executor)
 			  end
 		  elseif string.match(group, "Miscellaneous") then
 			  if row_form then

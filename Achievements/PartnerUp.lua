@@ -25,7 +25,7 @@ end
 
 local function checkAchievements(name_1, name_2)
 	for _, achievement_check in ipairs(other_hardcore_character_cache[name_1].achievements) do
-		if _G.achievements[achievement_check].class and _G.achievements[achievement_check].class == "All" then
+		if _G.achievements[achievement_check].class and _G.achievements[achievement_check].class ~= "All" then
 		  return
 		end
 		local has_achievement = false

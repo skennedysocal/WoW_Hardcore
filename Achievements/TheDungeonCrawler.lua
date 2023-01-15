@@ -45,7 +45,7 @@ for i,v in pairs(dungeon_kill_trigger) do
   _achievement.kill_targets[v] = i
 end
 _achievement.category = "Dungeons"
-_achievement.description = "Complete all dungeons through up until Sunken Temple (excluding RFC and Stockades) before reaching level 60."
+_achievement.description = "Complete all dungeons until Sunken Temple (excluding RFC and Stockades) before reaching level 60."
 _achievement.restricted_game_versions = {
 	["WotLK"] = 1,
 }

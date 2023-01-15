@@ -305,7 +305,7 @@ local function DrawGeneralTab(container)
 	local changelog_description = AceGUI:Create("Label")
 	changelog_description:SetWidth(_menu_width)
 	changelog_description:SetText(
-		"- Fixed bug with Stadics' challenge\n- Added Achievement Animation (see interface addons menu to test with `show`\n- Fixed bug with PartnerUp! which failed when players had class achievements\n- Dungeon tracking additions; removed infractions for lvl 60's, added appeals\n- Fixed some spelling and grammar for new achievements"
+		"- Fixed bug with Stadics' challenge\n- Added Achievement Animation (see interface addons menu to test with `show`\n- Fixed bug with PartnerUp! which failed when players had class achievements\n- Dungeon tracking additions; removed infractions for lvl 60's, added appeals\n- Fixed some spelling and grammar for new achievements\n- Fixed bug where quests which have a level requirement would not award achievement if turning in quest leveled up the character."
 	)
 	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
 	scroll_frame:AddChild(changelog_description)

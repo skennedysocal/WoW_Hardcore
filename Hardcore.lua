@@ -1717,7 +1717,7 @@ function Hardcore:DungeonTrackerPopulateFromQuests()
 		{ "Scarlet Monastery (Lib)", 1050, 1053, 1049, 1048, 1160, 1951},	-- 1048+1053: kill 4 bosses needs Lib+Cath+Arm
 		{ "Scarlet Monastery (Cath)", 1053, 1048 },
 		{ "Scarlet Monastery (Arm)", 1053, 1048 },
-		{ "Uldaman", 1360, 722, 2240, 17, 1139, 2204, 2342, 709, 2278, },
+		{ "Uldaman", 1360, 2240, 17, 1139, 2204, 2342, 709, 2278 },
 		{ "Zul'Farrak", 3042, 2865, 2846, 2768, 2770, 3527, 2991, 2936 },
 		{ "Maraudon", 7041, 7029, 7065, 7064, 7067, 7044, 7046},
 		{ "The Temple of Atal'Hakkar", 3528, 3446, 3447, 1475, 4143, 4146, 3373 },

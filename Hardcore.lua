@@ -177,6 +177,7 @@ local DEPRECATED_COMMANDS = {
 }
 
 -- stuff
+hc_recent_level_up = nil -- KEEP GLOBAL
 local PLAYER_NAME, _ = nil
 local PLAYER_GUID = nil
 local PLAYER_FACTION = nil
@@ -1592,10 +1593,12 @@ function Hardcore:PLAYER_LEVEL_UP(...)
 	local level, healthDelta, powerDelta, numNewTalents, numNewPvpTalentSlots, strengthDelta, agilityDelta, staminaDelta, intellectDelta =
 		...
 	recent_levelup = level
+	hc_recent_level_up = 1
 
 	-- just in case... make sure recent level up gets reset after 3 secs
 	C_Timer.After(3, function()
 		recent_levelup = nil
+		hc_recent_level_up = nil
 	end)
 
 	-- get time played, see TIME_PLAYED_MSG

@@ -15,6 +15,8 @@ local blacklist_spells_named = {
 grounded_achievement.name = "Grounded"
 grounded_achievement.title = "Grounded"
 grounded_achievement.class = "All"
+grounded_achievement.bl_text = "Starting Achievement"
+grounded_achievement.pts = 15
 grounded_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_grounded.blp"
 grounded_achievement.description =
 	"Complete the Hardcore challenge without at any point using a mount, flight path, or portal. Zeppelins and ships can be used."

@@ -87,7 +87,17 @@ Hardcore_Character = {
 
 --[[ Local variables ]]
 --
-local online_player_ranks = {}
+_G.hc_online_player_ranks = {}
+local speedrun_levels = {
+  [10] = 1,
+  [15] = 1,
+  [20] = 1,
+  [30] = 1,
+  [40] = 1,
+  [45] = 1,
+  [50] = 1,
+  [60] = 1,
+}
 local last_received_xguild_chat = ""
 local debug = false
 local expecting_achievement_appeal = false
@@ -375,8 +385,19 @@ end
 local failure_function_executor = { Fail = FailureFunction }
 
 function SuccessFunction(achievement_name)
+	if _G.passive_achievements[achievement_name] == nil then return end
+	for _, v in ipairs(Hardcore_Character.passive_achievements) do
+	  if v == achievement_name then return end
+	end
 	table.insert(Hardcore_Character.passive_achievements, achievement_name)
-	Hardcore:Print("Achieved " .. _G.passive_achievements[achievement_name].title)
+
+	Hardcore:ShowPassiveAchievementFrame(
+		_G.passive_achievements[achievement_name].icon_path,
+		"Achieved " .. _G.passive_achievements[achievement_name].title	.. "!",
+		5.0
+	)
+
+	Hardcore:Print("Achieved " .. _G.passive_achievements[achievement_name].title .. "! Make sure to /reload when convenient to save your progress.")
 end
 
 local success_function_executor = { Succeed = SuccessFunction }
@@ -646,14 +667,43 @@ local function SlashHandler(msg, editbox)
 			Hardcore:Print("Wrong syntax: Missing second argument")
 			return
 		end
-		if rank == nil then
-			Hardcore:Print("Wrong syntax: Missing third argument")
-			return
-		end
 
 		if tostring(GetCode(-1)):sub(1,10) == tostring(tonumber(code)):sub(1,10) then
 		  Hardcore_Character.trade_partners = {}
 		  Hardcore:Print("Appealed Trade partners")
+		else
+		  Hardcore:Print("Incorrect code. Double check with a moderator." .. GetCode(-1) .. " " .. code)
+		end
+	elseif cmd == "AppealDuoTrio" then
+		local code = nil
+		local ach_num = nil
+		local iters = 0
+		for substring in args:gmatch("%S+") do
+		  if iters == 0 then
+			code = substring
+		  elseif iters == 1 then
+			ach_num = substring
+		  end
+		  iters = iters + 1
+		end
+		if code == nil then
+			Hardcore:Print("Wrong syntax: Missing first argument")
+			return
+		end
+		if ach_num == nil or _G.ach then
+			Hardcore:Print("Wrong syntax: Missing second argument")
+			return
+		end
+
+		if tostring(GetCode(-1)):sub(1,10) == tostring(tonumber(code)):sub(1,10) then
+		  if Hardcore_Character.party_mode == "Failed Duo" then
+			  Hardcore_Character.party_mode = "Duo"
+			  Hardcore:Print("Appealed Duo status")
+		  end
+		  if Hardcore_Character.party_mode == "Failed Trio" then
+			  Hardcore_Character.party_mode = "Trio"
+			  Hardcore:Print("Appealed Trio status")
+		  end
 		else
 		  Hardcore:Print("Incorrect code. Double check with a moderator." .. GetCode(-1) .. " " .. code)
 		end
@@ -729,6 +779,9 @@ function Hardcore:ForceResetSavedVariables()
 	for i, v in ipairs(saved_variable_meta) do
 		Hardcore_Character[v.key] = v.initial_data
 	end
+	Hardcore_Character.dungeon_kill_targets = nil
+	Hardcore_Character.dungeon_kill_targets_solo = nil
+	Hardcore_Character.kill_list_dict = nil
 end
 
 function Hardcore:InitializeSettingsSavedVariables()
@@ -907,6 +960,13 @@ end
 TradeFrameTradeButton:SetScript("OnClick", function()
 	local duo_trio_partner = false
 	local target_trader = TradeFrameRecipientNameText:GetText()
+	local level = UnitLevel("player")
+	local max_level = 60
+	if (Hardcore_Character.game_version ~= "") and
+		(Hardcore_Character.game_version ~= "Era") and
+		(Hardcore_Character.game_version ~= "SoM") then
+		max_level = 80
+	end
 	if Hardcore_Character.team ~= nil then
 		for _, name in ipairs(Hardcore_Character.team) do
 			if target_trader == name then
@@ -915,11 +975,17 @@ TradeFrameTradeButton:SetScript("OnClick", function()
 			end
 		end
 	end
-	if duo_trio_partner == false then
-		table.insert(Hardcore_Character.trade_partners, target_trader)
-		Hardcore_Character.trade_partners = Hardcore_FilterUnique(Hardcore_Character.trade_partners)
+	if duo_trio_partner == true then
+		AcceptTrade()
+	else
+		if level < max_level then
+			Hardcore:Print("|cFFFF0000BLOCKED:|r You may not trade outside of duos/trios.")
+		else
+			table.insert(Hardcore_Character.trade_partners, target_trader)
+			Hardcore_Character.trade_partners = Hardcore_FilterUnique(Hardcore_Character.trade_partners)
+			AcceptTrade()
+		end
 	end
-	AcceptTrade()
 end)
 
 --[[ Startup ]]
@@ -977,6 +1043,26 @@ function Hardcore:PLAYER_LOGIN()
 		Hardcore_Character.passive_achievements = {}
 	end
 
+	-- ItemRefTooltip:HookScript("OnTooltipSetItem", function(tooltip, ...)
+	--     local name, link = tooltip:GetItem()
+	--     local _, _, Color, Ltype, Id, Enchant, Gem1, Gem2, Gem3, Gem4,
+    -- Suffix, Unique, LinkLvl, Name = string.find(link,
+    -- "|?c?f?f?(%x*)|?H?([^:]*):?(%d+):?(%d*):?(%d*):?(%d*):?(%d*):?(%d*):?(%-?%d*):?(%-?%d*):?(%d*):?(%d*):?(%-?%d*)|?h?%[?([^%[%]]*)%]?|?h?|?r?")
+	--     if Id == tostring(3299) then 
+	-- 	if Gem1 == tostring(1) then
+	-- 	    tooltip:ClearLines()
+	-- 	    if _G.id_pa[Enchant] and _G.passive_achievements[_G.id_pa[Enchant]] then
+	-- 		    SetAchievementTooltipB(tooltip, _G.passive_achievements[_G.id_pa[Enchant]])
+	-- 	    end
+	-- 	end
+	-- 	if Gem1 == tostring(2) then
+	-- 	    tooltip:ClearLines()
+	-- 	    if _G.id_a[Enchant] and _G.achievements[_G.id_a[Enchant]] then
+	-- 		    SetAchievementTooltipB(tooltip, _G.achievements[_G.id_a[Enchant]])
+	-- 	    end
+	-- 	end
+	--     end
+	-- end)
 	-- Adds HC character tab functionality
 	hooksecurefunc("CharacterFrameTab_OnClick", function(self, button)
 		local name = self:GetName()
@@ -2215,6 +2301,15 @@ function Hardcore:TIME_PLAYED_MSG(...)
 		local totalTimePlayed, timePlayedThisLevel = ...
 		local playerName, _ = UnitName("player")
 
+		local function CalculateAdjustedTime(_timeplayed, _irl_time)
+			local adjusted_time = _timeplayed
+			if _irl_time / 86400 > 30 then
+			  adjusted_time = adjusted_time + (_irl_time  - (86400 * 30)) * 13.5/86400*60
+			end
+			return adjusted_time
+		end
+
+
 		-- create the record
 		local mylevelup = {}
 		mylevelup["level"] = recent
@@ -2222,6 +2317,12 @@ function Hardcore:TIME_PLAYED_MSG(...)
 		mylevelup["realm"] = GetRealmName()
 		mylevelup["player"] = playerName
 		mylevelup["localtime"] = date()
+		if Hardcore_Character.first_recorded then
+			mylevelup["adjustedtime"] = CalculateAdjustedTime(totalTimePlayed, GetServerTime() - Hardcore_Character.first_recorded)
+			if speedrun_levels[recent] then 
+			  Hardcore_Character["adjusted_time" .. tostring(recent)] = mylevelup["adjustedtime"]
+			end
+		end
 
 		-- clear existing records if someone deleted / remade character
 		-- since this is level 2, this must be a brand new character
@@ -2411,10 +2512,10 @@ function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
 			Hardcore:SendCharacterData(name)
 			return
 		end
-		if command == COMM_COMMANDS[14] then -- Received request for hc character data
+		if command == COMM_COMMANDS[14] then
 			local name, _ = string.split("-", sender)
 			if hc_id2rank[data] then
-				online_player_ranks[name] = hc_id2rank[data]
+				_G.hc_online_player_ranks[name] = hc_id2rank[data]
 				return
 			end
 		end
@@ -2658,6 +2759,20 @@ function Hardcore:ShowAlertFrame(styleConfig, message)
 	C_Timer.After(delay, function()
 		frame:Hide()
 	end)
+end
+
+function Hardcore:ShowPassiveAchievementFrame(icon_path, message, delay)
+	-- message is any text accepted by FontString:SetText(message)
+
+	achievement_alert_handler:SetIcon(icon_path)
+	achievement_alert_handler:SetMsg(message)
+	achievement_alert_handler:ShowTimed(delay)
+	-- PlaySound(12891)
+	PlaySoundFile("Interface\\Addons\\Hardcore\\Media\\achievement_sound.ogg")
+
+	if alertSound then
+		PlaySound(alertSound)
+	end
 end
 
 function Hardcore:Add(data, sender, command)
@@ -3586,8 +3701,16 @@ function Hardcore:ApplyAlertFrameSettings()
 end
 
 ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", function(frame, event, message, sender, ...)
+
+-- 	word=message:match("%[(%a+)%]")
+-- 	if _G.passive_achievements[word] then
+-- 		message = message:gsub("%[(%a+)%]", "|cff00FFF3|Hitem:3299:".._G.pa_id[word]..":1:::::::20:257::::::|h[".._G.passive_achievements[word].title.."]|h|r")
+-- 	end
+-- 	if _G.achievements[word] then
+-- 		message = message:gsub("%[(%a+)%]", "|cff00FFF3|Hitem:3299:".._G.a_id[word]..":2:::::::20:257::::::|h[".._G.achievements[word].title.."]|h|r")
+-- 	end
 	local _name, _ = string.split("-", sender)
-	if online_player_ranks[_name] and online_player_ranks[_name] == "officer" then
+	if _G.hc_online_player_ranks[_name] and _G.hc_online_player_ranks[_name] == "officer" then
 	  message = "\124cFFFF0000<MOD>\124r " .. message
 	  -- message = "|T" .. "Interface\\Addons\\Hardcore\\Media\\icon_crown.blp" .. ":8:8:0:0:64:64:4:60:4:60|t " .. message
 	end
@@ -3608,9 +3731,19 @@ ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", function(frame, event, message
 	end
 
 	local _name, _ = string.split("-", sender)
-	if online_player_ranks[_name] and online_player_ranks[_name] == "officer" then
+	if _G.hc_online_player_ranks[_name] and _G.hc_online_player_ranks[_name] == "officer" then
 	  message = "\124cFFFF0000<MOD>\124r " .. message
 	  -- message = "|T" .. "Interface\\Addons\\Hardcore\\Media\\icon_crown.blp" .. ":8:8:0:0:64:64:4:60:4:60|t " .. message -- crown
+	end
+	return false, message, sender, ... -- don't hide this message
+	-- note that you must return *all* of the values that were passed to your filter, even ones you didn't change
+end)
+
+ChatFrame_AddMessageEventFilter("CHAT_MSG_CHANNEL", function(frame, event, message, sender, ...)
+	local _name, _ = string.split("-", sender)
+	local _prefix, _ = string.split("#", message)
+	if _prefix == "L" then
+	  _G.hc_online_player_ranks[_name] = "officer"
 	end
 	return false, message, sender, ... -- don't hide this message
 	-- note that you must return *all* of the values that were passed to your filter, even ones you didn't change
@@ -3807,6 +3940,90 @@ local options = {
 				},
 			},
 		},
+		achievement_alert_pos_group = {
+			type = "group",
+			name = "Achievement alert position and scale",
+			inline = true,
+			order = 5,
+			args = {
+				alerts_x_pos = {
+					type = "range",
+					name = "X-offset",
+					desc = "Modify achievement alert frame's x-offset.",
+					min = -100,
+					max = 100,
+					get = function()
+						local _x_offset = Hardcore_Settings.achievement_alert_frame_x_offset or 0
+						return _x_offset / 10
+					end,
+					set = function(info, value)
+						Hardcore_Settings.achievement_alert_frame_x_offset = value * 10
+						local _x_offset = Hardcore_Settings.achievement_alert_frame_x_offset or 0
+						local _y_offset = Hardcore_Settings.achievement_alert_frame_y_offset or 0
+						local _scale = Hardcore_Settings.achievement_alert_frame_scale or 1
+						achievement_alert_handler:ApplySettings(_x_offset, _y_offset, _scale)
+					end,
+					order = 4,
+				},
+				alerts_y_pos = {
+					type = "range",
+					name = "Y-offset",
+					desc = "Modify achievement alert frame's y-offset.",
+					min = -100,
+					max = 100,
+					get = function()
+						local _y_offset = Hardcore_Settings.achievement_alert_frame_y_offset or 0
+						return _y_offset / 10
+					end,
+					set = function(info, value)
+						Hardcore_Settings.achievement_alert_frame_y_offset = value * 10
+						local _x_offset = Hardcore_Settings.achievement_alert_frame_x_offset or 0
+						local _y_offset = Hardcore_Settings.achievement_alert_frame_y_offset or 0
+						local _scale = Hardcore_Settings.achievement_alert_frame_scale or 1
+						achievement_alert_handler:ApplySettings(_x_offset, _y_offset, _scale)
+					end,
+					order = 4,
+				},
+				alerts_scale = {
+					type = "range",
+					name = "Scale",
+					desc = "Modify achievement alert frame's scale.",
+					min = 0.1,
+					max = 2,
+					get = function()
+						return Hardcore_Settings.achievement_alert_frame_scale or 1.0
+					end,
+					set = function(info, value)
+						if value < 0.1 then
+							value = 0.1
+						end
+						Hardcore_Settings.achievement_alert_frame_scale = value
+						local _x_offset = Hardcore_Settings.achievement_alert_frame_x_offset or 0
+						local _y_offset = Hardcore_Settings.achievement_alert_frame_y_offset or 0
+						local _scale = Hardcore_Settings.achievement_alert_frame_scale or 1
+						achievement_alert_handler:ApplySettings(_x_offset, _y_offset, _scale)
+					end,
+					order = 4,
+				},
+				alert_sample = {
+					type = "execute",
+					name = "show",
+					desc = "Show sample achievement alert.",
+					func = function(info, value)
+						local _x_offset = Hardcore_Settings.achievement_alert_frame_x_offset or 0
+						local _y_offset = Hardcore_Settings.achievement_alert_frame_y_offset or 0
+						local _scale = Hardcore_Settings.achievement_alert_frame_scale or 1
+						achievement_alert_handler:ApplySettings(_x_offset, _y_offset, _scale)
+						Hardcore:ShowPassiveAchievementFrame(
+							_G.passive_achievements["MasterHerbalism"].icon_path,
+							"Achieved " .. _G.passive_achievements["MasterHerbalism"].title	.. "!",
+							25.0
+						)
+					end,
+					order = 5,
+				},
+			},
+		},
 		chat_filter_header = {
 			type = "group",
 			name = "Chat filters",
@@ -3948,6 +4165,9 @@ local options = {
 				Hardcore_Settings.alert_frame_x_offset = 0
 				Hardcore_Settings.alert_frame_y_offset = -150
 				Hardcore_Settings.alert_frame_scale = 0.7
+				Hardcore_Settings.achievement_alert_frame_x_offset = nil
+				Hardcore_Settings.achievement_alert_frame_y_offset = nil
+				Hardcore_Settings.achievement_alert_frame_scale = nil
 				Hardcore_Settings.show_minimap_mailbox_icon = false
 				Hardcore_Settings.ignore_xguild_alerts = false
 				Hardcore_Settings.ignore_xguild_chat = false

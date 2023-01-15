@@ -25,6 +25,8 @@ homebound_achievement.name = "Homebound"
 homebound_achievement.title = "Homebound"
 homebound_achievement.class = "All"
 homebound_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_homebound.blp"
+homebound_achievement.bl_text = "Starting Achievement"
+homebound_achievement.pts = 50
 homebound_achievement.description =
 	"Complete the Hardcore challenge without at any point leaving the continent on which your character has started. If you started in Kalimdor, you may at no point enter the Eastern Kingdoms. If you started in the Eastern Kingdoms, you may at no point enter Kalimdor."
 

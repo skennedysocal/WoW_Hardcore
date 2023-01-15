@@ -1,3 +1,6 @@
+local _menu_width = 900
+local _inner_menu_width = 800
+local _menu_height = 600
 local AceGUI = LibStub("AceGUI-3.0")
 hardcore_modern_menu = nil
 hardcore_modern_menu_state = {}
@@ -277,7 +280,7 @@ local function DrawGeneralTab(container)
 	scroll_frame:AddChild(first_menu_description_title)
 
 	local first_menu_description = AceGUI:Create("Label")
-	first_menu_description:SetWidth(600)
+	first_menu_description:SetWidth(_menu_width)
 	first_menu_description:SetText(
 		"\n\n Check out the following tabs \n\n\n   |c00FFFF00Rules|r: Compiled list of hardcore challenge rules\n\n   |c00FFFF00Verify|r: Generate a verification string to confirm your max level character\n\n   |c00FFFF00Death Knight|r: Read about Death Knight rules and/or sacrifice/activate\n\n   |c00FFFF00Levels|r: See a list of your recorded character levels\n\n   |c00FFFF00Accountability|r: See whose playing in your Hardcore guild and what addon versions they are using\n\n   |c00FFFF00Achievements|r: Check out all available achievements to try\n\n|c00FFFF00Achievements|r: These are one-time challenges that don't require activation at the start of the run.\n\n"
 	)
@@ -295,12 +298,30 @@ local function DrawGeneralTab(container)
 
 	local changelog_title = AceGUI:Create("Label")
 	changelog_title:SetWidth(500)
+	changelog_title:SetText("11.0")
+	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16)
+	scroll_frame:AddChild(changelog_title)
+
+	local changelog_description = AceGUI:Create("Label")
+	changelog_description:SetWidth(_menu_width)
+	changelog_description:SetText(
+		"- Added a dungeon tab for tracking dungeon stats and completion.\n- Changes to actively prevent illegal trades (addon will block trades from non-trade partners unless you are lvl 60).\n- Increased rep. requirement for Stadic's to 45,000\n- Added 50+ new achievements.  New achievements do not need to be selected at level 1.  See the Achievements tab for more information.\n- Added Duo/Trio appeal codes"
+	)
+	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	scroll_frame:AddChild(changelog_description)
+
+
+
+	---
+
+	local changelog_title = AceGUI:Create("Label")
+	changelog_title:SetWidth(500)
 	changelog_title:SetText("10.5")
 	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16)
 	scroll_frame:AddChild(changelog_title)
 
 	local changelog_description = AceGUI:Create("Label")
-	changelog_description:SetWidth(600)
+	changelog_description:SetWidth(_menu_width)
 	changelog_description:SetText(
 		"- Added timer on shivved, sword and board, and berserker which gives the player a minute to unequip.\n- Fixed appeal code\n- Fixed shivved failing on skinning knife\n- Added DuoMade and TrioMade\n- Fixed minor menu crash\n- Added <MOD> tags\n- Added trade appeals"
 	)
@@ -317,7 +338,7 @@ local function DrawGeneralTab(container)
 	scroll_frame:AddChild(changelog_title)
 
 	local changelog_description = AceGUI:Create("Label")
-	changelog_description:SetWidth(600)
+	changelog_description:SetWidth(_menu_width)
 	changelog_description:SetText(
 		"- Passive Achievements added (Disabled).\n- Removed speedrunner until alignment is reached.\n- Fixed appeal code for long names\n- removed spam from failed channel connects\n- Fixed scavenger achievement failing when creating items while merchant window is open.\n- Automatically hide talent frame when trying to open it with Not So Talented enabled."
 	)
@@ -333,7 +354,7 @@ local function DrawGeneralTab(container)
 	scroll_frame:AddChild(changelog_title)
 
 	local changelog_description = AceGUI:Create("Label")
-	changelog_description:SetWidth(600)
+	changelog_description:SetWidth(_menu_width)
 	changelog_description:SetText(
 		"- Add Speedrunner back as an achievement! New formula for tracking time is being used.\n- Update descriptions for Stadic's challenge and speedrun when mousing over icon\n- Made it more convenient to appeal achievements."
 	)
@@ -349,7 +370,7 @@ local function DrawGeneralTab(container)
 	scroll_frame:AddChild(changelog_title)
 
 	local changelog_description = AceGUI:Create("Label")
-	changelog_description:SetWidth(600)
+	changelog_description:SetWidth(_menu_width)
 	changelog_description:SetText(
 		"- Added options to ignore cross-guild chat and alerts (in interface options->Hardcore (not Hardcore:Greenwall!) \n- Fixed fishing poles failing Hammertime, pacifist, and shivved. \n- Fixed alert message which showed a |c before class names. \n -Stadic's challenge now requires 30,000 gained reputation (not total).\n- No longer tells user to ping mod for time gaps under level 20.\n- Updated DUO/TRIO rules"
 	)
@@ -363,7 +384,7 @@ local function DrawGeneralTab(container)
 	scroll_frame:AddChild(changelog_title)
 
 	local changelog_description = AceGUI:Create("Label")
-	changelog_description:SetWidth(600)
+	changelog_description:SetWidth(_menu_width)
 	changelog_description:SetText(
 		"- Added support for automatic guild notifications across guilds (level up and deaths)\n- Fixed self-made bug."
 	)
@@ -377,7 +398,7 @@ local function DrawGeneralTab(container)
 	scroll_frame:AddChild(changelog_title)
 
 	local changelog_description = AceGUI:Create("Label")
-	changelog_description:SetWidth(600)
+	changelog_description:SetWidth(_menu_width)
 	changelog_description:SetText(
 		"- Added Greenwall (cross-guild chat) integration\n- Added Stadics Challenge (1hp). Stadics Challenge will alert guild members when a point of damage is taken.\n- No Health Achievement bug fixed; Now the player should be able to make potions without failing the challenge.\n- Self-made bug fixed where the player couldn't equip a fishing rode without failing."
 	)
@@ -391,7 +412,7 @@ local function DrawGeneralTab(container)
 	scroll_frame:AddChild(changelog_title)
 
 	local changelog_description = AceGUI:Create("Label")
-	changelog_description:SetWidth(600)
+	changelog_description:SetWidth(_menu_width)
 	changelog_description:SetText(
 		"- Verification string in new menu ui fixed\n- Teleport moonglade fixed (again) for Druid of the Claw\n- Optimizations for level list.  Level list is now paginated and should no longer cause long freezes.\n- Optimizations for accountability tab.  Accountability tab now loads more quickly up on clicking `inspect all`.  Accountability tab no longer causes a stutter every 7 seconds.\n- HC main menu added to UI special frames; Escape key can be used to exit the menu.\n- Dungeon list updated to include BFD and WotLK dungeons\n- Currency tab is now handled correctly.  Previously, the HC tab would overlap with the currency tab, and the currency panel/ hc panel would still be drawn when switching between the two.\n- Self-made achievement updates.  Self-made no longer fails you for equipping tabards or gear with stat bonuses.  Starting gear list of items updated as well.\n- Self-made no longer allows equipping quest items."
 	)
@@ -405,7 +426,7 @@ local function DrawGeneralTab(container)
 	scroll_frame:AddChild(changelog_title)
 
 	local changelog_description = AceGUI:Create("Label")
-	changelog_description:SetWidth(600)
+	changelog_description:SetWidth(_menu_width)
 	changelog_description:SetText(
 		"- Inspect Players in main menu's accountability tab\n- Moonglade correctly detected for duo/trio partners\n- Defaults to modern menu for hardcore show.  To use the old menu again, go to interface options and uncheck the checkbox."
 	)
@@ -419,7 +440,7 @@ local function DrawGeneralTab(container)
 	scroll_frame:AddChild(changelog_title)
 
 	local changelog_description = AceGUI:Create("Label")
-	changelog_description:SetWidth(600)
+	changelog_description:SetWidth(_menu_width)
 	changelog_description:SetText(
 		"- Fixed issue where trade partner verification check was being recorded for duo/trio partner trades\n"
 	)
@@ -433,7 +454,7 @@ local function DrawGeneralTab(container)
 	scroll_frame:AddChild(changelog_title)
 
 	local changelog_description = AceGUI:Create("Label")
-	changelog_description:SetWidth(600)
+	changelog_description:SetWidth(_menu_width)
 	changelog_description:SetText(
 		"- Shivved updated to allow fishing poles\n- Hammertime updated to allow fishing poles\n- Self-made fixed and updated to allow fishing poles and starting gear\n- Force initialize and bound hardcore_settings to fix some lingering with settings\n- Remove character frame taint; Players can now open character frame during combat but not the HC tab\n- Add ability for mods to appeal achievements in-game\n- Added beta modern menu which replaces /hardcore show\n- Minor verbage changes in rules in beta menu\n- Dungeon levels added to rules in beta menu\n- Achievements added to beta menu\n- Formatting fixes for level list and accountability in beta menu\n- Druid of the claw fixed issue where moonglade wasn't allowed\n- Scavenger fixed issue where other addons could buy from merchants\n - Bandaid fix for other addons removing inspect frame"
 	)
@@ -444,7 +465,7 @@ end
 local function DrawRulesTab(container)
 	local function DrawRulesLabel(text, _scroll_frame)
 		local general_rules_label = AceGUI:Create("HardcoreClassTitleLabel")
-		general_rules_label:SetWidth(600)
+		general_rules_label:SetWidth(_inner_menu_width)
 		general_rules_label:SetHeight(60)
 		general_rules_label:SetText(text)
 		general_rules_label:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 20)
@@ -462,7 +483,7 @@ local function DrawRulesTab(container)
 
 	DrawRulesLabel("General", scroll_frame)
 	local general_rules_description = AceGUI:Create("Label")
-	general_rules_description:SetWidth(600)
+	general_rules_description:SetWidth(_inner_menu_width)
 	general_rules_description:SetText(
 		"\nFor more info, rules, news, hall of legends, challenges, and more visit the classichc website. Help is available on discord (link on website) \n\nAll professions allowed\nNo restriction on talents\n\nYou can use gear that you pickup or craft\nNo Auction house, No mailbox, No trading\n\nNo grouping in open world\n\nNo battlegrounds allowed\n\nBuffs from others are allowed, don't ask for others for buffs\n\n\n\n"
 	)
@@ -477,7 +498,7 @@ local function DrawRulesTab(container)
 			_scroll_frame:AddChild(entry)
 
 			local name_label = AceGUI:Create("Label")
-			name_label:SetWidth(100)
+			name_label:SetWidth(200)
 			name_label:SetText("")
 			name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
 			entry:AddChild(name_label)
@@ -506,7 +527,7 @@ local function DrawRulesTab(container)
 		scroll_frame:AddChild(row_header)
 
 		local name_label = AceGUI:Create("Label")
-		name_label:SetWidth(100)
+		name_label:SetWidth(200)
 		name_label:SetText("")
 		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
 		row_header:AddChild(name_label)
@@ -574,7 +595,7 @@ local function DrawRulesTab(container)
 	end
 	DrawRulesLabel("Dungeon Groups", scroll_frame)
 	local general_rules_description = AceGUI:Create("Label")
-	general_rules_description:SetWidth(600)
+	general_rules_description:SetWidth(_inner_menu_width)
 	general_rules_description:SetText(
 		"\nDungeon Groups are authorized but only ONE run of each Dungeon per character.  Everyone in party must be following hardcore rules.  Everyone must be in level range of the meeting stone.  Group at the meeting stone to start the dungeon.  You can invite people who are on the way.  If you level up inside of the dungeon and exceed the meeting stone requirement you can stay.  Warlocks are allowed to summon players to the meeting stone\n\n\n\n"
 	)
@@ -584,7 +605,7 @@ local function DrawRulesTab(container)
 
 	DrawRulesLabel("Class and Item Specific", scroll_frame)
 	local general_rules_description = AceGUI:Create("Label")
-	general_rules_description:SetWidth(600)
+	general_rules_description:SetWidth(_inner_menu_width)
 	general_rules_description:SetText(
 		"\nWarlocks can’t resurrect via SS.  Shamans can’t resurrect via Ankh.  Paladins can’t Bubble Hearth. \n\nNo Light of Elune + Hearthstone\n\n\n\n"
 	)
@@ -593,7 +614,7 @@ local function DrawRulesTab(container)
 
 	DrawRulesLabel("Verification", scroll_frame)
 	local general_rules_description = AceGUI:Create("Label")
-	general_rules_description:SetWidth(600)
+	general_rules_description:SetWidth(_inner_menu_width)
 	general_rules_description:SetText(
 		"\nYou can verify your run using this addon (Get verified tab). Recording or streaming is also recommended to provide evidence for special circumstances such as disconnection deaths.\n\nAt MAX level you earn your IMMORTALITY and become a full fledged character with insane bragging rights.\n\n\n\n"
 	)
@@ -602,7 +623,7 @@ local function DrawRulesTab(container)
 
 	DrawRulesLabel("Duos/Trios", scroll_frame)
 	local general_rules_description = AceGUI:Create("Label")
-	general_rules_description:SetWidth(600)
+	general_rules_description:SetWidth(_inner_menu_width)
 	general_rules_description:SetText(
 		"\nYou must not leave the same zone as each other, unless you are a Druid going to Moonglade to complete essential class quests.\nYou must choose a combo that spawns in the same starting location.\nIf one of you dies, the other must fall on the sword and the run is over.\nYou can trade your duo partner found or crafted items, including gold.\nMultiboxing goes against the spirit of the Hardcore Challenge and is not allowed.\nIf playing in a duo or trio, have all members reload ui at level 1 and click the 'Party' tab to setup your run.\n\n\n\n"
 	)
@@ -670,7 +691,7 @@ local function DrawVerifyTab(container, _hardcore_character)
 	scroll_frame:AddChild(first_menu_description_title)
 
 	local general_rules_description = AceGUI:Create("Label")
-	general_rules_description:SetWidth(600)
+	general_rules_description:SetWidth(_menu_width)
 	general_rules_description:SetText("\n\nTo get verified, copy the string below and visit the classichc website.")
 	general_rules_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
 	scroll_frame:AddChild(general_rules_description)
@@ -701,7 +722,7 @@ end
 local function DrawDKTab(container, dk_button_function)
 	local function DrawRulesLabel(text, _scroll_frame)
 		local general_rules_label = AceGUI:Create("HardcoreClassTitleLabel")
-		general_rules_label:SetWidth(600)
+		general_rules_label:SetWidth(_inner_menu_width)
 		general_rules_label:SetHeight(60)
 		general_rules_label:SetText(text)
 		general_rules_label:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 20)
@@ -715,12 +736,12 @@ local function DrawDKTab(container, dk_button_function)
 
 	local scroll_frame = AceGUI:Create("ScrollFrame")
 	scroll_frame:SetLayout("Flow")
-	scroll_frame:SetHeight(320)
+	scroll_frame:SetHeight(490)
 	scroll_container:AddChild(scroll_frame)
 
 	DrawRulesLabel("", scroll_frame)
 	local general_rules_description = AceGUI:Create("Label")
-	general_rules_description:SetWidth(600)
+	general_rules_description:SetWidth(_inner_menu_width)
 	general_rules_description:SetText(
 		"Death Knights are authorized for the Hardcore Challenge, adding in these following rules.  You must level a character of the SAME FACTION following the standard HC Ruleset, at which point it must be sacrificed to create a Death Knight.  The sacrificial level is a range between 55 and 58. You cannot sacrifice before or after these levels.  As a side note, sacrificing a toon does not mean you must delete it, but it will no longer be valid HC toon.\n"
 	)
@@ -729,7 +750,7 @@ local function DrawDKTab(container, dk_button_function)
 
 	DrawRulesLabel("", scroll_frame)
 	local general_rules_description = AceGUI:Create("Label")
-	general_rules_description:SetWidth(600)
+	general_rules_description:SetWidth(_inner_menu_width)
 	general_rules_description:SetText(
 		"\nIf you should die or fail your run while playing as a Death Knight, you must start over from level 1, with a fresh toon to perform the sacrifice again. You may create your DK in advance if you wish to RSVP a name, but do not log onto them. Remember that you need to have a lvl 55 already on the server to create a DK.  Duo and Trio groups who wish to have a DK in the party must follow some additional steps in creating a DK. These steps are listed further below.  General achievements will carry over when you activate your DK\n\n\n\n"
 	)
@@ -738,7 +759,7 @@ local function DrawDKTab(container, dk_button_function)
 
 	DrawRulesLabel("Solo DK", scroll_frame)
 	local general_rules_description = AceGUI:Create("Label")
-	general_rules_description:SetWidth(600)
+	general_rules_description:SetWidth(_inner_menu_width)
 	general_rules_description:SetText(
 		"Listed below is a step by step process for creating a DK while solo.. \n    Step 1: Level a character of the “SAME FACTION” to the required level range, following the HC rules.\n    Step 2: Click on the “SACRIFICE” button below. This starts a 5 minute timer. You cannot activate the “SACRIFICE” button while in combat, stealthed, or during Feign Death.\n    Step 3: During these 5 minutes, you must die on your current character. After dying, log out.\n    Step 4: DO NOT DELETE THE TOON YOU SACRIFICED UNTIL AFTER THE DK IS ACTIVATED!!\n    Step 5: Create or log onto your Death Knight.\n    Step 6: Click on “ACTIVATE” below. Then do a /reload. You are now good to go.\nSurvive well out there!\n\n\n\n"
 	)
@@ -747,7 +768,7 @@ local function DrawDKTab(container, dk_button_function)
 
 	DrawRulesLabel("Duo/Trio DK", scroll_frame)
 	local general_rules_description = AceGUI:Create("Label")
-	general_rules_description:SetWidth(600)
+	general_rules_description:SetWidth(_inner_menu_width)
 	general_rules_description:SetText(
 		"There are some additional things you must do when you wish to create a DK for Duo or Trio groups.\n    Step 1: Start your Duo/Trio group of the “SAME FACTION” and reach the level range for sacrifice, following the HC rules.\n    Step 2: For the player who is sacrificing, click on the “SACRIFICE” button below. This starts a 5 minute timer. You cannot activate the “SACRIFICE” button while in combat, stealthed, or during Feign Death.\n    Step 3: During these 5 minutes, you must die on your current character. After dying, drop group and logout. Your partners who are not sacrificing MUST STAY ONLINE!\n    Step 4: DO NOT DELETE THE TOON YOU SACRIFICED UNTIL AFTER THE DK IS ACTIVATED!!\n    Step 5: Create or log onto your Death Knight.\n    Step 6: Click on “ACTIVATE” below.\n    Step 7: Rejoin the party with your partners using /inv “Name” \n    Step 8: All party member must /reload\n    Step 9: If more than one player is creating a DK, then you must follow the steps ONE PERSON AT A TIME! Multiple players creating a DK in the party at the same time WILL invalidate your run. \n\n\n\n"
 	)
@@ -875,7 +896,7 @@ local function DrawLevelsTab(container, _hardcore_settings)
 
 	local scroll_frame = AceGUI:Create("ScrollFrame")
 	scroll_frame:SetLayout("Flow")
-	scroll_frame:SetHeight(369)
+	scroll_frame:SetHeight(490)
 	scroll_container:AddChild(scroll_frame)
 
 	local row_header = AceGUI:Create("SimpleGroup")
@@ -967,7 +988,7 @@ local function DrawLevelsTab(container, _hardcore_settings)
 	scroll_frame:AddChild(entry)
 
 	local button_container = AceGUI:Create("SimpleGroup")
-	button_container:SetWidth(700)
+	button_container:SetWidth(_inner_menu_width)
 	button_container:SetHeight(100)
 	button_container:SetLayout("Flow")
 	scroll_container:AddChild(button_container)
@@ -991,7 +1012,7 @@ local function DrawLevelsTab(container, _hardcore_settings)
 	button_container:AddChild(date_label)
 
 	local date_label = AceGUI:Create("HardcoreClassTitleLabel")
-	date_label:SetWidth(350)
+	date_label:SetWidth(490)
 	date_label:SetText("|c00FFFF00You've Leveled up " .. #_hardcore_settings.level_list .. " Times!|r")
 	date_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
 	button_container:AddChild(date_label)
@@ -1169,7 +1190,7 @@ local function DrawDungeonsTab(container, _hardcore_character)
 
 	local scroll_frame = AceGUI:Create("ScrollFrame")
 	scroll_frame:SetLayout("Flow")
-	scroll_frame:SetHeight(372)
+	scroll_frame:SetHeight(500)
 	scroll_container:AddChild(scroll_frame)
 
 	-- Row header
@@ -1179,7 +1200,7 @@ local function DrawDungeonsTab(container, _hardcore_character)
 	scroll_frame:AddChild(row_header)
 
 	local name_label = AceGUI:Create("Label")
-	name_label:SetWidth(250)
+	name_label:SetWidth(530)
 	name_label:SetText("|c00FFFF00Dungeon|r")
 	name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
 	row_header:AddChild(name_label)
@@ -1203,7 +1224,7 @@ local function DrawDungeonsTab(container, _hardcore_character)
 	row_header:AddChild(date_label)
 
 	-- Rest of the data
-	DrawNameColumn(scroll_frame, _hardcore_character.dt.runs, _hardcore_character.dt.pending, _hardcore_character.dt.current, 250)
+	DrawNameColumn(scroll_frame, _hardcore_character.dt.runs, _hardcore_character.dt.pending, _hardcore_character.dt.current, 530)
 	DrawLevelColumn(scroll_frame, _hardcore_character.dt.runs, _hardcore_character.dt.pending, _hardcore_character.dt.current, 50)
 	DrawPlayedColumn(scroll_frame, _hardcore_character.dt.runs, _hardcore_character.dt.pending, _hardcore_character.dt.current, 125)
 	DrawDateColumn(scroll_frame, _hardcore_character.dt.runs, _hardcore_character.dt.pending, _hardcore_character.dt.current, 125)
@@ -1255,13 +1276,26 @@ local function DrawAccountabilityTab(container)
 							.. ":16:16:0:0:64:64:4:60:4:60|t"
 					end
 				end
+				for i, achievement_name in ipairs(other_hardcore_character_cache[player_name_short].passive_achievements) do
+					if _G.passive_achievements[achievement_name] then
+						inline_text = inline_text
+							.. "|T"
+							.. _G.passive_achievements[achievement_name].icon_path
+							.. ":16:16:0:0:64:64:4:60:4:60|t"
+					end
+				end
 				_label_tbls["achievement_label"]:SetText(inline_text)
 				_label_tbls["achievement_label"]:SetCallback("OnEnter", function(widget)
 					GameTooltip:SetOwner(WorldFrame, "ANCHOR_CURSOR")
-					GameTooltip:AddLine("Active achievements")
+					GameTooltip:AddLine("achievements")
 					for i, achievement_name in ipairs(other_hardcore_character_cache[player_name_short].achievements) do
 						if _G.achievements[achievement_name] then
 							GameTooltip:AddLine(_G.achievements[achievement_name].title)
+						end
+					end
+					for i, achievement_name in ipairs(other_hardcore_character_cache[player_name_short].passive_achievements) do
+						if _G.passive_achievements[achievement_name] then
+							GameTooltip:AddLine(_G.passive_achievements[achievement_name].title)
 						end
 					end
 					GameTooltip:Show()
@@ -1344,7 +1378,7 @@ local function DrawAccountabilityTab(container)
 		hardcore_modern_menu_state.entry_tbl[player_name_short]["first_recorded_label"] = first_recorded_label
 
 		local achievement_label = AceGUI:Create("InteractiveLabel")
-		achievement_label:SetWidth(120)
+		achievement_label:SetWidth(320)
 		achievement_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
 		entry:AddChild(achievement_label)
 		hardcore_modern_menu_state.entry_tbl[player_name_short]["achievement_label"] = achievement_label
@@ -1469,7 +1503,7 @@ local function DrawAccountabilityTab(container)
 	end)
 
 	local achievements_label = AceGUI:Create("InteractiveLabel")
-	achievements_label:SetWidth(120)
+	achievements_label:SetWidth(320)
 	achievements_label:SetText("|c00FFFF00Achievements|r")
 	achievements_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
 	row_header:AddChild(achievements_label)
@@ -1585,15 +1619,7 @@ local function DrawAchievementsTab(container)
 				achievement_icon:SetImage(v.icon_path)
 				achievement_icon:SetImageSize(size, size)
 				achievement_icon.image:SetVertexColor(1, 1, 1)
-				achievement_icon:SetCallback("OnEnter", function(widget)
-					GameTooltip:SetOwner(WorldFrame, "ANCHOR_CURSOR")
-					GameTooltip:AddLine(v.title)
-					GameTooltip:AddLine(v.description, 1, 1, 1, true)
-					GameTooltip:Show()
-				end)
-				achievement_icon:SetCallback("OnLeave", function(widget)
-					GameTooltip:Hide()
-				end)
+				SetAchievementTooltip(achievement_icon, achievement, _player_name)
 				class_container:AddChild(achievement_icon)
 			end
 		end
@@ -1760,6 +1786,8 @@ function ShowMainMenu(_hardcore_character, _hardcore_settings, dk_button_functio
 	hardcore_modern_menu:SetTitle("Classic Hardcore")
 	hardcore_modern_menu:SetStatusText("")
 	hardcore_modern_menu:SetLayout("Flow")
+	hardcore_modern_menu:SetHeight(_menu_height)
+	hardcore_modern_menu:SetWidth(_menu_width)
 
 	tabcontainer = AceGUI:Create("TabGroup") -- "InlineGroup" is also good
 	tabcontainer:SetTabs({
@@ -1771,12 +1799,10 @@ function ShowMainMenu(_hardcore_character, _hardcore_settings, dk_button_functio
 		{ value = "DungeonsTab", text = "Dungeons" },
 		{ value = "AccountabilityTab", text = "Accountability" },
 		{ value = "AchievementsTab", text = "Achievements" },
-		-- { value = "AchievementsTab", text = "Active Achievements" },
-		-- { value = "PassiveAchievementsTab", text = "Passive Achievements" },
 	}) -- ,
 	tabcontainer:SetFullWidth(true)
 	tabcontainer:SetFullHeight(true) -- probably?
-	tabcontainer:SetLayout("Fill") -- important!
+	tabcontainer:SetLayout("Flow") -- important!
 
 	-- Callback function for OnGroupSelected
 	local function SelectGroup(container, event, group)
@@ -1811,9 +1837,7 @@ function ShowMainMenu(_hardcore_character, _hardcore_settings, dk_button_functio
 			scroll_frame:SetLayout("Flow")
 			scroll_container:AddChild(scroll_frame)
 		elseif group == "AchievementsTab" then
-			DrawAchievementsTab(container)
-		elseif group == "PassiveAchievementsTab" then
-			DrawPassiveAchievementsTab(container)
+			achievement_tab_handler:DrawAchievementTab(tabcontainer, _hardcore_character, false)
 		end
 	end
 

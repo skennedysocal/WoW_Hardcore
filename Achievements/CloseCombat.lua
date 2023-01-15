@@ -6,6 +6,8 @@ _G.achievements.CloseCombat = close_combat_achievement
 close_combat_achievement.name = "CloseCombat"
 close_combat_achievement.title = "Close Combat"
 close_combat_achievement.class = "Hunter"
+close_combat_achievement.bl_text = "Starting Achievement"
+close_combat_achievement.pts = 10
 close_combat_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_close_combat.blp"
 close_combat_achievement.description =
 	"Complete the Hardcore challenge without at any point using a ranged weapon attack (any ability requiring a ranged weapon to be equipped). Upon logging in, unequip your ranged weapon and quiver and never equip a new one. Throwing weapons are not allowed."

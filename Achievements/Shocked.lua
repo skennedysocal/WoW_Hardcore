@@ -6,6 +6,7 @@ _G.achievements.Shocked = shocked_achievement
 shocked_achievement.name = "Shocked"
 shocked_achievement.title = "Shocked"
 shocked_achievement.class = "Shaman"
+shocked_achievement.pts = 10
 shocked_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_shocked.blp"
 shocked_achievement.description =
 	"Complete the Hardcore challenge without at any point using an ability with a cast time. Only instant spells are allowed. If Nature’s Swiftness makes a spell instant, that spell is allowed to be cast. All items with a cast time (e.g. Hearthstones) are allowed."

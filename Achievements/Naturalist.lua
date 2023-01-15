@@ -14,6 +14,7 @@ local blacklist_spells_named = {
 naturalist_achievement.name = "Naturalist"
 naturalist_achievement.title = "Naturalist"
 naturalist_achievement.class = "Druid"
+naturalist_achievement.pts = 10
 naturalist_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_naturalist.blp"
 naturalist_achievement.description =
 	"Complete the Hardcore challenge without at any point using a shape shifting ability. Travel Form and Aquatic Form are not allowed. Items and quests that make you change your form are allowed."

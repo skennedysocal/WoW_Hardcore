@@ -6,6 +6,7 @@ _G.achievements.ShadowEmbrace = shadow_embrace_achievement
 shadow_embrace_achievement.name = "ShadowEmbrace"
 shadow_embrace_achievement.title = "Shadow Embrace"
 shadow_embrace_achievement.class = "Warlock"
+shadow_embrace_achievement.pts = 10
 shadow_embrace_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_shadow_embrace.blp"
 shadow_embrace_achievement.description =
 	"Complete the Hardcore challenge without at any point using an ability that deals damage other than Shadow. Spells and Demon abilities that deal Fire damage are not allowed. All items and consumables that deal damage other than Shadow are allowed."

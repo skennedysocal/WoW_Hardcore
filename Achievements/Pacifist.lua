@@ -7,6 +7,7 @@ pacifist_achievement.name = "Pacifist"
 pacifist_achievement.title = "Pacifist"
 pacifist_achievement.class = "Priest"
 pacifist_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_pacifist.blp"
+pacifist_achievement.pts = 10
 pacifist_achievement.description =
 	"Complete the Hardcore challenge without at any point wielding a weapon. One-handed weapons, staves, and wands are not allowed. Upon logging in, unequip your weapon and never equip a new one. All off-hand items and fishing poles are allowed."
 

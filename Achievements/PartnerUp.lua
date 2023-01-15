@@ -7,6 +7,7 @@ partner_up_achievement.name = "PartnerUp"
 partner_up_achievement.title = "Partner Up!"
 partner_up_achievement.class = "All"
 partner_up_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_default.blp"
+partner_up_achievement.pts = 10
 partner_up_achievement.description =
 	"Complete the Hardcore challenge in a group of two. Read the rules, if you want to know more about Hardcore Duos. For all Achievements within the General category, your duo is considered one character (i.e. the achievement’s rules apply to both of you as if you were one character). |c00FFA500 Note: You must be in a Duo or Trio group to complete this achievement.|r"
 partner_up_achievement.updated = false
@@ -24,6 +25,9 @@ end
 
 local function checkAchievements(name_1, name_2)
 	for _, achievement_check in ipairs(other_hardcore_character_cache[name_1].achievements) do
+		if _G.achievements[achievement_check].class and _G.achievements[achievement_check].class == "All" then
+		  return
+		end
 		local has_achievement = false
 		for i, other_achievement in ipairs(other_hardcore_character_cache[name_2].achievements) do
 			if other_achievement == achievement_check then

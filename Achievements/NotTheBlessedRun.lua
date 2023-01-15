@@ -36,6 +36,7 @@ local blacklist_spells_named = {
 not_the_blessed_run_achievement.name = "NotTheBlessedRun"
 not_the_blessed_run_achievement.title = "Not the Blessed Run"
 not_the_blessed_run_achievement.class = "Paladin"
+not_the_blessed_run_achievement.pts = 10
 not_the_blessed_run_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_not_the_blessed_run.blp"
 not_the_blessed_run_achievement.description =
 	"Complete the Hardcore challenge without at any point using a Blessing/Hand, or Aura spell. Hand of Reckoning is ALLOWED to be used."

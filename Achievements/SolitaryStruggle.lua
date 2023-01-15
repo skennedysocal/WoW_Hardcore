@@ -5,6 +5,7 @@ _G.achievements.SolitaryStruggle = solitary_struggle_achievement
 -- General info
 solitary_struggle_achievement.name = "SolitaryStruggle"
 solitary_struggle_achievement.title = "Solitary Struggle"
+solitary_struggle_achievement.pts = 25
 solitary_struggle_achievement.class = "All"
 solitary_struggle_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_solitary_struggle.blp"
 solitary_struggle_achievement.description =

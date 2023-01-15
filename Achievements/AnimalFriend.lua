@@ -7,6 +7,8 @@ animal_friend_achievement.cache = {}
 animal_friend_achievement.name = "AnimalFriend"
 animal_friend_achievement.title = "Animal Friend"
 animal_friend_achievement.class = "All"
+animal_friend_achievement.pts = 15
+animal_friend_achievement.bl_text = "Starting Achievement"
 animal_friend_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_animal_friend.blp"
 animal_friend_achievement.description =
 	"Complete the Hardcore challenge without at any point killing an NPC of the type Beast. Killing is considered any action that gives your character kill credit (experience, eligibility to loot, or quest progress)."

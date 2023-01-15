@@ -6,6 +6,7 @@ _G.achievements.Scavenger = scavenger_achievement
 scavenger_achievement.name = "Scavenger"
 scavenger_achievement.title = "Scavenger"
 scavenger_achievement.class = "All"
+scavenger_achievement.pts = 20
 scavenger_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_scavenger.blp"
 scavenger_achievement.description =
 	"Complete the Hardcore challenge without at any point using, consuming, or equipping an item that you have not looted from a mob, chest, or loot container, or crafted or conjured yourself. You are not allowed to ever buy any items from vendors, nor use, consume, or equip items rewarded by a quest (items provided for a quest can be used, consumed, or equipped). This includes consumables, projectiles, trade goods, and containers. All items you start with can be used, consumed, and equipped, including Hearthstone."

@@ -3990,6 +3990,7 @@ local options = {
 					desc = "Modify achievement alert frame's scale.",
 					min = 0.1,
 					max = 2,
+					disabled = true,
 					get = function()
 						return Hardcore_Settings.achievement_alert_frame_scale or 1.0
 					end,
@@ -4016,7 +4017,7 @@ local options = {
 						achievement_alert_handler:ApplySettings(_x_offset, _y_offset, _scale)
 						Hardcore:ShowPassiveAchievementFrame(
 							_G.passive_achievements["MasterHerbalism"].icon_path,
-							"Achieved " .. _G.passive_achievements["MasterHerbalism"].title	.. "!",
+							_G.passive_achievements["MasterHerbalism"].title,
 							25.0
 						)
 					end,

@@ -1,38 +1,101 @@
 achievement_alert_handler = {}
 
 -- Animated border
--- local test_frame = CreateFrame("Frame");
--- test_frame:SetSize(400, 400)
--- test_frame:SetHeight(200)
--- test_frame:SetWidth(400)
--- test_frame:SetPoint("CENTER", UIParent, 0, 0)
--- local tex = test_frame:CreateTexture()
--- tex:SetHeight(200)
--- tex:SetWidth(400)
--- tex:SetTexture("Interface\\Addons\\Hardcore\\Media\\test_sprite.blp")
--- tex:SetHeight(200)
--- tex:SetWidth(400)
--- tex:SetSize(400,400)
--- tex:SetDrawLayer("OVERLAY", 7)
--- tex:SetAllPoints()
--- tex:SetParent(UIParent)
+local test_frame = CreateFrame("Frame");
+test_frame:SetSize(400, 400)
+test_frame:SetHeight(400)
+test_frame:SetWidth(400)
+test_frame:SetPoint("CENTER", UIParent, 0, 0)
+local tex = test_frame:CreateTexture()
+tex:SetHeight(200)
+tex:SetWidth(400)
+tex:SetTexture("Interface\\Addons\\Hardcore\\Media\\achievement_animation_spritesheet.blp")
+tex:SetDrawLayer("OVERLAY", 5)
+tex:SetPoint("CENTER", test_frame, 0, -100)
+tex:SetParent(UIParent)
 
--- test_frame:Show()
--- tex:Show()
+local tex2 = test_frame:CreateTexture()
+tex2:SetHeight(200)
+tex2:SetWidth(400)
+tex2:SetTexture("Interface\\Addons\\Hardcore\\Media\\achievement_animation_spritesheet2.blp")
+tex2:SetDrawLayer("OVERLAY", 5)
+tex2:SetPoint("CENTER", test_frame, 0, -100)
+tex2:SetParent(UIParent)
+
+local hc_ring_tex = test_frame:CreateTexture()
+hc_ring_tex:SetTexture("Interface\\Addons\\Hardcore\\Media\\hc-ring.blp")
+hc_ring_tex:SetDrawLayer("OVERLAY", 7)
+
+hc_ring_tex:SetHeight(130)
+hc_ring_tex:SetWidth(130)
+hc_ring_tex:SetPoint("CENTER", test_frame, -112, -99)
+hc_ring_tex:SetParent(UIParent)
+
+local achievement_icon_texture = test_frame:CreateTexture()
+achievement_icon_texture:SetTexture("Interface\\Addons\\Hardcore\\Media\\icon_absent_minded_prospector.blp")
+achievement_icon_texture:SetDrawLayer("OVERLAY", 6)
+achievement_icon_texture:SetHeight(62)
+achievement_icon_texture:SetWidth(62)
+achievement_icon_texture:SetPoint("CENTER", test_frame, -107, -104)
+achievement_icon_texture:SetParent(UIParent)
+
+local achievement_title_text = test_frame:CreateFontString(nil,"OVERLAY") 
+achievement_title_text:SetFont("Interface\\AddOns\\Hardcore\\Media\\BreatheFire.ttf", 14)
+-- achievement_title_text:SetFont("Fonts\\FRIZQT__.TTF", 13)
+achievement_title_text:SetTextColor(.8, .8, .8, 1)
+achievement_title_text:SetPoint("CENTER", 25, -94)
+achievement_title_text:SetText("Protect the Prospector")
+achievement_title_text:SetWidth(350)
+
+test_frame:Hide()
+tex:Hide()
+tex2:Hide()
+hc_ring_tex:Hide()
+achievement_icon_texture:Hide()
+
+
 -- _G.HCTextureUtils:AddToAnimationFrames("TestFrame", tex, _G.HCTextureInfo.TestFrame.test_sprite.AnimationInfo)
 
--- test_frame:HookScript("OnUpdate", function(self, elapsed)
--- _G.HCTextureUtils.Animate_OnUpdate(elapsed)
--- end)
+function achievement_alert_handler:ShowTimed(_time)
+  local counter = 0
 
--- C_Timer.After(5.0, function()
--- 	test_frame:Hide()
--- 	tex:Hide()
--- end)
+  test_frame:Show()
+  hc_ring_tex:Show()
+  achievement_icon_texture:Show()
+  C_Timer.NewTicker(1/30, function(self)
+	  if counter < 32 then 
+		  tex:SetTexCoord(counter*1/32, (counter+1)*1/32, 0, 1);
+		  tex:Show()
+		  tex2:Hide()
+	  else
+		  tex2:SetTexCoord((counter-32)*1/32, (counter+1-32)*1/32, 0, 1);
+		  tex2:Show()
+		  tex:Hide()
+	  end
+	  if counter > 30 then
+		achievement_title_text:SetTextColor(.8, .8, .8, 1)
+		achievement_icon_texture:SetVertexColor(1,1,1,1)
+	  else
+		achievement_title_text:SetTextColor(1, 1, 1, 0)
+		achievement_icon_texture:SetVertexColor(1,1,1,counter*1/30)
+	  end
+	  counter = counter + 1
+	  if counter > 59 then 
+	    self:Cancel()
+	  end;
+  end)
 
+  C_Timer.After(_time, function()
+	  test_frame:Hide()
+	  tex:Hide()
+	  tex2:Hide()
+	  hc_ring_tex:Hide()
+	  achievement_icon_texture:Hide()
+  end)
+end
 
 local static_offset_x = 0
-local static_offset_y = 250
+local static_offset_y = 0
 local modified_offset_x = 0
 local modified_offset_y = 0
 
@@ -84,19 +147,12 @@ function achievement_alert_handler:Show()
   achievement_alert_frame_icon:Show()
 end
 
-function achievement_alert_handler:ShowTimed(_time)
-	achievement_alert_handler:Show()
-	C_Timer.After(_time or 1.0, function()
-		achievement_alert_handler:Hide()
-	end)
-end
-
 function achievement_alert_handler:SetIcon(_icon_path)
-      t2:SetTexture(_icon_path)
+      achievement_icon_texture:SetTexture(_icon_path)
 end
 
 function achievement_alert_handler:SetMsg(_msg)
-      text:SetText(_msg)
+      achievement_title_text:SetText(_msg)
 end
 
 function achievement_alert_handler:SetScale(_scale)
@@ -110,8 +166,8 @@ end
 function achievement_alert_handler:ApplySettings(_x_offset, _y_offset, _scale)
 	modified_offset_x = _x_offset
 	modified_offset_y = _y_offset
-	achievement_alert_handler:SetScale(_scale)
-	achievement_alert_frame:SetPoint("CENTER", UIParent, static_offset_x + modified_offset_x, static_offset_y + modified_offset_y)
+	-- achievement_alert_handler:SetScale(_scale)
+	test_frame:SetPoint("CENTER", UIParent, static_offset_x + modified_offset_x, static_offset_y + modified_offset_y)
 end
 
 

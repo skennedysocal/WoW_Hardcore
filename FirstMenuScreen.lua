@@ -185,7 +185,7 @@ function ShowFirstMenu(_hardcore_character, _hardcore_settings, _failure_functio
 
 			DrawPartyTab(container, scroll_frame)
 		elseif group == "AchievementsTab" then
-			achievement_tab_handler:DrawAchievementTab(tabcontainer, _hardcore_character, true)
+			achievement_tab_handler:DrawAchievementTab(tabcontainer, _hardcore_character, true, _failure_function_executor)
 		end
 	end
 

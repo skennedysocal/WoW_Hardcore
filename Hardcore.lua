@@ -3703,24 +3703,6 @@ function Hardcore:ApplyAlertFrameSettings()
 	Hardcore_Alert_Frame:SetPoint("TOP", "UIParent", "TOP", x_offset / scale, y_offset / scale)
 end
 
-ChatFrame_AddMessageEventFilter("CHAT_MSG_SAY", function(frame, event, message, sender, ...)
-
--- 	word=message:match("%[(%a+)%]")
--- 	if _G.passive_achievements[word] then
--- 		message = message:gsub("%[(%a+)%]", "|cff00FFF3|Hitem:3299:".._G.pa_id[word]..":1:::::::20:257::::::|h[".._G.passive_achievements[word].title.."]|h|r")
--- 	end
--- 	if _G.achievements[word] then
--- 		message = message:gsub("%[(%a+)%]", "|cff00FFF3|Hitem:3299:".._G.a_id[word]..":2:::::::20:257::::::|h[".._G.achievements[word].title.."]|h|r")
--- 	end
-	local _name, _ = string.split("-", sender)
-	if _G.hc_online_player_ranks[_name] and _G.hc_online_player_ranks[_name] == "officer" then
-	  message = "\124cFFFF0000<MOD>\124r " .. message
-	  -- message = "|T" .. "Interface\\Addons\\Hardcore\\Media\\icon_crown.blp" .. ":8:8:0:0:64:64:4:60:4:60|t " .. message
-	end
-
-	return false, message, sender, ... -- don't hide this message
-end)
-
 ChatFrame_AddMessageEventFilter("CHAT_MSG_GUILD", function(frame, event, message, sender, ...)
 	if Hardcore_Settings.filter_f_in_chat then
 		if message == "f" or message == "F" then

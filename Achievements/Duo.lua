@@ -145,6 +145,7 @@ function duo_rules:Unregister()
 end
 
 function duo_rules:Warn()
+	if UnitLevel("player") == 1 then return end
 	duo_rules.accumulated_warn_time = duo_rules.accumulated_warn_time + check_rate
 	if max_warn_time - duo_rules.accumulated_warn_time > 0 then
 		minimap_button.icon = "Interface\\Addons\\Hardcore\\Media\\duo_minimap_warning.blp"

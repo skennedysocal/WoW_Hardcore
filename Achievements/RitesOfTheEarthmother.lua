@@ -8,7 +8,7 @@ _achievement.title = "Arra'chea goes down"
 _achievement.class = "All"
 _achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_rites_of_the_earthmother.blp"
 _achievement.level_cap = 11
-_achievement.quest_num = 763
+_achievement.quest_num = 776
 _achievement.quest_name = "Rites of the Earthmother"
 _achievement.zone = "Mulgore"
 _achievement.kill_target = "Arra'chea"
@@ -33,5 +33,5 @@ end
 -- Register Definitions
 _achievement:SetScript("OnEvent", function(self, event, ...)
 	local arg = { ... }
-	HCCommonPassiveAchievementKillCheck(_achievement, event, arg)
+	HCCommonPassiveAchievementBasicQuestCheck(_achievement, event, arg)
 end)

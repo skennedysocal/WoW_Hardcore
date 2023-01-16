@@ -192,6 +192,7 @@ function trio_rules:Unregister()
 end
 
 function trio_rules:Warn()
+	if UnitLevel("player") == 1 then return end
 	trio_rules.accumulated_warn_time = trio_rules.accumulated_warn_time + check_rate
 	if max_warn_time - trio_rules.accumulated_warn_time > 0 then
 		minimap_button.icon = "Interface\\Addons\\Hardcore\\Media\\duo_minimap_warning.blp"

@@ -960,6 +960,7 @@ end
 
 TradeFrameTradeButton:SetScript("OnClick", function()
 	local duo_trio_partner = false
+	local legacy_duo_support = #Hardcore_Character.trade_partners > 0
 	local target_trader = TradeFrameRecipientNameText:GetText()
 	local level = UnitLevel("player")
 	local max_level = 60
@@ -976,16 +977,15 @@ TradeFrameTradeButton:SetScript("OnClick", function()
 			end
 		end
 	end
+
 	if duo_trio_partner == true then
 		AcceptTrade()
+	elseif (level == max_level) or legacy_duo_support then
+		table.insert(Hardcore_Character.trade_partners, target_trader)
+		Hardcore_Character.trade_partners = Hardcore_FilterUnique(Hardcore_Character.trade_partners)
+		AcceptTrade()
 	else
-		if level < max_level then
-			Hardcore:Print("|cFFFF0000BLOCKED:|r You may not trade outside of duos/trios.")
-		else
-			table.insert(Hardcore_Character.trade_partners, target_trader)
-			Hardcore_Character.trade_partners = Hardcore_FilterUnique(Hardcore_Character.trade_partners)
-			AcceptTrade()
-		end
+		Hardcore:Print("|cFFFF0000BLOCKED:|r You may not trade outside of duos/trios.")
 	end
 end)
 

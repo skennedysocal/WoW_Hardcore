@@ -298,6 +298,22 @@ local function DrawGeneralTab(container)
 
 	local changelog_title = AceGUI:Create("Label")
 	changelog_title:SetWidth(500)
+	changelog_title:SetText("11.2")
+	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16)
+	scroll_frame:AddChild(changelog_title)
+
+	local changelog_description = AceGUI:Create("Label")
+	changelog_description:SetWidth(_menu_width)
+	changelog_description:SetText(
+		"- Made a variety of new achievements more robust\n- duo/trio will no longer fail at lvl 1\n- <MOD> tag no longer applied to say\n- Added legacy support for duo/trio trades"
+	)
+	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	scroll_frame:AddChild(changelog_description)
+
+	---
+
+	local changelog_title = AceGUI:Create("Label")
+	changelog_title:SetWidth(500)
 	changelog_title:SetText("11.1")
 	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16)
 	scroll_frame:AddChild(changelog_title)

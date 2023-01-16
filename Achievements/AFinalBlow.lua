@@ -32,5 +32,5 @@ end
 -- Register Definitions
 _achievement:SetScript("OnEvent", function(self, event, ...)
 	local arg = { ... }
-	HCCommonPassiveAchievementKillCheck(_achievement, event, arg)
+	HCCommonPassiveAchievementBasicQuestCheck(_achievement, event, arg)
 end)

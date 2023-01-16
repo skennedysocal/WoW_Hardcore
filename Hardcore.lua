@@ -1882,7 +1882,7 @@ function Hardcore:DungeonTrackerLogRun( run )
 	-- Warn if this is a repeated run and log
 	for i, v in ipairs(Hardcore_Character.dt.runs) do
 		if v.name == run.name then
-			if Hardcore.dt.warn_infractions == true then
+			if Hardcore_Character.dt.warn_infractions == true then
 				Hardcore:Print( "\124cffFF0000Player entered " .. run.name .. " already at date " .. v.date .. " -- logging repeated run" )
 			end
 			break
@@ -1892,7 +1892,7 @@ function Hardcore:DungeonTrackerLogRun( run )
 	-- Warn if this is an overleveled run and log
 	local max_level = Hardcore:DungeonTrackerGetDungeonMaxLevel( run.name )
 	if run.level > max_level then
-		if Hardcore.dt.warn_infractions == true then
+		if Hardcore_Character.dt.warn_infractions == true then
 			Hardcore:Print( "\124cffFF0000Player was overleveled for " .. run.name .. " -- logging overleveled run" )
 		end
 	end
@@ -3589,10 +3589,14 @@ function Hardcore:InitiatePulsePlayed()
 	--time accumulator
 	C_Timer.NewTicker(TIME_TRACK_PULSE, function()
 		Hardcore_Character.time_tracked = Hardcore_Character.time_tracked + TIME_TRACK_PULSE
-		Hardcore:DungeonTracker()
 		if RECEIVED_FIRST_PLAYED_TIME_MSG == true then
 			Hardcore_Character.accumulated_time_diff = Hardcore_Character.time_played - Hardcore_Character.time_tracked
 		end
+	end)
+
+	-- dungeon tracking
+	C_Timer.NewTicker(DT_TIME_STEP, function()
+		Hardcore:DungeonTracker()
 	end)
 
 	--played time tracking

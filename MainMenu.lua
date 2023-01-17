@@ -298,6 +298,22 @@ local function DrawGeneralTab(container)
 
 	local changelog_title = AceGUI:Create("Label")
 	changelog_title:SetWidth(500)
+	changelog_title:SetText("11.3")
+	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16)
+	scroll_frame:AddChild(changelog_title)
+
+	local changelog_description = AceGUI:Create("Label")
+	changelog_description:SetWidth(_menu_width)
+	changelog_description:SetText(
+		"- Fixed burning shadow specific bug\n- Tuned achievement animation\n- Dungeon tracking fixes"
+	)
+	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	scroll_frame:AddChild(changelog_description)
+
+	---
+
+	local changelog_title = AceGUI:Create("Label")
+	changelog_title:SetWidth(500)
 	changelog_title:SetText("11.2")
 	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16)
 	scroll_frame:AddChild(changelog_title)

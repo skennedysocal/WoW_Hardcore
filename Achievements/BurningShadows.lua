@@ -1,9 +1,9 @@
 local _G = _G
 local _achievement = CreateFrame("Frame")
-_G.passive_achievements.Fangore = _achievement
+_G.passive_achievements.BurningShadows = _achievement
 
 -- General info
-_achievement.name = "Burning Shadows"
+_achievement.name = "BurningShadows"
 _achievement.title = "Burning Shadows"
 _achievement.class = "All"
 _achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_voidwalker.blp"

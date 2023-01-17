@@ -10,7 +10,7 @@ local tex = test_frame:CreateTexture()
 tex:SetHeight(200)
 tex:SetWidth(400)
 tex:SetTexture("Interface\\Addons\\Hardcore\\Media\\achievement_animation_spritesheet.blp")
-tex:SetDrawLayer("OVERLAY", 5)
+tex:SetDrawLayer("OVERLAY", 4)
 tex:SetPoint("CENTER", test_frame, 0, -100)
 tex:SetParent(UIParent)
 
@@ -18,13 +18,13 @@ local tex2 = test_frame:CreateTexture()
 tex2:SetHeight(200)
 tex2:SetWidth(400)
 tex2:SetTexture("Interface\\Addons\\Hardcore\\Media\\achievement_animation_spritesheet2.blp")
-tex2:SetDrawLayer("OVERLAY", 5)
+tex2:SetDrawLayer("OVERLAY", 4)
 tex2:SetPoint("CENTER", test_frame, 0, -100)
 tex2:SetParent(UIParent)
 
 local hc_ring_tex = test_frame:CreateTexture()
 hc_ring_tex:SetTexture("Interface\\Addons\\Hardcore\\Media\\hc-ring.blp")
-hc_ring_tex:SetDrawLayer("OVERLAY", 7)
+hc_ring_tex:SetDrawLayer("OVERLAY", 6)
 
 hc_ring_tex:SetHeight(130)
 hc_ring_tex:SetWidth(130)
@@ -33,11 +33,20 @@ hc_ring_tex:SetParent(UIParent)
 
 local achievement_icon_texture = test_frame:CreateTexture()
 achievement_icon_texture:SetTexture("Interface\\Addons\\Hardcore\\Media\\icon_absent_minded_prospector.blp")
-achievement_icon_texture:SetDrawLayer("OVERLAY", 6)
+achievement_icon_texture:SetDrawLayer("OVERLAY", 5)
 achievement_icon_texture:SetHeight(62)
 achievement_icon_texture:SetWidth(62)
 achievement_icon_texture:SetPoint("CENTER", test_frame, -107, -104)
 achievement_icon_texture:SetParent(UIParent)
+
+local achievement_icon_texture_white_ring = test_frame:CreateTexture()
+achievement_icon_texture_white_ring:SetTexture("Interface\\Addons\\Hardcore\\Media\\hcring_white.blp")
+achievement_icon_texture_white_ring:SetDrawLayer("OVERLAY", 7)
+achievement_icon_texture_white_ring:SetHeight(130)
+achievement_icon_texture_white_ring:SetWidth(130)
+achievement_icon_texture_white_ring:SetPoint("CENTER", test_frame, -112, -99)
+achievement_icon_texture_white_ring:SetParent(UIParent)
+
 
 local achievement_title_text = test_frame:CreateFontString(nil,"OVERLAY") 
 achievement_title_text:SetFont("Interface\\AddOns\\Hardcore\\Media\\BreatheFire.ttf", 14)
@@ -52,6 +61,7 @@ tex:Hide()
 tex2:Hide()
 hc_ring_tex:Hide()
 achievement_icon_texture:Hide()
+achievement_icon_texture_white_ring:Hide()
 
 
 -- _G.HCTextureUtils:AddToAnimationFrames("TestFrame", tex, _G.HCTextureInfo.TestFrame.test_sprite.AnimationInfo)
@@ -62,6 +72,7 @@ function achievement_alert_handler:ShowTimed(_time)
   test_frame:Show()
   hc_ring_tex:Show()
   achievement_icon_texture:Show()
+  achievement_icon_texture_white_ring:Show()
   C_Timer.NewTicker(1/30, function(self)
 	  if counter < 32 then 
 		  tex:SetTexCoord(counter*1/32, (counter+1)*1/32, 0, 1);
@@ -74,10 +85,14 @@ function achievement_alert_handler:ShowTimed(_time)
 	  end
 	  if counter > 30 then
 		achievement_title_text:SetTextColor(.8, .8, .8, 1)
-		achievement_icon_texture:SetVertexColor(1,1,1,1)
+		achievement_icon_texture:SetVertexColor(1,1,1,counter*5/30)
+		hc_ring_tex:SetVertexColor(1,1,1, counter*5/30 )
+		achievement_icon_texture_white_ring:SetVertexColor(1,1,1, (50 - counter)/30)
 	  else
 		achievement_title_text:SetTextColor(1, 1, 1, 0)
-		achievement_icon_texture:SetVertexColor(1,1,1,counter*1/30)
+		achievement_icon_texture:SetVertexColor(1,1,1, 0 )
+		hc_ring_tex:SetVertexColor(1,1,1, 0 )
+		achievement_icon_texture_white_ring:SetVertexColor(1,1,1, (counter*1.5/30))
 	  end
 	  counter = counter + 1
 	  if counter > 59 then 
@@ -91,6 +106,7 @@ function achievement_alert_handler:ShowTimed(_time)
 	  tex2:Hide()
 	  hc_ring_tex:Hide()
 	  achievement_icon_texture:Hide()
+	  achievement_icon_texture_white_ring:Hide()
   end)
 end
 

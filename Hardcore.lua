@@ -219,7 +219,8 @@ local DT_INSIDE_MAX_TIME          = 61		-- Maximum time inside a dungeon without
 local DT_OUTSIDE_MAX_TRACKED_TIME = 900		-- If seen outside, how many seconds seen outside before finalization (900 = 15m)
 local DT_OUTSIDE_MAX_REAL_TIME    = 1800	-- If seen outside, how many seconds since last seen inside before finalization (1800 = 30m)
 local DT_OUTSIDE_MAX_RUN_TIME     = 21600	-- If seen outside, how many seconds since start of run before finalization (21600 = 6 hrs)
-local DT_TIME_STEP			      = 1
+local DT_TIME_STEP			      = 1		-- Dungeon code called every 1 second
+local DT_VERSION			      = 2		-- Increasing this will trigger a full rebuild of the dungeon tracker info
 
 -- frame display
 local display = "Rules"
@@ -1723,7 +1724,7 @@ function Hardcore:DungeonTrackerPopulateFromQuests()
 		{ "Uldaman", 1360, 2240, 17, 1139, 2204, 2278 },
 		{ "Zul'Farrak", 3042, 2865, 2846, 2768, 2770, 3527, 2991, 2936 },
 		{ "Maraudon", 7041, 7029, 7065, 7064, 7067, 7044, 7046},
-		{ "The Temple of Atal'Hakkar", 3528, 3446, 3447, 1475, 4143, 4146, 3373 },
+		{ "The Temple of Atal'Hakkar", 3528, 3446, 3447, 3373 },		-- 1475, 4143, 4146, removed: tablets and haze drop outside
 		{ "Blackrock Depths", 4136, 4123, 4286, 4126, 4081, 4134},
 		{ "Blackrock Spire", 4701, 5001, 4724, 4982, 4903, 4862, 4729, 4788, 4768, 4974, 4764, 5102, 6821, 7761 },  -- UBRS and LBRS are one instance
 		{ "Scholomance", 5529, 5582, 5382, 5384, 5466, 5343, 5341},
@@ -1799,7 +1800,7 @@ function Hardcore:DungeonTrackerUpdateInfractions()
 		-- Check if the run is repeated further down in the array (this prevents counting runs twice when i ends up at j)
 		for j = i + 1, #Hardcore_Character.dt.runs do
 			if Hardcore_Character.dt.runs[ i ].name == Hardcore_Character.dt.runs[ j ].name then
-				repeated_runs = repeated_runs + 1
+				repeated = repeated + 1
 			end
 		end
 	end
@@ -1864,7 +1865,7 @@ function Hardcore:DungeonTrackerWarnInfraction( name )
 end
 
 
-function Hardcore:DungeonTrackerLogCurrentRun( run )
+function Hardcore:DungeonTrackerLogRun( run )
 
 	-- We don't log this run if the inside time is too small
 	if run.time_inside < DT_INSIDE_MAX_TIME then
@@ -1881,7 +1882,7 @@ function Hardcore:DungeonTrackerLogCurrentRun( run )
 	-- Warn if this is a repeated run and log
 	for i, v in ipairs(Hardcore_Character.dt.runs) do
 		if v.name == run.name then
-			if Hardcore.dt.warn_infractions == true then
+			if Hardcore_Character.dt.warn_infractions == true then
 				Hardcore:Print( "\124cffFF0000Player entered " .. run.name .. " already at date " .. v.date .. " -- logging repeated run" )
 			end
 			break
@@ -1891,13 +1892,13 @@ function Hardcore:DungeonTrackerLogCurrentRun( run )
 	-- Warn if this is an overleveled run and log
 	local max_level = Hardcore:DungeonTrackerGetDungeonMaxLevel( run.name )
 	if run.level > max_level then
-		if Hardcore.dt.warn_infractions == true then
+		if Hardcore_Character.dt.warn_infractions == true then
 			Hardcore:Print( "\124cffFF0000Player was overleveled for " .. run.name .. " -- logging overleveled run" )
 		end
 	end
 
 	-- Now actually log the run
-	Hardcore:Debug( "Logging run in " ..run.name )
+	Hardcore:Debug( "Logging run in " .. run.name )
 	table.insert( Hardcore_Character.dt.runs, run )
 
 	-- Update infraction statistics (involves a re-count)
@@ -1980,7 +1981,7 @@ function Hardcore:DungeonTrackerCheckChanged( name )
 	if Hardcore_Character.dt.current.name ~= name then
 		-- Change to the new dungeon, but we store only if we spent enough time
 		Hardcore:Debug( "Left dungeon " .. Hardcore_Character.dt.current.name .. " for dungeon " .. name )
-		Hardcore:DungeonTrackerLogCurrentRun( Hardcore_Character.dt.current )
+		Hardcore:DungeonTrackerLogRun( Hardcore_Character.dt.current )
 		Hardcore_Character.dt.current = {}
 	end
 
@@ -1999,8 +2000,10 @@ function Hardcore:DungeonTracker()
 --	local message = "Instance:" .. name .. ", " .. instanceType .. ", " .. instanceID 
 --	Hardcore:Print( message )
 
-	-- Handle invalid or legacy data files
-	if Hardcore_Character.dt == nil then
+	-- Handle invalid or legacy data files, or version upgrade (triggers full rebuild of dungeon database)
+	if (Hardcore_Character.dt == nil) or 					-- no DT yet
+	   (Hardcore_Character.dt.version == nil) or 			-- initial DT version without a version number
+	   (Hardcore_Character.dt.version ~= DT_VERSION) then	-- older version (with a version number)
 		Hardcore_Character.dt = {}
 	end
 	if not next( Hardcore_Character.dt ) then
@@ -2011,6 +2014,7 @@ function Hardcore:DungeonTracker()
 		Hardcore_Character.dt.overleveled_runs = 0
 		Hardcore_Character.dt.legacy_runs_imported = false
 		Hardcore_Character.dt.warn_infractions = true
+		Hardcore_Character.dt.version = DT_VERSION
 	end
 
 	-- If there are no logged runs yet, we try to figure out which dungeons were already done from the completed quests.
@@ -2046,10 +2050,10 @@ function Hardcore:DungeonTracker()
 		for i=#Hardcore_Character.dt.pending,1,-1  do
 			Hardcore_Character.dt.pending[i].time_outside = Hardcore_Character.dt.pending[i].time_outside + DT_TIME_STEP
 			if Hardcore_Character.dt.pending[ i ].time_outside >= DT_OUTSIDE_MAX_TRACKED_TIME or 
-				(Hardcore_Character.dt.pending[ i ].last_seen - Hardcore_Character.dt.pending[ i ].start) >= DT_OUTSIDE_MAX_REAL_TIME or
+				(now - Hardcore_Character.dt.pending[ i ].last_seen) >= DT_OUTSIDE_MAX_REAL_TIME or
 				(now - Hardcore_Character.dt.pending[ i ].start) >= DT_OUTSIDE_MAX_RUN_TIME
 			then
-				Hardcore:DungeonTrackerLogCurrentRun(Hardcore_Character.dt.pending[ i ])
+				Hardcore:DungeonTrackerLogRun(Hardcore_Character.dt.pending[ i ])
 				table.remove( Hardcore_Character.dt.pending, i )
 			end
 		end
@@ -2060,20 +2064,18 @@ function Hardcore:DungeonTracker()
 	-- Check if we are in a new dungeon (this has the special handling of Scarlet Monastery)
 	name = Hardcore:DungeonTrackerCheckChanged(name)
 			
-	-- See if we can reconnect to a pending run
-	local reconnected = false
+	-- See if we can reconnect to a pending run (this forgets the current run, which is probably in an unidentified SM wing)
 	for i = 1, #Hardcore_Character.dt.pending do
 		if( Hardcore_Character.dt.pending[i].name == name ) then
 			Hardcore_Character.dt.current = Hardcore_Character.dt.pending[ i ]
 			table.remove( Hardcore_Character.dt.pending, i )
 			Hardcore:Debug( "Reconnected to pending run in " .. Hardcore_Character.dt.current.name )
-			reconnected = true
 			break
 		end
 	end
 	
-	-- If we didn't reconnnect or have a current run already, start a new run
-	if (reconnected == false) and (not next(Hardcore_Character.dt.current)) then
+	-- If we don't have a current run at this point (reconnected or not), start a new run
+	if not next(Hardcore_Character.dt.current) then
 		DUNGEON_RUN = {}
 		DUNGEON_RUN.name   		 = name
 		DUNGEON_RUN.id   		 = instanceID
@@ -2082,7 +2084,7 @@ function Hardcore:DungeonTracker()
 		DUNGEON_RUN.time_outside = 0
 		DUNGEON_RUN.last_warn    = -1000
 		DUNGEON_RUN.start		 = now
-		--DUNGEON_RUN.last_seen	 = now
+		DUNGEON_RUN.last_seen	 = now
 		DUNGEON_RUN.level		 = UnitLevel("player")
 		local group_composition  = UnitName("player")
 		if Hardcore_Character.dt.group_members ~= nil then
@@ -3587,10 +3589,14 @@ function Hardcore:InitiatePulsePlayed()
 	--time accumulator
 	C_Timer.NewTicker(TIME_TRACK_PULSE, function()
 		Hardcore_Character.time_tracked = Hardcore_Character.time_tracked + TIME_TRACK_PULSE
-		Hardcore:DungeonTracker()
 		if RECEIVED_FIRST_PLAYED_TIME_MSG == true then
 			Hardcore_Character.accumulated_time_diff = Hardcore_Character.time_played - Hardcore_Character.time_tracked
 		end
+	end)
+
+	-- dungeon tracking
+	C_Timer.NewTicker(DT_TIME_STEP, function()
+		Hardcore:DungeonTracker()
 	end)
 
 	--played time tracking

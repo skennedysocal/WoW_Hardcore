@@ -14,6 +14,7 @@ _achievement.zone = "Burning Steppes"
 _achievement.kill_target = "Krom'Grul"
 _achievement.faction = "Horde"
 _achievement.bl_text = "Burning Steppes Quest"
+_achievement.pts = 10
 _achievement.description = HCGeneratePassiveAchievementKillDescription(_achievement.kill_target, _achievement.quest_name, _achievement.zone, _achievement.level_cap, "Horde")
 _achievement.restricted_game_versions = {
 	["WotLK"] = 1,

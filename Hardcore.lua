@@ -1464,7 +1464,9 @@ end
 
 function Hardcore:PLAYER_DEAD()
 	-- Screenshot
-	C_Timer.After(PICTURE_DELAY, Screenshot)
+	C_Timer.After(PICTURE_DELAY, function()
+	  Screenshot()
+	end)
 
 	-- Update deaths
 	if
@@ -1607,7 +1609,9 @@ function Hardcore:PLAYER_LEVEL_UP(...)
 
 	-- take screenshot (got this idea from DingPics addon)
 	-- wait a bit so the yellow animation appears
-	C_Timer.After(PICTURE_DELAY, Screenshot)
+	C_Timer.After(PICTURE_DELAY, function()
+	  Screenshot()
+	end)
 
 	-- send a message to the guild if the player's level is divisible by 10
 	local landmarkLevel = (level % 10) == 0

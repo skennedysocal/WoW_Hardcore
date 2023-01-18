@@ -298,6 +298,22 @@ local function DrawGeneralTab(container)
 
 	local changelog_title = AceGUI:Create("Label")
 	changelog_title:SetWidth(500)
+	changelog_title:SetText("11.6")
+	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16, "")
+	scroll_frame:AddChild(changelog_title)
+
+	local changelog_description = AceGUI:Create("Label")
+	changelog_description:SetWidth(_menu_width)
+	changelog_description:SetText(
+		"- Better WoTLK patch compatibility (Overhauled AceGUI)"
+	)
+	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
+	scroll_frame:AddChild(changelog_description)
+
+	---
+
+	local changelog_title = AceGUI:Create("Label")
+	changelog_title:SetWidth(500)
 	changelog_title:SetText("11.5")
 	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16, "")
 	scroll_frame:AddChild(changelog_title)

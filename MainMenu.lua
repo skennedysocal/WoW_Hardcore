@@ -275,7 +275,7 @@ local function DrawGeneralTab(container)
 	local first_menu_description_title = AceGUI:Create("Label")
 	first_menu_description_title:SetWidth(500)
 	first_menu_description_title:SetText("Welcome to Classic hardcore!")
-	first_menu_description_title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 20)
+	first_menu_description_title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 20, "")
 	-- first_menu_description_title:SetPoint("TOP", 2,5)
 	scroll_frame:AddChild(first_menu_description_title)
 
@@ -284,14 +284,14 @@ local function DrawGeneralTab(container)
 	first_menu_description:SetText(
 		"\n\n Check out the following tabs \n\n\n   |c00FFFF00Rules|r: Compiled list of hardcore challenge rules\n\n   |c00FFFF00Verify|r: Generate a verification string to confirm your max level character\n\n   |c00FFFF00Death Knight|r: Read about Death Knight rules and/or sacrifice/activate\n\n   |c00FFFF00Levels|r: See a list of your recorded character levels\n\n   |c00FFFF00Accountability|r: See whose playing in your Hardcore guild and what addon versions they are using\n\n   |c00FFFF00Achievements|r: Check out all available achievements to try\n\n|c00FFFF00Achievements|r: These are one-time challenges that don't require activation at the start of the run.\n\n"
 	)
-	first_menu_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	first_menu_description:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	-- first_menu_description:SetPoint("TOP", 2,5)
 	scroll_frame:AddChild(first_menu_description)
 
 	local changelog_title = AceGUI:Create("Label")
 	changelog_title:SetWidth(500)
 	changelog_title:SetText("\n\nChangelog")
-	changelog_title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 20)
+	changelog_title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 20, "")
 	scroll_frame:AddChild(changelog_title)
 
 	---
@@ -299,7 +299,7 @@ local function DrawGeneralTab(container)
 	local changelog_title = AceGUI:Create("Label")
 	changelog_title:SetWidth(500)
 	changelog_title:SetText("11.5")
-	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16)
+	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16, "")
 	scroll_frame:AddChild(changelog_title)
 
 	local changelog_description = AceGUI:Create("Label")
@@ -307,7 +307,7 @@ local function DrawGeneralTab(container)
 	changelog_description:SetText(
 		"-WoTLK patch compatibility"
 	)
-	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	scroll_frame:AddChild(changelog_description)
 
 	---
@@ -315,7 +315,7 @@ local function DrawGeneralTab(container)
 	local changelog_title = AceGUI:Create("Label")
 	changelog_title:SetWidth(500)
 	changelog_title:SetText("11.4")
-	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16)
+	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16, "")
 	scroll_frame:AddChild(changelog_title)
 
 	local changelog_description = AceGUI:Create("Label")
@@ -323,7 +323,7 @@ local function DrawGeneralTab(container)
 	changelog_description:SetText(
 		"- Fixed stinkys escape for Alliance\n- Fixed the crown of will showing for horde\n- Fixed Kromgrul from not showing up in achievement list\n- Added new achievement `Serum to the Forsaken`."
 	)
-	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	scroll_frame:AddChild(changelog_description)
 
 	---
@@ -331,7 +331,7 @@ local function DrawGeneralTab(container)
 	local changelog_title = AceGUI:Create("Label")
 	changelog_title:SetWidth(500)
 	changelog_title:SetText("11.3")
-	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16)
+	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16, "")
 	scroll_frame:AddChild(changelog_title)
 
 	local changelog_description = AceGUI:Create("Label")
@@ -339,7 +339,7 @@ local function DrawGeneralTab(container)
 	changelog_description:SetText(
 		"- Fixed burning shadow specific bug\n- Tuned achievement animation\n- Dungeon tracking fixes"
 	)
-	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	scroll_frame:AddChild(changelog_description)
 
 	---
@@ -347,7 +347,7 @@ local function DrawGeneralTab(container)
 	local changelog_title = AceGUI:Create("Label")
 	changelog_title:SetWidth(500)
 	changelog_title:SetText("11.2")
-	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16)
+	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16, "")
 	scroll_frame:AddChild(changelog_title)
 
 	local changelog_description = AceGUI:Create("Label")
@@ -355,7 +355,7 @@ local function DrawGeneralTab(container)
 	changelog_description:SetText(
 		"- Made a variety of new achievements more robust\n- duo/trio will no longer fail at lvl 1\n- <MOD> tag no longer applied to say\n- Added legacy support for duo/trio trades"
 	)
-	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	scroll_frame:AddChild(changelog_description)
 
 	---
@@ -363,7 +363,7 @@ local function DrawGeneralTab(container)
 	local changelog_title = AceGUI:Create("Label")
 	changelog_title:SetWidth(500)
 	changelog_title:SetText("11.1")
-	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16)
+	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16, "")
 	scroll_frame:AddChild(changelog_title)
 
 	local changelog_description = AceGUI:Create("Label")
@@ -371,7 +371,7 @@ local function DrawGeneralTab(container)
 	changelog_description:SetText(
 		"- Fixed bug with Stadics' challenge\n- Added Achievement Animation (see interface addons menu to test with `show`\n- Fixed bug with PartnerUp! which failed when players had class achievements\n- Dungeon tracking additions; removed infractions for lvl 60's, added appeals\n- Fixed some spelling and grammar for new achievements\n- Fixed bug where quests which have a level requirement would not award achievement if turning in quest leveled up the character."
 	)
-	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	scroll_frame:AddChild(changelog_description)
 
 
@@ -380,7 +380,7 @@ local function DrawGeneralTab(container)
 	local changelog_title = AceGUI:Create("Label")
 	changelog_title:SetWidth(500)
 	changelog_title:SetText("11.0")
-	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16)
+	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16, "")
 	scroll_frame:AddChild(changelog_title)
 
 	local changelog_description = AceGUI:Create("Label")
@@ -388,7 +388,7 @@ local function DrawGeneralTab(container)
 	changelog_description:SetText(
 		"- Added a dungeon tab for tracking dungeon stats and completion.\n- Changes to actively prevent illegal trades (addon will block trades from non-trade partners unless you are lvl 60).\n- Increased rep. requirement for Stadic's to 45,000\n- Added 50+ new achievements.  New achievements do not need to be selected at level 1.  See the Achievements tab for more information.\n- Added Duo/Trio appeal codes"
 	)
-	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	scroll_frame:AddChild(changelog_description)
 
 
@@ -398,7 +398,7 @@ local function DrawGeneralTab(container)
 	local changelog_title = AceGUI:Create("Label")
 	changelog_title:SetWidth(500)
 	changelog_title:SetText("10.5")
-	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16)
+	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16, "")
 	scroll_frame:AddChild(changelog_title)
 
 	local changelog_description = AceGUI:Create("Label")
@@ -406,7 +406,7 @@ local function DrawGeneralTab(container)
 	changelog_description:SetText(
 		"- Added timer on shivved, sword and board, and berserker which gives the player a minute to unequip.\n- Fixed appeal code\n- Fixed shivved failing on skinning knife\n- Added DuoMade and TrioMade\n- Fixed minor menu crash\n- Added <MOD> tags\n- Added trade appeals"
 	)
-	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	scroll_frame:AddChild(changelog_description)
 
 
@@ -415,7 +415,7 @@ local function DrawGeneralTab(container)
 	local changelog_title = AceGUI:Create("Label")
 	changelog_title:SetWidth(500)
 	changelog_title:SetText("10.4")
-	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16)
+	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16, "")
 	scroll_frame:AddChild(changelog_title)
 
 	local changelog_description = AceGUI:Create("Label")
@@ -423,7 +423,7 @@ local function DrawGeneralTab(container)
 	changelog_description:SetText(
 		"- Passive Achievements added (Disabled).\n- Removed speedrunner until alignment is reached.\n- Fixed appeal code for long names\n- removed spam from failed channel connects\n- Fixed scavenger achievement failing when creating items while merchant window is open.\n- Automatically hide talent frame when trying to open it with Not So Talented enabled."
 	)
-	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	scroll_frame:AddChild(changelog_description)
 
 	---
@@ -431,7 +431,7 @@ local function DrawGeneralTab(container)
 	local changelog_title = AceGUI:Create("Label")
 	changelog_title:SetWidth(500)
 	changelog_title:SetText("10.3")
-	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16)
+	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16, "")
 	scroll_frame:AddChild(changelog_title)
 
 	local changelog_description = AceGUI:Create("Label")
@@ -439,7 +439,7 @@ local function DrawGeneralTab(container)
 	changelog_description:SetText(
 		"- Add Speedrunner back as an achievement! New formula for tracking time is being used.\n- Update descriptions for Stadic's challenge and speedrun when mousing over icon\n- Made it more convenient to appeal achievements."
 	)
-	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	scroll_frame:AddChild(changelog_description)
 
 	---
@@ -447,7 +447,7 @@ local function DrawGeneralTab(container)
 	local changelog_title = AceGUI:Create("Label")
 	changelog_title:SetWidth(500)
 	changelog_title:SetText("10.2")
-	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16)
+	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16, "")
 	scroll_frame:AddChild(changelog_title)
 
 	local changelog_description = AceGUI:Create("Label")
@@ -455,13 +455,13 @@ local function DrawGeneralTab(container)
 	changelog_description:SetText(
 		"- Added options to ignore cross-guild chat and alerts (in interface options->Hardcore (not Hardcore:Greenwall!) \n- Fixed fishing poles failing Hammertime, pacifist, and shivved. \n- Fixed alert message which showed a |c before class names. \n -Stadic's challenge now requires 30,000 gained reputation (not total).\n- No longer tells user to ping mod for time gaps under level 20.\n- Updated DUO/TRIO rules"
 	)
-	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	scroll_frame:AddChild(changelog_description)
 
 	local changelog_title = AceGUI:Create("Label")
 	changelog_title:SetWidth(500)
 	changelog_title:SetText("10.1")
-	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16)
+	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16, "")
 	scroll_frame:AddChild(changelog_title)
 
 	local changelog_description = AceGUI:Create("Label")
@@ -469,13 +469,13 @@ local function DrawGeneralTab(container)
 	changelog_description:SetText(
 		"- Added support for automatic guild notifications across guilds (level up and deaths)\n- Fixed self-made bug."
 	)
-	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	scroll_frame:AddChild(changelog_description)
 
 	local changelog_title = AceGUI:Create("Label")
 	changelog_title:SetWidth(500)
 	changelog_title:SetText("10.0")
-	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16)
+	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16, "")
 	scroll_frame:AddChild(changelog_title)
 
 	local changelog_description = AceGUI:Create("Label")
@@ -483,13 +483,13 @@ local function DrawGeneralTab(container)
 	changelog_description:SetText(
 		"- Added Greenwall (cross-guild chat) integration\n- Added Stadics Challenge (1hp). Stadics Challenge will alert guild members when a point of damage is taken.\n- No Health Achievement bug fixed; Now the player should be able to make potions without failing the challenge.\n- Self-made bug fixed where the player couldn't equip a fishing rode without failing."
 	)
-	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	scroll_frame:AddChild(changelog_description)
 
 	local changelog_title = AceGUI:Create("Label")
 	changelog_title:SetWidth(500)
 	changelog_title:SetText("9.5")
-	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16)
+	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16, "")
 	scroll_frame:AddChild(changelog_title)
 
 	local changelog_description = AceGUI:Create("Label")
@@ -497,13 +497,13 @@ local function DrawGeneralTab(container)
 	changelog_description:SetText(
 		"- Verification string in new menu ui fixed\n- Teleport moonglade fixed (again) for Druid of the Claw\n- Optimizations for level list.  Level list is now paginated and should no longer cause long freezes.\n- Optimizations for accountability tab.  Accountability tab now loads more quickly up on clicking `inspect all`.  Accountability tab no longer causes a stutter every 7 seconds.\n- HC main menu added to UI special frames; Escape key can be used to exit the menu.\n- Dungeon list updated to include BFD and WotLK dungeons\n- Currency tab is now handled correctly.  Previously, the HC tab would overlap with the currency tab, and the currency panel/ hc panel would still be drawn when switching between the two.\n- Self-made achievement updates.  Self-made no longer fails you for equipping tabards or gear with stat bonuses.  Starting gear list of items updated as well.\n- Self-made no longer allows equipping quest items."
 	)
-	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	scroll_frame:AddChild(changelog_description)
 
 	local changelog_title = AceGUI:Create("Label")
 	changelog_title:SetWidth(500)
 	changelog_title:SetText("9.4")
-	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16)
+	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16, "")
 	scroll_frame:AddChild(changelog_title)
 
 	local changelog_description = AceGUI:Create("Label")
@@ -511,13 +511,13 @@ local function DrawGeneralTab(container)
 	changelog_description:SetText(
 		"- Inspect Players in main menu's accountability tab\n- Moonglade correctly detected for duo/trio partners\n- Defaults to modern menu for hardcore show.  To use the old menu again, go to interface options and uncheck the checkbox."
 	)
-	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	scroll_frame:AddChild(changelog_description)
 
 	local changelog_title = AceGUI:Create("Label")
 	changelog_title:SetWidth(500)
 	changelog_title:SetText("9.3")
-	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16)
+	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16, "")
 	scroll_frame:AddChild(changelog_title)
 
 	local changelog_description = AceGUI:Create("Label")
@@ -525,13 +525,13 @@ local function DrawGeneralTab(container)
 	changelog_description:SetText(
 		"- Fixed issue where trade partner verification check was being recorded for duo/trio partner trades\n"
 	)
-	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	scroll_frame:AddChild(changelog_description)
 
 	local changelog_title = AceGUI:Create("Label")
 	changelog_title:SetWidth(500)
 	changelog_title:SetText("9.2")
-	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16)
+	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16, "")
 	scroll_frame:AddChild(changelog_title)
 
 	local changelog_description = AceGUI:Create("Label")
@@ -539,7 +539,7 @@ local function DrawGeneralTab(container)
 	changelog_description:SetText(
 		"- Shivved updated to allow fishing poles\n- Hammertime updated to allow fishing poles\n- Self-made fixed and updated to allow fishing poles and starting gear\n- Force initialize and bound hardcore_settings to fix some lingering with settings\n- Remove character frame taint; Players can now open character frame during combat but not the HC tab\n- Add ability for mods to appeal achievements in-game\n- Added beta modern menu which replaces /hardcore show\n- Minor verbage changes in rules in beta menu\n- Dungeon levels added to rules in beta menu\n- Achievements added to beta menu\n- Formatting fixes for level list and accountability in beta menu\n- Druid of the claw fixed issue where moonglade wasn't allowed\n- Scavenger fixed issue where other addons could buy from merchants\n - Bandaid fix for other addons removing inspect frame"
 	)
-	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	scroll_frame:AddChild(changelog_description)
 end
 
@@ -549,7 +549,7 @@ local function DrawRulesTab(container)
 		general_rules_label:SetWidth(_inner_menu_width)
 		general_rules_label:SetHeight(60)
 		general_rules_label:SetText(text)
-		general_rules_label:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 20)
+		general_rules_label:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 20, "")
 		_scroll_frame:AddChild(general_rules_label)
 	end
 	local scroll_container = AceGUI:Create("SimpleGroup")
@@ -568,7 +568,7 @@ local function DrawRulesTab(container)
 	general_rules_description:SetText(
 		"\nFor more info, rules, news, hall of legends, challenges, and more visit the classichc website. Help is available on discord (link on website) \n\nAll professions allowed\nNo restriction on talents\n\nYou can use gear that you pickup or craft\nNo Auction house, No mailbox, No trading\n\nNo grouping in open world\n\nNo battlegrounds allowed\n\nBuffs from others are allowed, don't ask for others for buffs\n\n\n\n"
 	)
-	general_rules_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	general_rules_description:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	scroll_frame:AddChild(general_rules_description)
 
 	local function DrawDungeonLevels(scroll_Frame)
@@ -581,25 +581,25 @@ local function DrawRulesTab(container)
 			local name_label = AceGUI:Create("Label")
 			name_label:SetWidth(200)
 			name_label:SetText("")
-			name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+			name_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 			entry:AddChild(name_label)
 
 			local name_label = AceGUI:Create("Label")
 			name_label:SetWidth(175)
 			name_label:SetText(_name)
-			name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+			name_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 			entry:AddChild(name_label)
 
 			local level_label = AceGUI:Create("Label")
 			level_label:SetWidth(155)
 			level_label:SetText(_era)
-			level_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+			level_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 			entry:AddChild(level_label)
 
 			local name_label = AceGUI:Create("Label")
 			name_label:SetWidth(100)
 			name_label:SetText(_wotlk)
-			name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+			name_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 			entry:AddChild(name_label)
 		end
 		local row_header = AceGUI:Create("SimpleGroup")
@@ -610,25 +610,25 @@ local function DrawRulesTab(container)
 		local name_label = AceGUI:Create("Label")
 		name_label:SetWidth(200)
 		name_label:SetText("")
-		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 		row_header:AddChild(name_label)
 
 		local name_label = AceGUI:Create("Label")
 		name_label:SetWidth(150)
 		name_label:SetText("|c00FFFF00Dungeon Name|r")
-		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 		row_header:AddChild(name_label)
 
 		local level_label = AceGUI:Create("Label")
 		level_label:SetWidth(150)
 		level_label:SetText("|c00FFFF00Max Lvl (Era)|r")
-		level_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		level_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 		row_header:AddChild(level_label)
 
 		local played_time_label = AceGUI:Create("Label")
 		played_time_label:SetWidth(200)
 		played_time_label:SetText("|c00FFFF00Max Lvl (WotlK)|r")
-		played_time_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		played_time_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 		row_header:AddChild(played_time_label)
 
 		addEntry(scroll_frame, "Ragefire Chasm", 18, 20)
@@ -680,7 +680,7 @@ local function DrawRulesTab(container)
 	general_rules_description:SetText(
 		"\nDungeon Groups are authorized but only ONE run of each Dungeon per character.  Everyone in party must be following hardcore rules.  Everyone must be in level range of the meeting stone.  Group at the meeting stone to start the dungeon.  You can invite people who are on the way.  If you level up inside of the dungeon and exceed the meeting stone requirement you can stay.  Warlocks are allowed to summon players to the meeting stone\n\n\n\n"
 	)
-	general_rules_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	general_rules_description:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	scroll_frame:AddChild(general_rules_description)
 	DrawDungeonLevels(scroll_frame)
 
@@ -690,7 +690,7 @@ local function DrawRulesTab(container)
 	general_rules_description:SetText(
 		"\nWarlocks can’t resurrect via SS.  Shamans can’t resurrect via Ankh.  Paladins can’t Bubble Hearth. \n\nNo Light of Elune + Hearthstone\n\n\n\n"
 	)
-	general_rules_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	general_rules_description:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	scroll_frame:AddChild(general_rules_description)
 
 	DrawRulesLabel("Verification", scroll_frame)
@@ -699,7 +699,7 @@ local function DrawRulesTab(container)
 	general_rules_description:SetText(
 		"\nYou can verify your run using this addon (Get verified tab). Recording or streaming is also recommended to provide evidence for special circumstances such as disconnection deaths.\n\nAt MAX level you earn your IMMORTALITY and become a full fledged character with insane bragging rights.\n\n\n\n"
 	)
-	general_rules_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	general_rules_description:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	scroll_frame:AddChild(general_rules_description)
 
 	DrawRulesLabel("Duos/Trios", scroll_frame)
@@ -708,7 +708,7 @@ local function DrawRulesTab(container)
 	general_rules_description:SetText(
 		"\nYou must not leave the same zone as each other, unless you are a Druid going to Moonglade to complete essential class quests.\nYou must choose a combo that spawns in the same starting location.\nIf one of you dies, the other must fall on the sword and the run is over.\nYou can trade your duo partner found or crafted items, including gold.\nMultiboxing goes against the spirit of the Hardcore Challenge and is not allowed.\nIf playing in a duo or trio, have all members reload ui at level 1 and click the 'Party' tab to setup your run.\n\n\n\n"
 	)
-	general_rules_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	general_rules_description:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	scroll_frame:AddChild(general_rules_description)
 end
 
@@ -768,13 +768,13 @@ local function DrawVerifyTab(container, _hardcore_character)
 	local first_menu_description_title = AceGUI:Create("Label")
 	first_menu_description_title:SetWidth(500)
 	first_menu_description_title:SetText("Verify Your Character")
-	first_menu_description_title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 20)
+	first_menu_description_title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 20, "")
 	scroll_frame:AddChild(first_menu_description_title)
 
 	local general_rules_description = AceGUI:Create("Label")
 	general_rules_description:SetWidth(_menu_width)
 	general_rules_description:SetText("\n\nTo get verified, copy the string below and visit the classichc website.")
-	general_rules_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	general_rules_description:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	scroll_frame:AddChild(general_rules_description)
 
 	local first_menu_description = AceGUI:Create("MultiLineEditBox")
@@ -806,7 +806,7 @@ local function DrawDKTab(container, dk_button_function)
 		general_rules_label:SetWidth(_inner_menu_width)
 		general_rules_label:SetHeight(60)
 		general_rules_label:SetText(text)
-		general_rules_label:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 20)
+		general_rules_label:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 20, "")
 		_scroll_frame:AddChild(general_rules_label)
 	end
 	local scroll_container = AceGUI:Create("SimpleGroup")
@@ -826,7 +826,7 @@ local function DrawDKTab(container, dk_button_function)
 	general_rules_description:SetText(
 		"Death Knights are authorized for the Hardcore Challenge, adding in these following rules.  You must level a character of the SAME FACTION following the standard HC Ruleset, at which point it must be sacrificed to create a Death Knight.  The sacrificial level is a range between 55 and 58. You cannot sacrifice before or after these levels.  As a side note, sacrificing a toon does not mean you must delete it, but it will no longer be valid HC toon.\n"
 	)
-	general_rules_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	general_rules_description:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	scroll_frame:AddChild(general_rules_description)
 
 	DrawRulesLabel("", scroll_frame)
@@ -835,7 +835,7 @@ local function DrawDKTab(container, dk_button_function)
 	general_rules_description:SetText(
 		"\nIf you should die or fail your run while playing as a Death Knight, you must start over from level 1, with a fresh toon to perform the sacrifice again. You may create your DK in advance if you wish to RSVP a name, but do not log onto them. Remember that you need to have a lvl 55 already on the server to create a DK.  Duo and Trio groups who wish to have a DK in the party must follow some additional steps in creating a DK. These steps are listed further below.  General achievements will carry over when you activate your DK\n\n\n\n"
 	)
-	general_rules_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	general_rules_description:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	scroll_frame:AddChild(general_rules_description)
 
 	DrawRulesLabel("Solo DK", scroll_frame)
@@ -844,7 +844,7 @@ local function DrawDKTab(container, dk_button_function)
 	general_rules_description:SetText(
 		"Listed below is a step by step process for creating a DK while solo.. \n    Step 1: Level a character of the “SAME FACTION” to the required level range, following the HC rules.\n    Step 2: Click on the “SACRIFICE” button below. This starts a 5 minute timer. You cannot activate the “SACRIFICE” button while in combat, stealthed, or during Feign Death.\n    Step 3: During these 5 minutes, you must die on your current character. After dying, log out.\n    Step 4: DO NOT DELETE THE TOON YOU SACRIFICED UNTIL AFTER THE DK IS ACTIVATED!!\n    Step 5: Create or log onto your Death Knight.\n    Step 6: Click on “ACTIVATE” below. Then do a /reload. You are now good to go.\nSurvive well out there!\n\n\n\n"
 	)
-	general_rules_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	general_rules_description:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	scroll_frame:AddChild(general_rules_description)
 
 	DrawRulesLabel("Duo/Trio DK", scroll_frame)
@@ -853,7 +853,7 @@ local function DrawDKTab(container, dk_button_function)
 	general_rules_description:SetText(
 		"There are some additional things you must do when you wish to create a DK for Duo or Trio groups.\n    Step 1: Start your Duo/Trio group of the “SAME FACTION” and reach the level range for sacrifice, following the HC rules.\n    Step 2: For the player who is sacrificing, click on the “SACRIFICE” button below. This starts a 5 minute timer. You cannot activate the “SACRIFICE” button while in combat, stealthed, or during Feign Death.\n    Step 3: During these 5 minutes, you must die on your current character. After dying, drop group and logout. Your partners who are not sacrificing MUST STAY ONLINE!\n    Step 4: DO NOT DELETE THE TOON YOU SACRIFICED UNTIL AFTER THE DK IS ACTIVATED!!\n    Step 5: Create or log onto your Death Knight.\n    Step 6: Click on “ACTIVATE” below.\n    Step 7: Rejoin the party with your partners using /inv “Name” \n    Step 8: All party member must /reload\n    Step 9: If more than one player is creating a DK, then you must follow the steps ONE PERSON AT A TIME! Multiple players creating a DK in the party at the same time WILL invalidate your run. \n\n\n\n"
 	)
-	general_rules_description:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	general_rules_description:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	scroll_frame:AddChild(general_rules_description)
 
 	local button_container = AceGUI:Create("SimpleGroup")
@@ -898,7 +898,7 @@ local function DrawLevelsTab(container, _hardcore_settings)
 		local name_label = AceGUI:Create("Label")
 		name_label:SetWidth(width)
 		name_label:SetText(name_str)
-		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 		entry:AddChild(name_label)
 	end
 
@@ -919,7 +919,7 @@ local function DrawLevelsTab(container, _hardcore_settings)
 		local name_label = AceGUI:Create("Label")
 		name_label:SetWidth(width)
 		name_label:SetText(name_str)
-		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 		entry:AddChild(name_label)
 	end
 
@@ -944,7 +944,7 @@ local function DrawLevelsTab(container, _hardcore_settings)
 		local name_label = AceGUI:Create("Label")
 		name_label:SetWidth(width)
 		name_label:SetText(name_str)
-		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 		entry:AddChild(name_label)
 	end
 
@@ -965,7 +965,7 @@ local function DrawLevelsTab(container, _hardcore_settings)
 		local name_label = AceGUI:Create("Label")
 		name_label:SetWidth(width)
 		name_label:SetText(name_str)
-		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 		entry:AddChild(name_label)
 	end
 
@@ -988,7 +988,7 @@ local function DrawLevelsTab(container, _hardcore_settings)
 	local name_label = AceGUI:Create("InteractiveLabel")
 	name_label:SetWidth(150)
 	name_label:SetText("|c00FFFF00Name|r")
-	name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	name_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	row_header:AddChild(name_label)
 
 	name_label:SetCallback("OnClick", function(widget)
@@ -1004,7 +1004,7 @@ local function DrawLevelsTab(container, _hardcore_settings)
 	local level_label = AceGUI:Create("InteractiveLabel")
 	level_label:SetWidth(50)
 	level_label:SetText("|c00FFFF00Lvl|r")
-	level_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	level_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	row_header:AddChild(level_label)
 
 	level_label:SetCallback("OnClick", function(widget)
@@ -1020,7 +1020,7 @@ local function DrawLevelsTab(container, _hardcore_settings)
 	local played_time_label = AceGUI:Create("InteractiveLabel")
 	played_time_label:SetWidth(200)
 	played_time_label:SetText("|c00FFFF00Played Time|r")
-	played_time_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	played_time_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	row_header:AddChild(played_time_label)
 
 	played_time_label:SetCallback("OnClick", function(widget)
@@ -1036,7 +1036,7 @@ local function DrawLevelsTab(container, _hardcore_settings)
 	local date_label = AceGUI:Create("InteractiveLabel")
 	date_label:SetWidth(200)
 	date_label:SetText("|c00FFFF00Date|r")
-	date_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	date_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	row_header:AddChild(date_label)
 
 	date_label:SetCallback("OnClick", function(widget)
@@ -1089,19 +1089,19 @@ local function DrawLevelsTab(container, _hardcore_settings)
 	local date_label = AceGUI:Create("Label")
 	date_label:SetWidth(100)
 	date_label:SetText("|c00FFFF00Page " .. hardcore_modern_menu_state.levels_page .. "|r")
-	date_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	date_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	button_container:AddChild(date_label)
 
 	local date_label = AceGUI:Create("HardcoreClassTitleLabel")
 	date_label:SetWidth(490)
 	date_label:SetText("|c00FFFF00You've Leveled up " .. #_hardcore_settings.level_list .. " Times!|r")
-	date_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	date_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	button_container:AddChild(date_label)
 
 	local date_label = AceGUI:Create("HardcoreClassTitleLabel")
 	date_label:SetWidth(100)
 	date_label:SetText("")
-	date_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	date_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	button_container:AddChild(date_label)
 
 	local right_page_button = AceGUI:Create("Button")
@@ -1149,7 +1149,7 @@ local function DrawDungeonsTab(container, _hardcore_character)
 		local name_label = AceGUI:Create("Label")
 		name_label:SetWidth(width)
 		name_label:SetText(name_str)
-		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 		entry:AddChild(name_label)
 	end
 
@@ -1187,7 +1187,7 @@ local function DrawDungeonsTab(container, _hardcore_character)
 		local name_label = AceGUI:Create("Label")
 		name_label:SetWidth(width)
 		name_label:SetText(name_str)
-		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 		entry:AddChild(name_label)
 	end
 
@@ -1225,7 +1225,7 @@ local function DrawDungeonsTab(container, _hardcore_character)
 		local name_label = AceGUI:Create("Label")
 		name_label:SetWidth(width)
 		name_label:SetText(name_str)
-		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 		entry:AddChild(name_label)
 	end
 
@@ -1259,7 +1259,7 @@ local function DrawDungeonsTab(container, _hardcore_character)
 		local name_label = AceGUI:Create("Label")
 		name_label:SetWidth(width)
 		name_label:SetText(name_str)
-		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 		entry:AddChild(name_label)
 	end
 
@@ -1283,25 +1283,25 @@ local function DrawDungeonsTab(container, _hardcore_character)
 	local name_label = AceGUI:Create("Label")
 	name_label:SetWidth(530)
 	name_label:SetText("|c00FFFF00Dungeon|r")
-	name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	name_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	row_header:AddChild(name_label)
 
 	local level_label = AceGUI:Create("Label")
 	level_label:SetWidth(50)
 	level_label:SetText("|c00FFFF00Lvl|r")
-	level_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	level_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	row_header:AddChild(level_label)
 
 	local played_time_label = AceGUI:Create("Label")
 	played_time_label:SetWidth(125)
 	played_time_label:SetText("|c00FFFF00Run Time|r")
-	played_time_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	played_time_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	row_header:AddChild(played_time_label)
 
 	local date_label = AceGUI:Create("Label")
 	date_label:SetWidth(125)
 	date_label:SetText("|c00FFFF00Date|r")
-	date_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	date_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	row_header:AddChild(date_label)
 
 	-- Rest of the data
@@ -1326,7 +1326,7 @@ local function DrawDungeonsTab(container, _hardcore_character)
 	local status_label = AceGUI:Create("Label")
 	status_label:SetWidth(350)
 	status_label:SetText("|c00FFFF00You've run " .. #_hardcore_character.dt.runs .. " dungeons.|r")
-	status_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	status_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	footer_container:AddChild(status_label)
 
 end
@@ -1430,43 +1430,43 @@ local function DrawAccountabilityTab(container)
 		local name_label = AceGUI:Create("Label")
 		name_label:SetWidth(110)
 		name_label:SetText(player_name_short)
-		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 		entry:AddChild(name_label)
 		hardcore_modern_menu_state.entry_tbl[player_name_short] = {}
 
 		local level_label = AceGUI:Create("Label")
 		level_label:SetWidth(50)
-		level_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		level_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 		entry:AddChild(level_label)
 		hardcore_modern_menu_state.entry_tbl[player_name_short]["level_label"] = level_label
 
 		local version_label = AceGUI:Create("Label")
 		version_label:SetWidth(80)
-		version_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		version_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 		entry:AddChild(version_label)
 		hardcore_modern_menu_state.entry_tbl[player_name_short]["version_label"] = version_label
 
 		local party_mode_label = AceGUI:Create("Label")
 		party_mode_label:SetWidth(75)
-		party_mode_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		party_mode_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 		entry:AddChild(party_mode_label)
 		hardcore_modern_menu_state.entry_tbl[player_name_short]["party_mode_label"] = party_mode_label
 
 		local first_recorded_label = AceGUI:Create("Label")
 		first_recorded_label:SetWidth(85)
-		first_recorded_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		first_recorded_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 		entry:AddChild(first_recorded_label)
 		hardcore_modern_menu_state.entry_tbl[player_name_short]["first_recorded_label"] = first_recorded_label
 
 		local achievement_label = AceGUI:Create("InteractiveLabel")
 		achievement_label:SetWidth(320)
-		achievement_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		achievement_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 		entry:AddChild(achievement_label)
 		hardcore_modern_menu_state.entry_tbl[player_name_short]["achievement_label"] = achievement_label
 
 		local hc_tag_label = AceGUI:Create("Label")
 		hc_tag_label:SetWidth(75)
-		hc_tag_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		hc_tag_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 		entry:AddChild(hc_tag_label)
 		hardcore_modern_menu_state.entry_tbl[player_name_short]["hc_tag_label"] = hc_tag_label
 
@@ -1491,7 +1491,7 @@ local function DrawAccountabilityTab(container)
 	local name_label = AceGUI:Create("InteractiveLabel")
 	name_label:SetWidth(110)
 	name_label:SetText("|c00FFFF00Name|r")
-	name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	name_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	row_header:AddChild(name_label)
 
 	name_label:SetCallback("OnClick", function(widget)
@@ -1510,7 +1510,7 @@ local function DrawAccountabilityTab(container)
 	local level_label = AceGUI:Create("InteractiveLabel")
 	level_label:SetWidth(50)
 	level_label:SetText("|c00FFFF00Lvl|r")
-	level_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	level_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	row_header:AddChild(level_label)
 
 	level_label:SetCallback("OnClick", function(widget)
@@ -1529,7 +1529,7 @@ local function DrawAccountabilityTab(container)
 	local version_label = AceGUI:Create("InteractiveLabel")
 	version_label:SetWidth(80)
 	version_label:SetText("|c00FFFF00Version|r")
-	version_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	version_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	row_header:AddChild(version_label)
 
 	version_label:SetCallback("OnClick", function(widget)
@@ -1548,7 +1548,7 @@ local function DrawAccountabilityTab(container)
 	local mode_label = AceGUI:Create("InteractiveLabel")
 	mode_label:SetWidth(75)
 	mode_label:SetText("|c00FFFF00Mode|r")
-	mode_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	mode_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	row_header:AddChild(mode_label)
 
 	mode_label:SetCallback("OnClick", function(widget)
@@ -1567,7 +1567,7 @@ local function DrawAccountabilityTab(container)
 	local date_started_label = AceGUI:Create("InteractiveLabel")
 	date_started_label:SetWidth(85)
 	date_started_label:SetText("|c00FFFF00Started|r")
-	date_started_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	date_started_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	row_header:AddChild(date_started_label)
 
 	date_started_label:SetCallback("OnClick", function(widget)
@@ -1586,7 +1586,7 @@ local function DrawAccountabilityTab(container)
 	local achievements_label = AceGUI:Create("InteractiveLabel")
 	achievements_label:SetWidth(320)
 	achievements_label:SetText("|c00FFFF00Achievements|r")
-	achievements_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	achievements_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	row_header:AddChild(achievements_label)
 
 	achievements_label:SetCallback("OnClick", function(widget)
@@ -1605,7 +1605,7 @@ local function DrawAccountabilityTab(container)
 	local hc_tag_label = AceGUI:Create("InteractiveLabel")
 	hc_tag_label:SetWidth(100)
 	hc_tag_label:SetText("|c00FFFF00HC Tag|r")
-	hc_tag_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	hc_tag_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 	row_header:AddChild(hc_tag_label)
 
 	hc_tag_label:SetCallback("OnClick", function(widget)
@@ -1715,7 +1715,7 @@ local function DrawAchievementsTab(container)
 	achievements_title:SetRelativeWidth(1.0)
 	achievements_title:SetHeight(40)
 	achievements_title:SetText("General Achievements")
-	achievements_title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 16)
+	achievements_title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 16, "")
 	achievements_container:AddChild(achievements_title)
 	DrawClassContainer(achievements_container, "All", 50)
 
@@ -1730,7 +1730,7 @@ local function DrawAchievementsTab(container)
 		achievements_title:SetRelativeWidth(1.0)
 		achievements_title:SetHeight(40)
 		achievements_title:SetText(class)
-		achievements_title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 16)
+		achievements_title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 16, "")
 		class_contianer:AddChild(achievements_title)
 		DrawClassContainer(class_contianer, class, size)
 	end
@@ -1744,7 +1744,7 @@ local function DrawAchievementsTab(container)
 	achievements_title:SetRelativeWidth(1.0)
 	achievements_title:SetHeight(40)
 	achievements_title:SetText("\n\n\n\n")
-	achievements_title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 16)
+	achievements_title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 16, "")
 	scroll_container:AddChild(achievements_title)
 
 	local achievements_container = AceGUI:Create("SimpleGroup")
@@ -1818,7 +1818,7 @@ local function DrawPassiveAchievementsTab(container)
 	achievements_title:SetRelativeWidth(1.0)
 	achievements_title:SetHeight(40)
 	achievements_title:SetText("Passive Achievements")
-	achievements_title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 16)
+	achievements_title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 16, "")
 	achievements_container:AddChild(achievements_title)
 	DrawClassContainer(achievements_container, "All", 50)
 
@@ -1832,14 +1832,14 @@ local function DrawPassiveAchievementsTab(container)
 	achievements_title:SetRelativeWidth(1.0)
 	achievements_title:SetHeight(40)
 	achievements_title:SetText("Alliance Only Achievements")
-	achievements_title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 16)
+	achievements_title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 16, "")
 	scroll_container:AddChild(achievements_title)
 
 	local achievements_title = AceGUI:Create("HardcoreClassTitleLabel")
 	achievements_title:SetRelativeWidth(1.0)
 	achievements_title:SetHeight(40)
 	achievements_title:SetText("Horde Only Achievements")
-	achievements_title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 16)
+	achievements_title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 16, "")
 	scroll_container:AddChild(achievements_title)
 end
 

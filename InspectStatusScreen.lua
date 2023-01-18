@@ -31,7 +31,7 @@ I_br:SetWidth(128)
 I_br:SetHeight(256)
 
 local title_text = I_f:CreateFontString(nil, "ARTWORK")
-title_text:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 22)
+title_text:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 22, "")
 title_text:SetPoint("TOPLEFT", CharacterFrame, "TOPLEFT", 150, -45)
 title_text:SetTextColor(1, 0.82, 0)
 title_text:SetText("Hardcore")

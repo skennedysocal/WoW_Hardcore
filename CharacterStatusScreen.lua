@@ -54,7 +54,7 @@ br:SetWidth(128)
 br:SetHeight(256)
 
 local title_text = f:CreateFontString(nil, "ARTWORK")
-title_text:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 22)
+title_text:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 22, "")
 title_text:SetPoint("TOPLEFT", CharacterFrame, "TOPLEFT", 150, -45)
 title_text:SetTextColor(1, 0.82, 0)
 title_text:SetText("Hardcore")
@@ -218,7 +218,7 @@ function UpdateCharacterHC(
 		end
 	end
 	team_title:SetText(mode_type_str)
-	team_title:SetFont("Fonts\\FRIZQT__.TTF", 10)
+	team_title:SetFont("Fonts\\FRIZQT__.TTF", 10, "")
 	character_meta_data_container:AddChild(team_title)
 
 	local level_title_text = AceGUI:Create("HardcoreClassTitleLabel")
@@ -232,7 +232,7 @@ function UpdateCharacterHC(
 		class_text = "?"
 	end
 	level_title_text:SetText("Level " .. level_text .. " " .. class_text)
-	level_title_text:SetFont("Fonts\\FRIZQT__.TTF", 10)
+	level_title_text:SetFont("Fonts\\FRIZQT__.TTF", 10, "")
 	character_meta_data_container:AddChild(level_title_text)
 
 	local creation_date_label = AceGUI:Create("HardcoreClassTitleLabel")
@@ -246,7 +246,7 @@ function UpdateCharacterHC(
 		end
 	end
 	creation_date_label:SetText("Started on " .. start_date)
-	creation_date_label:SetFont("Fonts\\FRIZQT__.TTF", 10)
+	creation_date_label:SetFont("Fonts\\FRIZQT__.TTF", 10, "")
 	character_meta_data_container:AddChild(creation_date_label)
 
 	local version_name = AceGUI:Create("HardcoreClassTitleLabel")
@@ -255,7 +255,7 @@ function UpdateCharacterHC(
 	local version = _version
 	local game_version = _hardcore_character.game_version or _G["HardcoreBuildLabel"]
 	version_name:SetText("Addon version: " .. version .. ", " .. game_version)
-	version_name:SetFont("Fonts\\FRIZQT__.TTF", 10)
+	version_name:SetFont("Fonts\\FRIZQT__.TTF", 10, "")
 	character_meta_data_container:AddChild(version_name)
 
 	if _hardcore_character.hardcore_player_name ~= nil and _hardcore_character.hardcore_player_name ~= "" then
@@ -264,7 +264,7 @@ function UpdateCharacterHC(
 		hc_tag_f:SetHeight(60)
 		local hc_tag_string = _hardcore_character.hardcore_player_name
 		hc_tag_f:SetText("HC Tag: " .. hc_tag_string)
-		hc_tag_f:SetFont("Fonts\\FRIZQT__.TTF", 10)
+		hc_tag_f:SetFont("Fonts\\FRIZQT__.TTF", 10, "")
 		character_meta_data_container:AddChild(hc_tag_f)
 	end
 
@@ -285,7 +285,7 @@ function UpdateCharacterHC(
 	achievements_title:SetRelativeWidth(1.0)
 	achievements_title:SetHeight(40)
 	achievements_title:SetText("Achievements - " .. _acheivement_pts .. "pts")
-	achievements_title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 16)
+	achievements_title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 16, "")
 	achievements_container:AddChild(achievements_title)
 	if _hardcore_character.achievements ~= nil then
 		for i, v in ipairs(_hardcore_character.achievements) do

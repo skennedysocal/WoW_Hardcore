@@ -1,21 +1,20 @@
 local _G = _G
 local _achievement = CreateFrame("Frame")
-_G.passive_achievements.TheCrownOfWill = _achievement
+_G.passive_achievements.NothingButTheTruth = _achievement
 
 -- General info
-_achievement.name = "TheCrownOfWill"
-_achievement.title = "The Crown of Will"
+_achievement.name = "NothingButTheTruth"
+_achievement.title = "Serum to the Forsaken"
 _achievement.class = "All"
-_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_the_crown_of_will.blp"
-_achievement.level_cap = 43
-_achievement.quest_num = 521
-_achievement.quest_name = "The Crown of Will"
-_achievement.zone = "Alterac Mountains"
-_achievement.kill_target = "Mug'thol"
+_achievement.icon_path = "Interface\\Addons\\Hardcore\\Media\\icon_seagiant.blp"
+_achievement.level_cap = 40
+_achievement.quest_num = 1383
+_achievement.quest_name = "Nothing but the Truth"
+_achievement.zone = "Duskwood"
+_achievement.bl_text = "Duskwood Quest"
 _achievement.faction = "Horde"
-_achievement.bl_text = "Alterac Mountains Quest"
 _achievement.pts = 10
-_achievement.description = HCGeneratePassiveAchievementKillDescription(_achievement.kill_target, _achievement.quest_name, _achievement.zone, _achievement.level_cap, "Horde")
+_achievement.description = HCGeneratePassiveAchievementBasicQuestDescription(_achievement.quest_name, _achievement.zone, _achievement.level_cap, "Horde")
 _achievement.restricted_game_versions = {
 	["WotLK"] = 1,
 }

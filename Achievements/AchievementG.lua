@@ -133,6 +133,8 @@ _G.pa_id = {
 	SpeedrunnerTwenty = 63,
 	SpeedrunnerForty = 64,
 	SpeedrunnerFifty = 65,
+	Kromgrul = 66,
+	NothingButTheTruth = 67,
 }
 _G.id_pa = {}
 for k, v in pairs(_G.pa_id) do
@@ -290,6 +292,14 @@ passive_achievement_kill_handler:SetScript("OnEvent", function(self, event, ...)
 		end
 	end
 end)
+
+function HCCommonPassiveAchievementAltBasicQuestCheck(_achievement, _event, _args)
+	if _event == "QUEST_TURNED_IN" then
+		if _args[1] ~= nil and (_args[1] == _achievement.quest_num or _args[1] == _achievement.quest_num_alt) and (UnitLevel("player") <= _achievement.level_cap or (hc_recent_level_up and UnitLevel("player") <= _achievement.level_cap + 1)) then
+			_achievement.succeed_function_executor.Succeed(_achievement.name)
+		end
+	end
+end
 
 function HCCommonPassiveAchievementBasicQuestCheck(_achievement, _event, _args)
 	if _event == "QUEST_TURNED_IN" then

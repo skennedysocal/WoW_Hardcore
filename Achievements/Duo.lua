@@ -184,6 +184,19 @@ function duo_rules:ResetWarn()
 end
 
 function duo_rules:Check()
+	-- this code causes the rules checker to ignore all duo/trio rules at max level
+	if _hardcore_character.game_version ~= nil then
+		local max_level
+		if _hardcore_character.game_version == "Era" or _hardcore_character.game_version == "SoM" then
+			max_level = 60
+		else -- if Hardcore_Character.game_version == "WotLK" or anything else
+			max_level = 80
+		end
+		if UnitLevel( "player" ) >= max_level then
+			return
+		end
+	end
+
 	local num_members = GetNumGroupMembers()
 	if num_members < 2 then
 		Hardcore:Print("Duo check: not in group")

@@ -1826,7 +1826,8 @@ function Hardcore:DungeonTrackerWarnInfraction( name )
 	end
 	
 	-- Don't warn too frequently
-	if Hardcore_Character.dt.current.time_inside - Hardcore_Character.dt.current.last_warn < DT_WARN_INTERVAL then
+	if (Hardcore_Character.dt.current.last_warn ~= nil) and
+	   (Hardcore_Character.dt.current.time_inside - Hardcore_Character.dt.current.last_warn < DT_WARN_INTERVAL) then
 		return
 	end
 	
@@ -1834,18 +1835,19 @@ function Hardcore:DungeonTrackerWarnInfraction( name )
 	-- /run Hardcore_Character.dt.warn_infractions=false
 	if Hardcore_Character.dt.warn_infractions == false then
 		return
-	else
-		if Hardcore_Character.game_version ~= nil then
-			local max_level
-			if Hardcore_Character.game_version == "Era" or Hardcore_Character.game_version == "SoM" then
-				max_level = 60
-			else -- if Hardcore_Character.game_version == "WotLK" or anything else
-				max_level = 80
-			end
-			if UnitLevel( "player" ) >= max_level then
-				Hardcore_Character.dt.warn_infractions = false
-				return
-			end
+	end
+	
+	-- Get max level
+	if Hardcore_Character.game_version ~= nil then
+		local max_level
+		if Hardcore_Character.game_version == "Era" or Hardcore_Character.game_version == "SoM" then
+			max_level = 60
+		else -- if Hardcore_Character.game_version == "WotLK" or anything else
+			max_level = 80
+		end
+		if UnitLevel( "player" ) >= max_level then
+			Hardcore_Character.dt.warn_infractions = false
+			return
 		end
 	end
 
@@ -2146,7 +2148,7 @@ function Hardcore:DungeonTracker()
 		DUNGEON_RUN.date   		 = date("%m/%d/%y %H:%M:%S")
 		DUNGEON_RUN.time_inside  = 0
 		DUNGEON_RUN.time_outside = 0
-		DUNGEON_RUN.last_warn    = -1000
+		-- DUNGEON_RUN.last_warn    = -1000		-- Not necessary to initialise this; if it's nil, then it's -1000
 		DUNGEON_RUN.start		 = now
 		DUNGEON_RUN.last_seen	 = now
 		DUNGEON_RUN.last_pulse	 = 0

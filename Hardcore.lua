@@ -165,6 +165,7 @@ local COMM_COMMANDS = {
 	"XGUILD_CHAT_RELAY", -- Send chat message a player in another guild to relay
 	"XGUILD_CHAT", -- Send chat message to other guild
 	"NOTIFY_RANKING",
+	"DTPULSE" 			-- dungeon tracker active pulse
 }
 local COMM_SPAM_THRESHOLD = { -- msgs received within durations (s) are flagged as spam
 	PULSE = 3,
@@ -220,6 +221,7 @@ local DT_OUTSIDE_MAX_TRACKED_TIME = 900		-- If seen outside, how many seconds se
 local DT_OUTSIDE_MAX_REAL_TIME    = 1800	-- If seen outside, how many seconds since last seen inside before finalization (1800 = 30m)
 local DT_OUTSIDE_MAX_RUN_TIME     = 21600	-- If seen outside, how many seconds since start of run before finalization (21600 = 6 hrs)
 local DT_TIME_STEP			      = 1		-- Dungeon code called every 1 second
+local DT_GROUP_PULSE			  = 30		-- Send group pulse every 30 seconds
 local DT_VERSION			      = 2		-- Increasing this will trigger a full rebuild of the dungeon tracker info
 
 -- frame display
@@ -1993,6 +1995,62 @@ function Hardcore:DungeonTrackerCheckChanged( name )
 
 end
 
+function Hardcore:DungeonTrackerReceivePulse( sender, data )
+
+	local shortName
+	local ping_time
+	local dungeon_name
+	local run_name
+
+	Hardcore:Debug( "Received dungeon group pulse from " .. sender .. ", data = " .. data ) 
+	shortName, ping_time, dungeon_name = string.split(COMM_FIELD_DELIM, data)
+	
+	-- Check for errors, dt might not be set right now (if it just got reset for some weird reason)
+	if  (Hardcore_Character.dt == nil) or 
+		(not next( Hardcore_Character.dt )) or 
+		(not next( Hardcore_Character.dt.pending )) then
+		return
+	end
+	
+	-- Update the latest ping time in the idle runs only (no need to do it in current run)
+	for i, v in pairs( Hardcore_Character.dt.pending ) do
+
+		-- If we receive a pulse from "Scarlet Monastery" (without wing), then we have no choice but
+		-- to store that pulse in all idle SM runs
+		if dungeon_name == "Scarlet Monastery" then
+			run_name = string.sub( v.name, 1, 17 )
+		else
+			run_name = v.name
+		end
+		
+		-- If this is the run from which the ping originated, and the ping time is later than we already have, store it
+		if run_name == dungeon_name then
+			if ping_time > v.last_pulse then
+				v.last_pulse = ping_time
+			end
+		end		
+		
+	end
+
+end
+
+function Hardcore:DungeonTrackerSendPulse( now )
+
+	-- Don't send too many pulses, one every 30 seconds is enough
+	if (Hardcore_Character.dt.sent_pulse ~= nil) and 
+	   ((now - Hardcore_Character.dt.sent_pulse) < DT_GROUP_PULSE) then
+		return
+	end
+	Hardcore_Character.dt.sent_pulse = now
+
+	-- Send my own info to the party (=name + server time + dungeon)
+	if( CTL ) then
+		local name, serverName = UnitFullName("player")
+		local commMessage = COMM_COMMANDS[15] .. COMM_COMMAND_DELIM .. name .. COMM_FIELD_DELIM .. now .. COMM_FIELD_DELIM .. Hardcore_Character.dt.current.name
+		CTL:SendAddonMessage("NORMAL", COMM_NAME, commMessage, "PARTY")
+	end
+
+end
 
 function Hardcore:DungeonTracker()
 
@@ -2019,6 +2077,7 @@ function Hardcore:DungeonTracker()
 		Hardcore_Character.dt.legacy_runs_imported = false
 		Hardcore_Character.dt.warn_infractions = true
 		Hardcore_Character.dt.version = DT_VERSION
+		Hardcore_Character.dt.sent_pulse = 0				-- Never sent out a pulse (yet)
 	end
 
 	-- If there are no logged runs yet, we try to figure out which dungeons were already done from the completed quests.
@@ -2049,13 +2108,14 @@ function Hardcore:DungeonTracker()
 			Hardcore_Character.dt.current = {}
 		end
 		
-		-- Finalize any pending runs for which more than the timeout has passed. 
+		-- Finalize any pending runs for which more than the timeout has passed and for which no recent party pulse was received
 		-- Do this backwards so deleting an element is safe.
 		for i=#Hardcore_Character.dt.pending,1,-1  do
 			Hardcore_Character.dt.pending[i].time_outside = Hardcore_Character.dt.pending[i].time_outside + DT_TIME_STEP
-			if Hardcore_Character.dt.pending[ i ].time_outside >= DT_OUTSIDE_MAX_TRACKED_TIME or 
+			if ((now - Hardcore_Character.dt.pending[ i ].last_pulse) >= DT_OUTSIDE_MAX_TRACKED_TIME) and
+			   (Hardcore_Character.dt.pending[ i ].time_outside >= DT_OUTSIDE_MAX_TRACKED_TIME or 
 				(now - Hardcore_Character.dt.pending[ i ].last_seen) >= DT_OUTSIDE_MAX_REAL_TIME or
-				(now - Hardcore_Character.dt.pending[ i ].start) >= DT_OUTSIDE_MAX_RUN_TIME
+				(now - Hardcore_Character.dt.pending[ i ].start) >= DT_OUTSIDE_MAX_RUN_TIME )
 			then
 				Hardcore:DungeonTrackerLogRun(Hardcore_Character.dt.pending[ i ])
 				table.remove( Hardcore_Character.dt.pending, i )
@@ -2089,6 +2149,7 @@ function Hardcore:DungeonTracker()
 		DUNGEON_RUN.last_warn    = -1000
 		DUNGEON_RUN.start		 = now
 		DUNGEON_RUN.last_seen	 = now
+		DUNGEON_RUN.last_pulse	 = 0
 		DUNGEON_RUN.level		 = UnitLevel("player")
 		local group_composition  = UnitName("player")
 		if Hardcore_Character.dt.group_members ~= nil then
@@ -2106,6 +2167,9 @@ function Hardcore:DungeonTracker()
 	Hardcore_Character.dt.current.time_inside  = Hardcore_Character.dt.current.time_inside + DT_TIME_STEP
 	Hardcore_Character.dt.current.time_outside = 0			-- don't want to cumulate outside times
 	Hardcore_Character.dt.current.last_seen    = now
+
+	-- Send out pings to group members
+	Hardcore:DungeonTrackerSendPulse( now )
 
 	-- Warn the user if he is repeating this run or is overleveled
 	Hardcore:DungeonTrackerWarnInfraction(name)
@@ -2583,6 +2647,10 @@ function Hardcore:CHAT_MSG_ADDON(prefix, datastr, scope, sender)
 			end
 			return
 		end
+		if command == COMM_COMMANDS[15] then
+			Hardcore:DungeonTrackerReceivePulse( data, sender )
+			return
+		end		
 		if DEPRECATED_COMMANDS[command] or alert_msg_time[command] == nil then
 			return
 		end

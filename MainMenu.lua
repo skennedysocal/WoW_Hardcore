@@ -1165,7 +1165,7 @@ local function DrawDungeonsTab(container, _hardcore_character)
 			if v.level > 0 then
 				name_str = name_str .. v.level .. "\n"
 			else
-				name_str = name_str .. "?" .. "\n"
+				name_str = name_str .. "?\n"
 			end
 			num_lines = num_lines + 1
 		end
@@ -1203,7 +1203,7 @@ local function DrawDungeonsTab(container, _hardcore_character)
 			if v.time_inside > 0 then
 				name_str = name_str .. SecondsToTime(v.time_inside) .. "\n"
 			else
-				name_str = name_str .. "?" .. "\n"
+				name_str = name_str .. "?\n"
 			end
 			num_lines = num_lines + 1
 		end
@@ -1263,6 +1263,61 @@ local function DrawDungeonsTab(container, _hardcore_character)
 		entry:AddChild(name_label)
 	end
 
+	local function DrawBossColumn(_scroll_frame, _dt_runs, _dt_pending, _dt_current, width)
+		local entry = AceGUI:Create("SimpleGroup")
+		entry:SetLayout("Flow")
+		entry:SetWidth(width)
+		_scroll_frame:AddChild(entry)
+		
+		-- Put some example boss data; this should come from the speedcore code
+		local boss_data = {
+			["Ragefire Chasm"] = { 3600, { "Oggleflint", 1300 }, { "Bazzalan", 3600 } },
+			["Wailing Caverns"] = { 4000, { "Lady Anacondra", 1200 }, { "Verdan the Everliving", 4000 } },
+			["The Deadmines"] = { 0, { "Sneed's Shredder", 1300 }, { "Edwin Van Cleef", 5000 } },
+			["Blackfathom Deeps"] = { 4500, { "Ghamoo-Ra", 1100 }, { "Aku'mai", 4500 } },
+			["Scarlet Monastery (Lib)"] = { 2300, { "Houndmaster Loksey", 900 }, { "Arcanist Doan", 2300 } },
+		}
+		
+		local function GetBossTimeString( the_boss_data, the_name )
+			if the_boss_data ~= nil and the_name ~= nil and the_boss_data[ the_name ] ~= nil then
+				if the_boss_data[ the_name ][1] > 0 then 
+					return SecondsToTime(boss_data[ the_name ][1]) .. "\n"
+				else
+					return "X\n"		-- Dungeon done, but end boss not killed
+				end
+			else
+				return "?\n"			-- No info
+			end
+		end
+
+		local name_str = ""
+		local num_lines = 0
+		for i, v in pairs( _dt_runs ) do
+			name_str = name_str .. GetBossTimeString( boss_data, v.name )
+			num_lines = num_lines + 1
+		end
+		for i, v in pairs( _dt_pending ) do
+			name_str = name_str .. GetBossTimeString( boss_data, v.name )
+			num_lines = num_lines + 1
+		end
+		if next( _dt_current) then
+			name_str = name_str .. GetBossTimeString( boss_data, _dt_current.name )
+			num_lines = num_lines + 1
+		end
+
+		-- Make sure we have at least 10 lines, or Ace moves our dungeons down a line
+		num_lines = 8 - num_lines
+		for i = 1, num_lines do
+			name_str = name_str .. "\n"
+		end
+
+		local name_label = AceGUI:Create("Label")
+		name_label:SetWidth(width)
+		name_label:SetText(name_str)
+		name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		entry:AddChild(name_label)
+	end
+
 	local scroll_container = AceGUI:Create("SimpleGroup")
 	scroll_container:SetWidth(700)
 	scroll_container:SetFullHeight(true)
@@ -1281,10 +1336,16 @@ local function DrawDungeonsTab(container, _hardcore_character)
 	scroll_frame:AddChild(row_header)
 
 	local name_label = AceGUI:Create("Label")
-	name_label:SetWidth(530)
+	name_label:SetWidth(405)
 	name_label:SetText("|c00FFFF00Dungeon|r")
 	name_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
 	row_header:AddChild(name_label)
+
+	local date_label = AceGUI:Create("Label")
+	date_label:SetWidth(125)
+	date_label:SetText("|c00FFFF00Date|r")
+	date_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+	row_header:AddChild(date_label)
 
 	local level_label = AceGUI:Create("Label")
 	level_label:SetWidth(50)
@@ -1298,17 +1359,24 @@ local function DrawDungeonsTab(container, _hardcore_character)
 	played_time_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
 	row_header:AddChild(played_time_label)
 
-	local date_label = AceGUI:Create("Label")
-	date_label:SetWidth(125)
-	date_label:SetText("|c00FFFF00Date|r")
-	date_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
-	row_header:AddChild(date_label)
+	-- Set this variable to true to show Zdeyn's boss kill time speedcore code
+	local show_boss_column = false
+	if show_boss_column == true then
+		local boss_time_label = AceGUI:Create("Label")
+		boss_time_label:SetWidth(125)
+		boss_time_label:SetText("|c00FFFF00Boss Time|r")
+		boss_time_label:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		row_header:AddChild(boss_time_label)
+	end
 
-	-- Rest of the data
-	DrawNameColumn(scroll_frame, _hardcore_character.dt.runs, _hardcore_character.dt.pending, _hardcore_character.dt.current, 530)
+	-- Show the data
+	DrawNameColumn(scroll_frame, _hardcore_character.dt.runs, _hardcore_character.dt.pending, _hardcore_character.dt.current, 405)
+	DrawDateColumn(scroll_frame, _hardcore_character.dt.runs, _hardcore_character.dt.pending, _hardcore_character.dt.current, 125)
 	DrawLevelColumn(scroll_frame, _hardcore_character.dt.runs, _hardcore_character.dt.pending, _hardcore_character.dt.current, 50)
 	DrawPlayedColumn(scroll_frame, _hardcore_character.dt.runs, _hardcore_character.dt.pending, _hardcore_character.dt.current, 125)
-	DrawDateColumn(scroll_frame, _hardcore_character.dt.runs, _hardcore_character.dt.pending, _hardcore_character.dt.current, 125)
+	if show_boss_column == true then
+		DrawBossColumn(scroll_frame, _hardcore_character.dt.runs, _hardcore_character.dt.pending, _hardcore_character.dt.current, 125)
+	end
 
 	-- Some weird shit needed to prevent the last column from moving up
 	local entry = AceGUI:Create("SimpleGroup")

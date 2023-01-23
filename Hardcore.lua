@@ -1997,7 +1997,11 @@ function Hardcore:DungeonTrackerCheckChanged( name )
 
 end
 
-function Hardcore:DungeonTrackerReceivePulse( sender, data )
+-- DungeonTrackerReceivePulse( data, sender )
+--
+-- Receives a group pulse, storing the time in the message and the sender in the associated pending run
+
+function Hardcore:DungeonTrackerReceivePulse( data, sender )
 
 	local shortName
 	local ping_time
@@ -2016,11 +2020,10 @@ function Hardcore:DungeonTrackerReceivePulse( sender, data )
 	
 	-- Update the latest ping time in the idle runs only (no need to do it in current run)
 	for i, v in pairs( Hardcore_Character.dt.pending ) do
-
 		-- If we receive a pulse from "Scarlet Monastery" (without wing), then we have no choice but
-		-- to store that pulse in all idle SM runs
+		-- to store that pulse in all idle SM runs. So then we don't care about the wing of the pending run.
 		if dungeon_name == "Scarlet Monastery" then
-			run_name = string.sub( v.name, 1, 17 )
+			run_name = string.sub( v.name, 1, 17 )		-- This also cuts "The Temple of Atal'Hakkar" to "The Temple of Ata", but that's okay
 		else
 			run_name = v.name
 		end
@@ -2030,11 +2033,18 @@ function Hardcore:DungeonTrackerReceivePulse( sender, data )
 			if ping_time > v.last_pulse then
 				v.last_pulse = ping_time
 			end
-		end		
-		
+			
+			-- Add the ping sender to the party members, if not already there
+			if string.find( v.party, shortName ) == nil then
+				v.party = v.party .. "," .. shortName
+			end			
+		end
 	end
-
 end
+
+-- DungeonTrackerSendPulse( now )
+--
+-- Sends a group pulse, if the time out is expired
 
 function Hardcore:DungeonTrackerSendPulse( now )
 
@@ -2049,8 +2059,26 @@ function Hardcore:DungeonTrackerSendPulse( now )
 	if( CTL ) then
 		local name, serverName = UnitFullName("player")
 		local commMessage = COMM_COMMANDS[15] .. COMM_COMMAND_DELIM .. name .. COMM_FIELD_DELIM .. now .. COMM_FIELD_DELIM .. Hardcore_Character.dt.current.name
-		CTL:SendAddonMessage("NORMAL", COMM_NAME, commMessage, "PARTY")
+		CTL:SendAddonMessage("NORMAL", COMM_NAME, commMessage, "PARTY")			-- Maybe to "INSTANCE_CHAT" instead?
 	end
+
+end
+
+
+-- DungeonTrackerTestReceivePulse()
+--
+-- Fakes an incoming group pulse message for testing purposes
+
+function Hardcore:DungeonTrackerTestReceivePulse()
+
+	local now = GetServerTime()
+	local dung = "Scarlet Monastery"
+	local sender = "Testy123-HydraxianWaterlords"
+	local sender_short = "Testy123"
+	message = COMM_COMMANDS[15] .. COMM_COMMAND_DELIM .. sender_short .. COMM_FIELD_DELIM .. now .. COMM_FIELD_DELIM .. Hardcore_Character.dt.current.name
+	Hardcore:CHAT_MSG_ADDON(COMM_NAME, message, "Test", sender)
+
+	Hardcore:Debug("Sent group pulse message from " .. sender )
 
 end
 

@@ -436,6 +436,7 @@ local function DrawStartingAchievementsPageIconForm(container, scroll_container,
 			if achievement.class == class then
 				c = c + 1
 				local achievement_icon = AceGUI:Create("Icon")
+				achievement_icons[achievement.name] = achievement_icon
 				achievement_icon:SetWidth(size)
 				achievement_icon:SetHeight(size)
 				achievement_icon:SetImage(achievement.icon_path)

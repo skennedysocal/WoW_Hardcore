@@ -1632,65 +1632,164 @@ end
 -- DUNGEON RUN TRACKING --
 --------------------------
 
+-- dt_db ( = dungeon tracker database )
+-- 
+-- Contains all the info for the dungeons:
+-- { instanceID, zoneID, "English Name", type = { "D", "R", "B", "O" }, max_players, max_runs, { max_level_era, max_level_wotlk }, { quests } },
+-- Types: D = dungeon (5-player), R = raid, B = battleground, O = other
+
+local dt_db = {
+
+	-- Era dungeons
+	{ 389, 2437, "Ragefire Chasm", "D", 5, 1, {18, 20}, {5728, 5761, 5722, 5723, 5725} }, 		-- All 5 quests in RFC
+	{  36, 1581, "The Deadmines", "D", 5, 1, {26, 24}, {2040, 166, 214, 373} },					-- Underground Assault, The Defias Brotherhood, Red Silk Bandanas, The Unsent Letter
+	{  43,  718, "Wailing Caverns", "D", 5, 1, {24, 24}, {914, 1487, 3366} },					-- Leaders of the Fang, Deviate Eradication, The Glowing Shard
+	{  33,  209, "Shadowfang Keep", "D", 5, 1, {30, 25}, {1013, 1098, 1014} },					-- The Book of Ur, Deathstalkers in Shadowfang, Arugal Must Die
+	{  48,  719, "Blackfathom Deeps", "D", 5, 1, {32, 28}, {971, 1198, 1199, 1275, 6565, 6921, 1200, 6561, 6922 }} ,
+	{  34,  717, "The Stockade", "D", 5, 1, {32, 29}, {387, 386, 378, 388, 377, 391} },
+	{  47,  491, "Razorfen Kraul", "D", 5, 1, {38, 31}, {1221, 1102, 1109, 1101, 1144, 1142, 6522} },
+	{  90,  721, "Gnomeregan", "D", 5, 1, {38, 32}, {2904, 2951, 2945, 2922, 2928, 2924, 2930, 2929, 2841} },
+	{ 129,  722, "Razorfen Downs", "D", 5, 1, {46, 41}, {3636, 3341, 3525} },
+	{ 189,  796, "Scarlet Monastery", "D", 5, 1, {45, 44}, {} },
+	{ 18901, 79601, "Scarlet Monastery (GY)", "D", 5, 1, {45, 44}, {} },									-- Bit of a hack here, 4 wings don't have a separate ID; No quests in GY
+	{ 18902, 79602, "Scarlet Monastery (Lib)", "D", 5, 1, {45, 44}, {1050, 1053, 1049, 1048, 1160, 1951} },	-- 1048+1053: kill 4 bosses needs Lib+Cath+Arm
+	{ 18903, 79603, "Scarlet Monastery (Cath)", "D", 5, 1, {45, 44}, {1053, 1048} },
+	{ 18904, 79604, "Scarlet Monastery (Arm)", "D", 5, 1, {45, 44}, {1053, 1048} },
+	{ 70,  1137, "Uldaman", "D", 5, 1, {51, 44}, {1360, 2240, 17, 1139, 2204, 2278} },
+	{ 209, 1176, "Zul'Farrak", "D", 5, 1, {54, 50}, {3042, 2865, 2846, 2768, 2770, 3527, 2991, 2936} },
+	{ 349, 2100, "Maraudon", "D", 5, 1, {55, 52}, {7041, 7029, 7065, 7064, 7067, 7044, 7046} },
+	{ 109, 1477, "The Temple of Atal'Hakkar", "D", 5, 1, {60, 54}, {3528, 3446, 3447, 3373} },			-- 1475, 4143, 4146, removed: tablets and haze drop outside
+	{ 229, 1583, "Blackrock Spire", "D", 10, 1, {60, 62}, {4701, 5001, 4724, 4982, 4903, 4862, 4729, 4788, 4768, 4974, 4764, 5102, 6821, 7761} },  -- UBRS and LBRS are one instance
+	{ 230, 1584, "Blackrock Depths", "D", 5, 1, {60, 60}, {4136, 4123, 4286, 4126, 4081, 4134} },
+	{ 289, 2057, "Scholomance", "D", 5, 1, {60, 62}, {5529, 5582, 5382, 5384, 5466, 5343, 5341} },
+	{ 429, 2557, "Dire Maul", "D", 5, 1, {60, 62}, {7488, 7489, 7441, 7461, 7462, 7703, 5526} },
+	{ 329, 2017, "Stratholme", "D", 5, 1, {60, 62}, {5282, 5214, 5251, 5262, 5848, 5122, 5212, 5263, 5243, 5122, 6163, 5463, 8945} },	-- Undead / Live parts are one instance
+	-- Era Raids
+	{ 249, 2159, "Onyxia's Lair", "R", 40, 1000, {1000, 1000}, {} },
+	{ 309, 1977, "Zul'Gurub", "R", 20, 1000, {1000, 1000}, {} },
+	{ 409, 2717, "Molten Core", "R", 40, 1000, {1000, 1000}, {} },
+	{ 469, 2677, "Blackwing Lair", "R", 40, 1000, {1000, 1000}, {} },
+	{ 509, 3429, "Ruins of Ahn'Qiraj", "R", 20, 1000, {1000, 1000}, {} },
+	{ 531, 3428, "Ahn'Qiraj", "R", 40, 1000, {1000, 1000}, {} },
+	-- Era Battlegrounds
+	{ 0,   3277, "Warsong Gulch", "B", 10, 1000, {1000, 1000}, {} },				-- TODO TODO NEEDS AN INSTANCE ID
+	{ 30,  2597, "Alterac Valley", "B", 40, 1000, {1000, 1000}, {} },
+	{ 529, 3358, "Arathi Basin", "B", 15, 1000, {1000, 1000}, {} },
+		
+	-- TBC dungeons
+	{ 543, 3562, "Hellfire Ramparts", "D", 5, 1, {1000,64}, {9575, 9572, 9587, 9588} },
+	{ 542, 3713, "The Blood Furnace", "D", 5, 1, {1000,65}, {9607, 9608, 9589, 9590} },
+	{ 547, 3717, "The Slave Pens", "D", 5, 1, {1000,66}, {9738} },
+	{ 546, 3716, "The Underbog", "D", 5, 1, {1000,66}, {9738, 9717, 9719} },								-- 9715 removed because also drops in Steamvault
+	{ 557, 3792, "Mana Tombs", "D", 5, 1, {1000,68}, {10216, 10218, 10165} },
+	{ 558, 3790, "Auchenai Crypts", "D", 5, 1, {1000,1000}, {} },
+	{ 560, 2367, "Old Hillsbrad Foothills", "D", 5, 1, {1000,1000}, {} },
+	{ 556, 3791, "Sethekk Halls", "D", 5, 1, {1000,1000}, {} },
+	{ 553, 3847, "The Botanica", "D", 5, 1, {1000,1000}, {} }, 
+	{ 555, 3789, "Shadow Labyrinth", "D", 5, 1, {1000,1000}, {} },
+	{ 545, 3715, "The Steamvault", "D", 5, 1, {1000,1000}, {} },
+	{ 540, 3714, "The Shattered Halls", "D", 5, 1, {1000,1000}, {} },
+	{ 554, 3849, "The Mechanar", "D", 5, 1, {1000,1000}, {} },
+	{ 269, 2366, "The Black Morass", "D", 5, 1, {1000,1000}, {} },
+	{ 552, 3848, "The Arcatraz", "D", 5, 1, {1000,1000}, {} },
+	{ 585, 4131, "Magisters' Terrace",  "D", 5, 1, {1000,1000}, {} },
+	-- TBC Raids
+	{ 532, 3457, "Karazhan", "R", 10, 1000, {1000,1000}, {} },
+	{ 533, 3456, "Naxxramas", "R", 40, 1000, {1000,1000}, {} },
+	{ 534, 3606, "Hyjal Summit", "R", 25, 1000, {1000,1000}, {} },
+	{ 544, 3836, "Magtheridon's Lair", "R", 25, 1000, {1000,1000}, {} },
+	{ 548, 3607, "Serpentshrine Cavern", "R", 25, 1000, {1000,1000}, {} },
+	{ 564, 3959, "Black Temple", "R", 25, 1000, {1000,1000}, {} },
+	{ 565, 3923, "Gruul's Lair", "R", 25, 1000, {1000,1000}, {} },
+	{ 568, 3805, "Zul'Aman", "R", 10, 1000, {1000,1000}, {} },
+	{ 580, 4075, "Sunwell Plateau", "R", 25, 1000, {1000,1000}, {} },
+	{ 550, 3845, "Tempest Keep", "R", 25, 1000, {1000,1000}, {} },
+	-- TBC Battlegrounds
+	{ 0, 3820, "The Eye of the Storm", "B", 15, 1000, {1000,1000}, {} },			-- TODO TODO NEEDS AN INSTANCE ID
+	
+	-- WotLK dungeons
+	{ 574,  206, "Utgarde Keep", "D", 5, 1, {1000,74}, {11272, 13206, 11262, 13245, 13205, 11252} },
+	{ 576, 4265, "The Nexus", "D", 5, 1, {1000,75}, {13094, 13095, 11905, 11911, 11973, 13246} },
+	{ 601, 4277, "Azjol-Nerub", "D", 5, 1, {1000,76}, {13167, 13182, 13254} },
+	{ 619, 4494, "Ahn'kahet: The Old Kingdom", "D", 5, 1, {1000,77}, {13187, 13204, 13190, 13255} },
+	{ 600, 4196, "Drak'Tharon Keep", "D", 5, 1, {1000,78}, {12238, 12037, 13129, 13249} },
+	{ 608, 4415, "The Violet Hold", "D", 5, 1, {1000,79}, {13158, 13159, 13256} },
+	{ 604, 4416, "Gundrak", "D", 5, 1, {1000,80}, {13098, 13096, 13111, 13250} },
+	{ 599, 4264, "Halls of Stone", "D", 5, 1, {1000,80}, {13207, 13252} },
+	{ 602, 4272, "Halls of Lightning", "D", 5, 1, {1000,80}, {13109, 13108, 13244, 13253} },
+	{ 668, 4820, "Halls of Reflection", "D", 5, 1, {1000,80}, {24713, 24711, 24802, 24500, 24561, 24480} },
+	{ 595, 4100, "The Culling of Stratholme", "D", 5, 1, {1000,80}, {13151, 13149, 13240, 13251} },
+	{ 575, 1196, "Utgarde Pinnacle", "D", 5, 1, {1000,80}, {13131, 13132, 13241, 13248} },
+	{ 578, 4228, "The Oculus", "D", 5, 1, {1000,80}, {13124, 13126, 13127, 13128, 13240, 13247} },
+	{ 650, 4723, "Trial of the Champion", "D", 5, 1, {1000,80}, {14199} },
+	{ 632, 4809, "The Forge of Souls", "D", 5, 1, {1000,80}, {24506, 24510, 24511, 24499, 24682, 24683} },
+	{ 658, 4813, "Pit of Saron", "D", 5, 1, {1000,80}, {24682, 24683, 24507, 24498, 24712, 24710, 24713, 24711, 24559, 24461 }},
+	-- WotLK raids
+	{ 603, 4273, "Ulduar", "R", 25, 1000, {1000,1000}, {} },
+	{ 615, 4493, "The Obsidian Sanctum", "R", 25, 1000, {1000,1000}, {} },
+	{ 616, 4500, "The Eye of Eternity", "R", 25, 1000, {1000,1000}, {} },
+	{ 624, 4603, "Vault of Archavon", "R", 25, 1000, {1000,1000}, {} },
+	{ 631, 4812, "Icecrown Citadel", "R", 25, 1000, {1000,1000}, {} },
+	{ 649, 4722, "Trial of the Crusader", "R", 25, 1000, {1000,1000}, {} },
+	{ 724, 4987, "Ruby Sanctum",  "R", 25, 1000, {1000,1000}, {} },
+	-- WotLK Battlegrounds
+	{ 628, 4710, "Isle of Conquest", "B", 40, 1000, {1000,1000}, {} },
+	
+	-- Other
+	{ 449, "Champion's Hall", 1000, 1000, {1000, 1000}, {} },
+	{ 450, "Hall of Legends", 1000, 1000, {1000, 1000}, {} },
+	--{ , "Borean Tundra", },
+	--{ , "Strand of the Ancients", },
+
+}
+
+local dt_db_id_to_name = nil
+local dt_db_max_levels = nil
+
+-- Hardcore:DungeonTrackerGetDungeonName( id )
+--
+-- Needed to get around regionalised names. We want everything in English, yo!
+
+function Hardcore:DungeonTrackerGetDungeonName( id )
+
+	-- Create the hash if we haven't already
+	if dt_db_id_to_name == nil then
+		dt_db_id_to_name = {}
+		for i, v in ipairs( dt_db ) do
+			dt_db_id_to_name[ v[1] ] = v[3]
+		end
+	end
+	
+	if dt_db_id_to_name[ id ] == nil then
+		return "Unknown"
+	end
+		
+	return dt_db_id_to_name[ id ]
+
+end
+
 function Hardcore:DungeonTrackerGetDungeonMaxLevel( name )
 
-	-- TODO: use a common data source with the info in MainMenu.lua
-	local max_levels = {
-		["Ragefire Chasm"] = {18, 20},
-		["The Deadmines"] = {26, 24},
-		["Wailing Caverns"] = {24, 24},
-		["Shadowfang Keep"] = {30, 25},
-		["Blackfathon Deeps"] = {32, 28},
-		["The Stockade"] = {32, 29},
-		["Razorfen Kraul"] = {38, 31},
-		["Gnomeregan"] = {38, 32},
-		["Razorfen Downs"] = {46, 41},
-		["Scarlet Monastery"] = {45, 44},
-		["Scarlet Monastery (GY)"] = {45, 44},		-- Lazy way to make sure it works on any wing
-		["Scarlet Monastery (Lib)"] = {45, 44},		-- Lazy way to make sure it works on any wing
-		["Scarlet Monastery (Cath)"] = {45, 44},	-- Lazy way to make sure it works on any wing
-		["Scarlet Monastery (Arm)"] = {45, 44},		-- Lazy way to make sure it works on any wing
-		["Uldaman"] = {51, 44},
-		["Zul'Farrak"] = {54, 50},
-		["Maraudon"] = {55, 52},
-		["The Temple of Atal'Hakkar"] = {60, 54},
-		["Blackrock Depths"] = {60, 60},
-		["Blackrock Spire"] = {60, 62},
-		["Scholomance"] = {60, 62},
-		["Dire Maul"] = {60, 62},
-		["Stratholme"] = {60, 62},
-		-- TBC
-		["Hellfire Ramparts"] = {1000,64},
-		["Blood Furnace"] = {1000,65},
-		["The Slave Pens"] = {1000,66},
-		["The Underbog"] = {1000,66},
-		["Mana Tombs"] = {1000,68},
-		-- WotLK
-		["Utgarde Keep"] = {1000,74},
-		["Nexus"] = {1000,75},
-		["Azjol-Nerub"] = {1000,76},
-		["Ahn'kahet"] = {1000,77},
-		["Drak'Tharon Keep"] = {1000,78},
-		["Violet Hold"] = {1000,79},
-		["Gundrak"] = {1000,80},
-		["Halls of Stone"] = {1000,80},
-		["Halls of Lightning"] = {1000,80},
-		["The Culling of Stratholme"] = {1000,80},
-		["The Oculus"] = {1000,80},
-		["Utgarde Pinnacle"] = {1000,80},
-		["Forge of Souls"] = {1000,80},
-		["Pit of Saron"] = {1000,80},
-		["Halls of Reflection"] = {1000,80},
-		["Trial of the Champion"] = {1000,80}
-	}
 	local max_level = 1000		-- Default: if we can't find it, or game version not set: it doesn't have a max level
 
-	if max_levels[ name ] ~= nil then
+	-- Construct the hash if we haven't already
+	if dt_db_max_levels == nil then
+		dt_db_max_levels = {}
+		for i, v in ipairs( dt_db ) do
+			if v[7] ~= nil then
+				dt_db_max_levels[ v[3] ] = v[7]
+			else
+				dt_db_max_levels[ v[3] ] = { 1000, 1000 }
+			end
+		end
+	end
+
+	if dt_db_max_levels[ name ] ~= nil then
 		if Hardcore_Character.game_version ~= nil then
 			if Hardcore_Character.game_version == "Era" or Hardcore_Character.game_version == "SoM" then
-				max_level = max_levels[ name ][ 1 ];
+				max_level = dt_db_max_levels[ name ][ 1 ];
 			elseif Hardcore_Character.game_version == "WotLK" then
-				max_level = max_levels[ name ][ 2 ];
+				max_level = dt_db_max_levels[ name ][ 2 ];
 			end
 		end
 	end
@@ -1710,76 +1809,31 @@ function Hardcore:DungeonTrackerPopulateFromQuests()
 	if next( Hardcore_Character.dt.runs) then
 		return
 	end
-	
-	-- Start looking for finished quests
-	local dungeon_quests = {
-	
-		{ "Ragefire Chasm", 5728, 5761, 5722, 5723, 5725 },		-- All 5 quests in RFC
-		{ "The Deadmines", 2040, 166, 214, 373},					-- Underground Assault, The Defias Brotherhood, Red Silk Bandanas, The Unsent Letter
-		{ "Wailing Caverns", 914, 1487, 3366},					-- Leaders of the Fang, Deviate Eradication, The Glowing Shard
-		{ "Shadowfang Keep", 1013, 1098, 1014},					-- The Book of Ur, Deathstalkers in Shadowfang, Arugal Must Die
-		{ "Blackfathom Deeps", 971, 1198, 1199, 1275, 6565, 6921, 1200, 6561, 6922 },
-		{ "The Stockade", 387, 386, 378, 388, 377, 391},
-		{ "Razorfen Kraul", 1221, 1102, 1109, 1101, 1144, 1142, 6522},
-		{ "Gnomeregan", 2904, 2951, 2945, 2922, 2928, 2924, 2930, 2929, 2841 },
-		{ "Razorfen Downs", 3636, 3341, 3525 },
-		--{ "Scarlet Monastery (GY)"] = {},							-- No quests here
-		{ "Scarlet Monastery (Lib)", 1050, 1053, 1049, 1048, 1160, 1951},	-- 1048+1053: kill 4 bosses needs Lib+Cath+Arm
-		{ "Scarlet Monastery (Cath)", 1053, 1048 },
-		{ "Scarlet Monastery (Arm)", 1053, 1048 },
-		{ "Uldaman", 1360, 2240, 17, 1139, 2204, 2278 },
-		{ "Zul'Farrak", 3042, 2865, 2846, 2768, 2770, 3527, 2991, 2936 },
-		{ "Maraudon", 7041, 7029, 7065, 7064, 7067, 7044, 7046},
-		{ "The Temple of Atal'Hakkar", 3528, 3446, 3447, 3373 },		-- 1475, 4143, 4146, removed: tablets and haze drop outside
-		{ "Blackrock Depths", 4136, 4123, 4286, 4126, 4081, 4134},
-		{ "Blackrock Spire", 4701, 5001, 4724, 4982, 4903, 4862, 4729, 4788, 4768, 4974, 4764, 5102, 6821, 7761 },  -- UBRS and LBRS are one instance
-		{ "Scholomance", 5529, 5582, 5382, 5384, 5466, 5343, 5341},
-		{ "Dire Maul", 7488, 7489, 7441, 7461, 7462, 7703, 5526 },
-		{ "Stratholme", 5282, 5214, 5251, 5262, 5848, 5122, 5212, 5263, 5243, 5122, 6163, 5463, 8945},	-- Undead / Live parts are one instance
-		-- TBC
-		{ "Hellfire Ramparts", 9575, 9572, 9587, 9588 },
-		{ "Blood Furnace", 9607, 9608, 9589, 9590 },
-		{ "The Slave Pens", 9738 },
-		{ "The Underbog", 9738, 9717, 9719 },						-- 9715 removed because also drops in Steamvault
-		{ "Mana Tombs", 10216, 10218, 10165 },
-		-- WotLK
-		{ "Utgarde Keep", 11272, 13206, 11262, 13245, 13205, 11252 },
-		{ "Nexus", 13094, 13095, 11905, 11911, 11973, 13246 },
-		{ "Azjol-Nerub", 13167, 13182, 13254 },
-		{ "Ahn'kahet", 13187, 13204, 13190, 13255 },
-		{ "Drak'Tharon Keep", 12238, 12037, 13129, 13249 },
-		{ "Violet Hold", 13158, 13159, 13256 },
-		{ "Gundrak", 13098, 13096, 13111, 13250 },
-		{ "Halls of Stone", 13207, 13252 },
-		{ "Halls of Lightning", 13109, 13108, 13244, 13253 },
-		{ "The Culling of Stratholme", 13151, 13149, 13240, 13251 },
-		{ "The Oculus", 13124, 13126, 13127, 13128, 13240, 13247 },
-		{ "Utgarde Pinnacle", 13131, 13132, 13241, 13248 },
-		{ "Forge of Souls", 24506, 24510, 24511, 24499, 24682, 24683 },
-		{ "Pit of Saron", 24682, 24683, 24507, 24498, 24712, 24710, 24713, 24711, 24559, 24461 },
-		{ "Halls of Reflection", 24713, 24711, 24802, 24500, 24561, 24480 },
-		{ "Trial of the Champion", 14199 }
-	}
+
 	Hardcore:Debug( "Logging legacy runs.." )
 
 	-- Go through the list and log a run for each dungeon for which one or more quests are flagged as completed
-	for i, v in pairs( dungeon_quests ) do
+	for i, v in pairs( dt_db ) do
 		local dungeon_done = false
-		local j
-		for j = 2, #v do
-			if C_QuestLog.IsQuestFlaggedCompleted(v[j]) then
-				Hardcore:Debug( "Found legacy quest " .. v[j] )
-				dungeon_done = true
-				break
+		local quests = v[8]
+		if quests ~= nil then
+			local j
+			for j = 1, #quests do
+				if C_QuestLog.IsQuestFlaggedCompleted(quests[j]) then
+					Hardcore:Debug( "Found legacy quest " .. quests[j] )
+					dungeon_done = true
+					break
+				end
 			end
 		end
 		if dungeon_done == true then
 			DUNGEON_RUN = {}
-			DUNGEON_RUN.name   		 = v[1]
+			DUNGEON_RUN.name   		 = v[3]
+			DUNGEON_RUN.instanceID	 = v[1]
 			DUNGEON_RUN.date   		 = "(legacy)"
 			DUNGEON_RUN.time_inside  = 0
 			DUNGEON_RUN.level        = 0
-			DUNGEON_RUN.quest_id     = v[j]
+			DUNGEON_RUN.quest_id     = quests[j]
 			Hardcore:Print( "Logging legacy run in " .. DUNGEON_RUN.name )
 			table.insert( Hardcore_Character.dt.runs, DUNGEON_RUN )
 		end
@@ -2010,6 +2064,7 @@ function Hardcore:DungeonTrackerReceivePulse( data, sender )
 
 	Hardcore:Debug( "Received dungeon group pulse from " .. sender .. ", data = " .. data ) 
 	shortName, ping_time, dungeon_name = string.split(COMM_FIELD_DELIM, data)
+	ping_time = tonumber( ping_time )
 	
 	-- Check for errors, dt might not be set right now (if it just got reset for some weird reason)
 	if  (Hardcore_Character.dt == nil) or 
@@ -2050,7 +2105,7 @@ function Hardcore:DungeonTrackerSendPulse( now )
 
 	-- Don't send too many pulses, one every 30 seconds is enough
 	if (Hardcore_Character.dt.sent_pulse ~= nil) and 
-	   ((now - Hardcore_Character.dt.sent_pulse) < DT_GROUP_PULSE) then
+	   (now - Hardcore_Character.dt.sent_pulse < DT_GROUP_PULSE) then
 		return
 	end
 	Hardcore_Character.dt.sent_pulse = now
@@ -2075,12 +2130,18 @@ function Hardcore:DungeonTrackerTestReceivePulse()
 	local dung = "Scarlet Monastery"
 	local sender = "Testy123-HydraxianWaterlords"
 	local sender_short = "Testy123"
-	message = COMM_COMMANDS[15] .. COMM_COMMAND_DELIM .. sender_short .. COMM_FIELD_DELIM .. now .. COMM_FIELD_DELIM .. Hardcore_Character.dt.current.name
+	local dungeon = "Scarlet Monastery (Lib)"
+	message = COMM_COMMANDS[15] .. COMM_COMMAND_DELIM .. sender_short .. COMM_FIELD_DELIM .. now .. COMM_FIELD_DELIM .. dungeon
 	Hardcore:CHAT_MSG_ADDON(COMM_NAME, message, "Test", sender)
 
 	Hardcore:Debug("Sent group pulse message from " .. sender )
 
 end
+
+
+-- DungeonTracker
+--
+-- Main interface function for the dungeon tracker, called on a 1s second timer
 
 function Hardcore:DungeonTracker()
 
@@ -2089,8 +2150,8 @@ function Hardcore:DungeonTracker()
 	local name, instanceType, difficultyID, difficultyName, 
 		maxPlayers, dynamicDifficulty, isDynamic, instanceID, instanceGroupSize, LfgDungeonID = GetInstanceInfo()
 
---	local message = "Instance:" .. name .. ", " .. instanceType .. ", " .. instanceID 
---	Hardcore:Print( message )
+	--local message = "Instance:" .. name .. ", " .. instanceType .. ", " .. instanceID 
+	--Hardcore:Print( message )
 
 	-- Handle invalid or legacy data files, or version upgrade (triggers full rebuild of dungeon database)
 	if (Hardcore_Character.dt == nil) or 					-- no DT yet
@@ -2137,24 +2198,41 @@ function Hardcore:DungeonTracker()
 			table.insert( Hardcore_Character.dt.pending, Hardcore_Character.dt.current )
 			Hardcore_Character.dt.current = {}
 		end
-		
-		-- Finalize any pending runs for which more than the timeout has passed and for which no recent party pulse was received
-		-- Do this backwards so deleting an element is safe.
-		for i=#Hardcore_Character.dt.pending,1,-1  do
-			Hardcore_Character.dt.pending[i].time_outside = Hardcore_Character.dt.pending[i].time_outside + DT_TIME_STEP
-			if ((now - Hardcore_Character.dt.pending[ i ].last_pulse) >= DT_OUTSIDE_MAX_TRACKED_TIME) and
-			   (Hardcore_Character.dt.pending[ i ].time_outside >= DT_OUTSIDE_MAX_TRACKED_TIME or 
-				(now - Hardcore_Character.dt.pending[ i ].last_seen) >= DT_OUTSIDE_MAX_REAL_TIME or
-				(now - Hardcore_Character.dt.pending[ i ].start) >= DT_OUTSIDE_MAX_RUN_TIME )
-			then
-				Hardcore:DungeonTrackerLogRun(Hardcore_Character.dt.pending[ i ])
-				table.remove( Hardcore_Character.dt.pending, i )
-			end
-		end
-		
-		return  -- nothing more to be done when outside
 	end
 	
+	-- Finalize any pending runs for which more than the timeout has passed and for which no recent party pulse was received
+	-- Do this backwards so deleting an element is safe.
+	for i=#Hardcore_Character.dt.pending,1,-1  do
+		Hardcore_Character.dt.pending[i].time_outside = Hardcore_Character.dt.pending[i].time_outside + DT_TIME_STEP
+		
+		-- Calculate remaining time; it's the smallest of the three outside time outs
+		local idle_time_left = DT_OUTSIDE_MAX_TRACKED_TIME - Hardcore_Character.dt.pending[ i ].time_outside
+		idle_time_left = min( idle_time_left, DT_OUTSIDE_MAX_REAL_TIME - (now - Hardcore_Character.dt.pending[ i ].last_seen)  )
+		idle_time_left = min( idle_time_left, DT_OUTSIDE_MAX_RUN_TIME  - (now - Hardcore_Character.dt.pending[ i ].start)  )
+		
+		-- Override the remaining time if we got a group pulse
+		idle_time_left = max( idle_time_left, DT_OUTSIDE_MAX_TRACKED_TIME - (now - Hardcore_Character.dt.pending[ i ].last_pulse) )
+		
+		-- Update idle time left for the user interface
+		Hardcore_Character.dt.pending[ i ].idle_left = idle_time_left
+		
+		if idle_time_left <= 0 then
+			Hardcore:DungeonTrackerLogRun(Hardcore_Character.dt.pending[ i ])
+			table.remove( Hardcore_Character.dt.pending, i )
+		end
+	end
+	
+	-- nothing more to be done when outside
+	if instanceType == "none" then
+		return  
+	end
+	
+	-- Override the name, we don't want to use the local language versions
+	local EN_name = Hardcore:DungeonTrackerGetDungeonName( instanceID )
+	if EN_name ~= "Unknown" then
+		name = EN_name
+	end
+
 	-- Check if we are in a new dungeon (this has the special handling of Scarlet Monastery)
 	name = Hardcore:DungeonTrackerCheckChanged(name)
 			
@@ -2180,6 +2258,7 @@ function Hardcore:DungeonTracker()
 		DUNGEON_RUN.start		 = now
 		DUNGEON_RUN.last_seen	 = now
 		DUNGEON_RUN.last_pulse	 = 0
+		DUNGEON_RUN.idle_left	 = 0			-- Remaining idle time
 		DUNGEON_RUN.level		 = UnitLevel("player")
 		local group_composition  = UnitName("player")
 		if Hardcore_Character.dt.group_members ~= nil then

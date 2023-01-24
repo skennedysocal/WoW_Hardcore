@@ -1148,7 +1148,7 @@ local function DrawDungeonsTab(container, _hardcore_character)
 			num_lines = num_lines + 1
 		end
 		for i, v in pairs( _dt_pending ) do
-			name_str = name_str .. "|c00FFFF00" .. v.name .. " (idle)\n"
+			name_str = name_str .. "|c00FFFF00" .. v.name .. " (idle, " .. SecondsToTime(v.idle_left) .. ")\n"
 			num_lines = num_lines + 1
 		end
 		if next( _dt_current ) then

@@ -231,6 +231,19 @@ function trio_rules:ResetWarn()
 end
 
 function trio_rules:Check()
+	-- this code causes the rules checker to ignore all duo/trio rules at max level
+	if Hardcore_Character.game_version ~= nil then
+		local max_level
+		if Hardcore_Character.game_version == "Era" or Hardcore_Character.game_version == "SoM" then
+			max_level = 60
+		else -- if Hardcore_Character.game_version == "WotLK" or anything else
+			max_level = 80
+		end
+		if UnitLevel( "player" ) >= max_level then
+			return
+		end
+	end
+
 	local num_members = GetNumGroupMembers()
 	if num_members < 3 then
 		Hardcore:Print("Trio check: not in big enough group")

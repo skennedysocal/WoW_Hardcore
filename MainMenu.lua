@@ -298,6 +298,22 @@ local function DrawGeneralTab(container)
 
 	local changelog_title = AceGUI:Create("Label")
 	changelog_title:SetWidth(500)
+	changelog_title:SetText("11.7")
+	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16, "")
+	scroll_frame:AddChild(changelog_title)
+
+	local changelog_description = AceGUI:Create("Label")
+	changelog_description:SetWidth(_menu_width)
+	changelog_description:SetText(
+		"- Fixed Deep in the Ban'ethil Barrow Den from missing Rageclaw kill\n- Fixed kill target for Death to Goggeroc\n- Made profession achievements more reliable and check on reload\n- Fixed minor crash on forced achievement selection\n- Removed checks for duo/trios when 60+"
+	)
+	changelog_description:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
+	scroll_frame:AddChild(changelog_description)
+
+	---
+
+	local changelog_title = AceGUI:Create("Label")
+	changelog_title:SetWidth(500)
 	changelog_title:SetText("11.6")
 	changelog_title:SetFont("Fonts\\FRIZQT__.TTF", 16, "")
 	scroll_frame:AddChild(changelog_title)

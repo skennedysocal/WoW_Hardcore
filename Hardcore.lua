@@ -222,7 +222,7 @@ local DT_OUTSIDE_MAX_REAL_TIME    = 1800	-- If seen outside, how many seconds si
 local DT_OUTSIDE_MAX_RUN_TIME     = 21600	-- If seen outside, how many seconds since start of run before finalization (21600 = 6 hrs)
 local DT_TIME_STEP			      = 1		-- Dungeon code called every 1 second
 local DT_GROUP_PULSE			  = 30		-- Send group pulse every 30 seconds
-local DT_VERSION			      = 2		-- Increasing this will trigger a full rebuild of the dungeon tracker info
+local DT_VERSION			      = 3		-- Increasing this will trigger a full rebuild of the dungeon tracker info
 
 -- frame display
 local display = "Rules"
@@ -1655,7 +1655,7 @@ local dt_db = {
 	{ 18902, 79602, "Scarlet Monastery (Lib)", "D", 5, 1, {45, 44}, {1050, 1053, 1049, 1048, 1160, 1951} },	-- 1048+1053: kill 4 bosses needs Lib+Cath+Arm
 	{ 18903, 79603, "Scarlet Monastery (Cath)", "D", 5, 1, {45, 44}, {1053, 1048} },
 	{ 18904, 79604, "Scarlet Monastery (Arm)", "D", 5, 1, {45, 44}, {1053, 1048} },
-	{ 70,  1137, "Uldaman", "D", 5, 1, {51, 44}, {1360, 2240, 17, 1139, 2204, 2278} },
+	{  70, 1137, "Uldaman", "D", 5, 1, {51, 44}, {1360, 2240, 17, 1139, 2204, 2278} },
 	{ 209, 1176, "Zul'Farrak", "D", 5, 1, {54, 50}, {3042, 2865, 2846, 2768, 2770, 3527, 2991, 2936} },
 	{ 349, 2100, "Maraudon", "D", 5, 1, {55, 52}, {7041, 7029, 7065, 7064, 7067, 7044, 7046} },
 	{ 109, 1477, "The Temple of Atal'Hakkar", "D", 5, 1, {60, 54}, {3528, 3446, 3447, 3373} },			-- 1475, 4143, 4146, removed: tablets and haze drop outside
@@ -1672,7 +1672,7 @@ local dt_db = {
 	{ 509, 3429, "Ruins of Ahn'Qiraj", "R", 20, 1000, {1000, 1000}, {} },
 	{ 531, 3428, "Ahn'Qiraj", "R", 40, 1000, {1000, 1000}, {} },
 	-- Era Battlegrounds
-	{ 0,   3277, "Warsong Gulch", "B", 10, 1000, {1000, 1000}, {} },				-- TODO TODO NEEDS AN INSTANCE ID
+	{ 489, 3277, "Warsong Gulch", "B", 10, 1000, {1000, 1000}, {} },				-- TODO TODO NEEDS AN INSTANCE ID
 	{ 30,  2597, "Alterac Valley", "B", 40, 1000, {1000, 1000}, {} },
 	{ 529, 3358, "Arathi Basin", "B", 15, 1000, {1000, 1000}, {} },
 		
@@ -1681,18 +1681,18 @@ local dt_db = {
 	{ 542, 3713, "The Blood Furnace", "D", 5, 1, {1000,65}, {9607, 9608, 9589, 9590} },
 	{ 547, 3717, "The Slave Pens", "D", 5, 1, {1000,66}, {9738} },
 	{ 546, 3716, "The Underbog", "D", 5, 1, {1000,66}, {9738, 9717, 9719} },		-- 9715 removed because also drops in Steamvault
-	{ 557, 3792, "Mana Tombs", "D", 5, 1, {1000,68}, {10216, 10218, 10165} },
-	{ 558, 3790, "Auchenai Crypts", "D", 5, 1, {1000,70}, {} },						-- "All remaining TBC dungeons have a MAX level of 70"
-	{ 560, 2367, "Old Hillsbrad Foothills", "D", 5, 1, {1000,70}, {} },
-	{ 556, 3791, "Sethekk Halls", "D", 5, 1, {1000,70}, {} },
-	{ 553, 3847, "The Botanica", "D", 5, 1, {1000,70}, {} }, 
-	{ 555, 3789, "Shadow Labyrinth", "D", 5, 1, {1000,70}, {} },
-	{ 545, 3715, "The Steamvault", "D", 5, 1, {1000,70}, {} },
-	{ 540, 3714, "The Shattered Halls", "D", 5, 1, {1000,70}, {} },
-	{ 554, 3849, "The Mechanar", "D", 5, 1, {1000,70}, {} },
-	{ 269, 2366, "The Black Morass", "D", 5, 1, {1000,70}, {} },
-	{ 552, 3848, "The Arcatraz", "D", 5, 1, {1000,70}, {} },
-	{ 585, 4131, "Magisters' Terrace",  "D", 5, 1, {1000,70}, {} },
+	{ 557, 3792, "Mana-Tombs", "D", 5, 1, {1000,68}, {10216, 10218, 10165} },
+	{ 558, 3790, "Auchenai Crypts", "D", 5, 1, {1000,70}, {10164, 10167} },			-- "All remaining TBC dungeons have a MAX level of 70"
+	{ 560, 2367, "Old Hillsbrad Foothills", "D", 5, 1, {1000,70}, {10283, 10284, 10285 } },
+	{ 556, 3791, "Sethekk Halls", "D", 5, 1, {1000,70}, {10097, 10098} },
+	{ 553, 3847, "The Botanica", "D", 5, 1, {1000,70}, {10704, 10257, 10897} }, 
+	{ 555, 3789, "Shadow Labyrinth", "D", 5, 1, {1000,70}, {10885, 10094, 10095, 10091, 10649, 10666, 9831} },
+	{ 545, 3715, "The Steamvault", "D", 5, 1, {1000,70}, {9763, 9832, 10667, 10885} },
+	{ 540, 3714, "The Shattered Halls", "D", 5, 1, {1000,70}, {9492, 9495, 9493, 9496, 10670} },
+	{ 554, 3849, "The Mechanar", "D", 5, 1, {1000,70}, {10704, 10665} },
+	{ 269, 2366, "The Black Morass", "D", 5, 1, {1000,70}, {10296, 10297, 10298, 9836, 9837, 10902} },
+	{ 552, 3848, "The Arcatraz", "D", 5, 1, {1000,70}, {9832, 10886} },
+	{ 585, 4131, "Magisters' Terrace",  "D", 5, 1, {1000,70}, {11492, 11499} },
 	-- TBC Raids
 	{ 532, 3457, "Karazhan", "R", 10, 1000, {1000,1000}, {} },
 	{ 533, 3456, "Naxxramas", "R", 40, 1000, {1000,1000}, {} },
@@ -1705,7 +1705,7 @@ local dt_db = {
 	{ 580, 4075, "Sunwell Plateau", "R", 25, 1000, {1000,1000}, {} },
 	{ 550, 3845, "Tempest Keep", "R", 25, 1000, {1000,1000}, {} },
 	-- TBC Battlegrounds
-	{ 0, 3820, "The Eye of the Storm", "B", 15, 1000, {1000,1000}, {} },			-- TODO TODO NEEDS AN INSTANCE ID
+	{ 566, 3820, "The Eye of the Storm", "B", 15, 1000, {1000,1000}, {} },
 	
 	-- WotLK dungeons
 	{ 574,  206, "Utgarde Keep", "D", 5, 1, {1000,74}, {11272, 13206, 11262, 13245, 13205, 11252} },
@@ -1798,6 +1798,7 @@ function Hardcore:DungeonTrackerGetDungeonMaxLevel( name )
 
 end
 
+
 -- Hardcore:DungeonTrackerGetAllDungeonMaxLevels()
 --
 -- Returns a table of dungeons and associated max levels
@@ -1852,7 +1853,7 @@ function Hardcore:DungeonTrackerPopulateFromQuests()
 		if dungeon_done == true then
 			DUNGEON_RUN = {}
 			DUNGEON_RUN.name   		 = v[3]
-			DUNGEON_RUN.instanceID	 = v[1]
+			DUNGEON_RUN.id			 = v[1]
 			DUNGEON_RUN.date   		 = "(legacy)"
 			DUNGEON_RUN.time_inside  = 0
 			DUNGEON_RUN.level        = 0
@@ -1861,6 +1862,31 @@ function Hardcore:DungeonTrackerPopulateFromQuests()
 			table.insert( Hardcore_Character.dt.runs, DUNGEON_RUN )
 		end
 	end
+end
+
+
+function Hardcore:DungeonTrackerIsRepeatedRun( run1, run2 )
+
+	-- Most common case is where everything is in English; then the names should be the same
+	if run1.name == run2.name then
+		return true
+	end
+	
+	-- Handle exceptional case for Scarlet Monastery -- there, the instanceID will be the same for different wings,
+	-- but there is no repeated run if you do them both. The "true" must have come from the run name comparison above.
+	if run1.id ~= nil and run1.id == 189  then
+		return false
+	end
+	
+	-- Handle more exotic cases where some of the names of the logged runs are in another language (backward compatibility)
+	-- or there was somehow an update in the dungeon database which caused a small change in the name
+	if run1.id ~= nil and run2.id ~= nil and run1.id == run2.id then
+		return true
+	end
+	
+	-- Player-friendly: we can't figure it out, so we assume it's good
+	return false
+
 end
 
 
@@ -1882,7 +1908,8 @@ function Hardcore:DungeonTrackerUpdateInfractions()
 		end
 		-- Check if the run is repeated further down in the array (this prevents counting runs twice when i ends up at j)
 		for j = i + 1, #Hardcore_Character.dt.runs do
-			if Hardcore_Character.dt.runs[ i ].name == Hardcore_Character.dt.runs[ j ].name then
+
+			if Hardcore:DungeonTrackerIsRepeatedRun( Hardcore_Character.dt.runs[ i ], Hardcore_Character.dt.runs[ j ] ) then
 				repeated = repeated + 1
 			end
 		end
@@ -1894,7 +1921,7 @@ function Hardcore:DungeonTrackerUpdateInfractions()
 end
 
 
-function Hardcore:DungeonTrackerWarnInfraction( name )
+function Hardcore:DungeonTrackerWarnInfraction()
 
 	local time_left = DT_INSIDE_MAX_TIME - Hardcore_Character.dt.current.time_inside
 	-- We only warn if there is still chance to get out in time
@@ -1914,7 +1941,7 @@ function Hardcore:DungeonTrackerWarnInfraction( name )
 		return
 	end
 	
-	-- Get max level
+	-- Get max level to know if we should even warn
 	if Hardcore_Character.game_version ~= nil then
 		local max_level
 		if Hardcore_Character.game_version == "Era" or Hardcore_Character.game_version == "SoM" then
@@ -1932,14 +1959,14 @@ function Hardcore:DungeonTrackerWarnInfraction( name )
 	local max_level = Hardcore:DungeonTrackerGetDungeonMaxLevel( Hardcore_Character.dt.current.name )
 	if Hardcore_Character.dt.current.level > max_level then
 		Hardcore_Character.dt.current.last_warn = Hardcore_Character.dt.current.time_inside
-		message = "\124cffFF0000You are overleveled for " .. name .. ", max level = " .. max_level .. 
+		message = "\124cffFF0000You are overleveled for " .. Hardcore_Character.dt.current.name .. ", max level = " .. max_level .. 
 				  " -- leave the dungeon within " .. time_left .. " seconds!"
 		Hardcore:Print(message)
 	end	
 
 	-- See if this dungeon was already in the list of runs, and warn every so many seconds if that is so
 	for i, v in ipairs(Hardcore_Character.dt.runs) do
-		if v.name == name then
+		if Hardcore:DungeonTrackerIsRepeatedRun( v, Hardcore_Character.dt.current ) then
 			Hardcore_Character.dt.current.last_warn = Hardcore_Character.dt.current.time_inside
 			message = "\124cffFF0000You entered " .. v.name .. " already at date " .. v.date .. 
 					  " -- leave the dungeon within " .. time_left .. " seconds!"
@@ -1966,7 +1993,7 @@ function Hardcore:DungeonTrackerLogRun( run )
 
 	-- Warn if this is a repeated run and log
 	for i, v in ipairs(Hardcore_Character.dt.runs) do
-		if v.name == run.name then
+		if Hardcore:DungeonTrackerIsRepeatedRun( v, run ) then
 			if Hardcore_Character.dt.warn_infractions == true then
 				Hardcore:Print( "\124cffFF0000Player entered " .. run.name .. " already at date " .. v.date .. " -- logging repeated run" )
 			end
@@ -2250,7 +2277,7 @@ function Hardcore:DungeonTracker()
 		return
 	end
 
-	-- Override the name, we don't want to use the local language versions
+	-- Override the name, we don't want to use the local language versions (unless we can't find the name)
 	local EN_name = Hardcore:DungeonTrackerGetDungeonName( instanceID )
 	if EN_name ~= "Unknown" then
 		name = EN_name
@@ -2304,7 +2331,7 @@ function Hardcore:DungeonTracker()
 	Hardcore:DungeonTrackerSendPulse( now )
 
 	-- Warn the user if he is repeating this run or is overleveled
-	Hardcore:DungeonTrackerWarnInfraction(name)
+	Hardcore:DungeonTrackerWarnInfraction()
 end
 
 -- DungeonTrackerHandleAppealCode()

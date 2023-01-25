@@ -2112,9 +2112,9 @@ function Hardcore:DungeonTrackerReceivePulse( data, sender )
 	local dungeon_name
 	local run_name
 
-	Hardcore:Debug( "Received dungeon group pulse from " .. sender .. ", data = " .. data ) 
 	shortName, ping_time, dungeon_name = string.split(COMM_FIELD_DELIM, data)
 	ping_time = tonumber( ping_time )
+	Hardcore:Debug( "Received dungeon group pulse from " .. sender .. ", data = " .. shortName .. ", " .. ping_time .. ", " .. dungeon_name ) 
 	
 	-- Check for errors, dt might not be set right now (if it just got reset for some weird reason)
 	if  (Hardcore_Character.dt == nil) or 
@@ -2173,7 +2173,7 @@ end
 -- DungeonTrackerTestReceivePulse()
 --
 -- Fakes an incoming group pulse message for testing purposes
-
+--[[
 function Hardcore:DungeonTrackerTestReceivePulse()
 
 	local now = GetServerTime()
@@ -2187,7 +2187,7 @@ function Hardcore:DungeonTrackerTestReceivePulse()
 	Hardcore:Debug("Sent group pulse message from " .. sender )
 
 end
-
+]]--
 
 -- DungeonTracker
 --

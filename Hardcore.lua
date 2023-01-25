@@ -2191,7 +2191,7 @@ function Hardcore:DungeonTracker()
 	local now = GetServerTime()
 	
 	-- If we are no longer in a dungeon, move current to pending, and update timeouts
-	if instanceType == "none" then
+	if instanceType ~= "party" then
 		-- Move current to pending
 		if next(Hardcore_Character.dt.current) then
 			Hardcore:Debug( "Queuing active run in " .. Hardcore_Character.dt.current.name )
@@ -2222,11 +2222,11 @@ function Hardcore:DungeonTracker()
 		end
 	end
 	
-	-- nothing more to be done when outside
-	if instanceType == "none" then
-		return  
+	-- nothing more to be done when outside (or in raid, battleground, or arena)
+	if instanceType ~= "party" then
+		return
 	end
-	
+
 	-- Override the name, we don't want to use the local language versions
 	local EN_name = Hardcore:DungeonTrackerGetDungeonName( instanceID )
 	if EN_name ~= "Unknown" then

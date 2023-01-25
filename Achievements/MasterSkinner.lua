@@ -21,6 +21,7 @@ _achievement.restricted_game_versions = {
 -- Registers
 function _achievement:Register(succeed_function_executor)
 	_achievement:RegisterEvent("SKILL_LINES_CHANGED")
+	_achievement:RegisterEvent("PLAYER_ENTERING_WORLD")
 	_achievement.succeed_function_executor = succeed_function_executor 
 end
 

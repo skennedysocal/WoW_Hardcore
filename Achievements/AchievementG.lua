@@ -351,11 +351,11 @@ function HCCommonPassiveAchievementCraftedCheck(_achievement, _event, _args)
 end
 
 function HCCommonPassiveAchievementProfLevelCheck(_achievement, _event, _args)
-	if _event == "SKILL_LINES_CHANGED" then
+	if _event == "SKILL_LINES_CHANGED" or _event == "PLAYER_ENTERING_WORLD" then
 		for i = 1, GetNumSkillLines() do
-			local arg = GetSkillLineInfo(i)
-			if arg[1] == _achievement.profession_name then
-				  if arg[4] >= _achievement.profession_threshold then
+			local arg, _, _, lvl = GetSkillLineInfo(i)
+			if arg == _achievement.profession_name then
+				  if lvl >= _achievement.profession_threshold then
 					  _achievement.succeed_function_executor.Succeed(_achievement.name)
 				  end
 			end

@@ -1672,7 +1672,7 @@ local dt_db = {
 	{ 509, 3429, "Ruins of Ahn'Qiraj", "R", 20, 1000, {1000, 1000}, {} },
 	{ 531, 3428, "Ahn'Qiraj", "R", 40, 1000, {1000, 1000}, {} },
 	-- Era Battlegrounds
-	{ 489, 3277, "Warsong Gulch", "B", 10, 1000, {1000, 1000}, {} },				-- TODO TODO NEEDS AN INSTANCE ID
+	{ 489, 3277, "Warsong Gulch", "B", 10, 1000, {1000, 1000}, {} },
 	{ 30,  2597, "Alterac Valley", "B", 40, 1000, {1000, 1000}, {} },
 	{ 529, 3358, "Arathi Basin", "B", 15, 1000, {1000, 1000}, {} },
 		

@@ -1680,19 +1680,19 @@ local dt_db = {
 	{ 543, 3562, "Hellfire Ramparts", "D", 5, 1, {1000,64}, {9575, 9572, 9587, 9588} },
 	{ 542, 3713, "The Blood Furnace", "D", 5, 1, {1000,65}, {9607, 9608, 9589, 9590} },
 	{ 547, 3717, "The Slave Pens", "D", 5, 1, {1000,66}, {9738} },
-	{ 546, 3716, "The Underbog", "D", 5, 1, {1000,66}, {9738, 9717, 9719} },								-- 9715 removed because also drops in Steamvault
+	{ 546, 3716, "The Underbog", "D", 5, 1, {1000,66}, {9738, 9717, 9719} },		-- 9715 removed because also drops in Steamvault
 	{ 557, 3792, "Mana Tombs", "D", 5, 1, {1000,68}, {10216, 10218, 10165} },
-	{ 558, 3790, "Auchenai Crypts", "D", 5, 1, {1000,1000}, {} },
-	{ 560, 2367, "Old Hillsbrad Foothills", "D", 5, 1, {1000,1000}, {} },
-	{ 556, 3791, "Sethekk Halls", "D", 5, 1, {1000,1000}, {} },
-	{ 553, 3847, "The Botanica", "D", 5, 1, {1000,1000}, {} }, 
-	{ 555, 3789, "Shadow Labyrinth", "D", 5, 1, {1000,1000}, {} },
-	{ 545, 3715, "The Steamvault", "D", 5, 1, {1000,1000}, {} },
-	{ 540, 3714, "The Shattered Halls", "D", 5, 1, {1000,1000}, {} },
-	{ 554, 3849, "The Mechanar", "D", 5, 1, {1000,1000}, {} },
-	{ 269, 2366, "The Black Morass", "D", 5, 1, {1000,1000}, {} },
-	{ 552, 3848, "The Arcatraz", "D", 5, 1, {1000,1000}, {} },
-	{ 585, 4131, "Magisters' Terrace",  "D", 5, 1, {1000,1000}, {} },
+	{ 558, 3790, "Auchenai Crypts", "D", 5, 1, {1000,70}, {} },						-- "All remaining TBC dungeons have a MAX level of 70"
+	{ 560, 2367, "Old Hillsbrad Foothills", "D", 5, 1, {1000,70}, {} },
+	{ 556, 3791, "Sethekk Halls", "D", 5, 1, {1000,70}, {} },
+	{ 553, 3847, "The Botanica", "D", 5, 1, {1000,70}, {} }, 
+	{ 555, 3789, "Shadow Labyrinth", "D", 5, 1, {1000,70}, {} },
+	{ 545, 3715, "The Steamvault", "D", 5, 1, {1000,70}, {} },
+	{ 540, 3714, "The Shattered Halls", "D", 5, 1, {1000,70}, {} },
+	{ 554, 3849, "The Mechanar", "D", 5, 1, {1000,70}, {} },
+	{ 269, 2366, "The Black Morass", "D", 5, 1, {1000,70}, {} },
+	{ 552, 3848, "The Arcatraz", "D", 5, 1, {1000,70}, {} },
+	{ 585, 4131, "Magisters' Terrace",  "D", 5, 1, {1000,70}, {} },
 	-- TBC Raids
 	{ 532, 3457, "Karazhan", "R", 10, 1000, {1000,1000}, {} },
 	{ 533, 3456, "Naxxramas", "R", 40, 1000, {1000,1000}, {} },
@@ -1796,6 +1796,29 @@ function Hardcore:DungeonTrackerGetDungeonMaxLevel( name )
 	
 	return max_level
 
+end
+
+-- Hardcore:DungeonTrackerGetAllDungeonMaxLevels()
+--
+-- Returns a table of dungeons and associated max levels
+-- (only dungeons, not raids, not battle grounds)
+-- Mostly for use in the Rules tab
+
+function Hardcore:DungeonTrackerGetAllDungeonMaxLevels()
+
+	local the_table = {}
+	
+	for i,v in pairs( dt_db ) do
+		if v[4] == "D" then
+			local max_era_level = v[7][1]
+			if max_era_level == 1000 then
+				max_era_level = "--"
+			end
+			table.insert( the_table, { v[3], max_era_level, v[7][2] } )
+		end
+	end
+	
+	return the_table
 end
 
 

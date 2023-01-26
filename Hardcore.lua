@@ -57,6 +57,7 @@ Hardcore_Settings = {
 	use_alternative_menu = false,
 	ignore_xguild_chat = false,
 	ignore_xguild_alerts = false,
+	global_custom_pronoun = false,
 }
 
 --[[ Character saved variables ]]
@@ -488,6 +489,12 @@ local function SlashHandler(msg, editbox)
 			pronoun_option = substring
 		end
 		Hardcore:SetPronoun(pronoun_option)
+	elseif cmd == "gpronoun" then
+		local gpronoun_option = ""
+		for substring in args:gmatch("%S+") do
+			gpronoun_option = substring
+		end
+		Hardcore:SetGlobalPronoun(gpronoun_option)
 	-- Alert debug code
 	elseif cmd == "alert" and debug == true then
 		local head, tail = "", {}
@@ -1489,8 +1496,16 @@ function Hardcore:PLAYER_DEAD()
 		})
 	end
 
-	-- Send message to guild
+	-- Send message to guild	
 	local playerGreet = GENDER_GREETING[UnitSex("player")]
+	local pronoun = Hardcore_Character.custom_pronoun or Hardcore_Settings.global_custom_pronoun
+	if pronoun == "Their" then
+		playerGreet = GENDER_GREETING[1]
+	elseif pronoun == "His" then 
+		playerGreet = GENDER_GREETING[2]
+	elseif pronoun == "Her" then
+		playerGreet = GENDER_GREETING[3]
+	end
 	local name = UnitName("player")
 	local _, _, classID = UnitClass("player")
 	local class = CLASSES[classID]
@@ -1529,7 +1544,7 @@ function Hardcore:PLAYER_DEAD()
 	end
 
 	if not (recent_msg["text"] == nil) then
-		local playerPronoun = Hardcore_Character.custom_pronoun or GENDER_POSSESSIVE_PRONOUN[UnitSex("player")]
+		local playerPronoun = Hardcore_Character.custom_pronoun or Hardcore_Settings.global_custom_pronoun or GENDER_POSSESSIVE_PRONOUN[UnitSex("player")]
 		messageString = string.format('%s. %s last words were "%s"', messageString, playerPronoun, recent_msg["text"])
 	end
 
@@ -3797,6 +3812,7 @@ function Hardcore:SetGriefAlertCondition(grief_alert_option)
 		Hardcore:Print("|cff00ff00Grief alert options:|r off horde alliance both")
 	end
 end
+
 function Hardcore:SetPronoun(pronoun_option)
 	if pronoun_option == "off" then
 		Hardcore_Character.custom_pronoun = false
@@ -3814,6 +3830,26 @@ function Hardcore:SetPronoun(pronoun_option)
 		local custom_pronoun_msg = Hardcore_Character.custom_pronoun or "off"
 		Hardcore:Print("Custom pronoun for last words currently set to: " .. custom_pronoun_msg)
 		Hardcore:Print("|cff00ff00Custom pronoun options:|r off her his their")
+	end
+end
+
+function Hardcore:SetGlobalPronoun(gpronoun_option)
+	if gpronoun_option == "off" then
+		Hardcore_Settings.global_custom_pronoun = false
+		Hardcore:Print("Global custom pronoun set to off.")
+	elseif gpronoun_option == "her" then
+		Hardcore_Settings.global_custom_pronoun = "Her"
+		Hardcore:Print("Global custom pronoun set to 'Her'.")
+	elseif gpronoun_option == "his" then
+		Hardcore_Settings.global_custom_pronoun = "His"
+		Hardcore:Print("Global custom pronoun set to 'His'.")
+	elseif gpronoun_option == "their" then
+		Hardcore_Settings.global_custom_pronoun = "Their"
+		Hardcore:Print("Global custom pronoun set to 'Their'.")
+	else
+		local custom_pronoun_msg =Hardcore_Settings.global_custom_pronoun or "off"
+		Hardcore:Print("Global custom pronoun for last words currently set to: " .. custom_pronoun_msg)
+		Hardcore:Print("|cff00ff00Global custom pronoun options:|r off her his their")
 	end
 end
 

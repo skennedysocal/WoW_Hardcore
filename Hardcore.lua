@@ -82,7 +82,8 @@ Hardcore_Character = {
 	converted_successfully = false,
 	converted_time = "",
 	game_version = "",
-	hardcore_player_name = "",
+	hardcore_player_name = "",	
+	custom_pronoun = false,
 }
 
 --[[ Local variables ]]
@@ -481,6 +482,12 @@ local function SlashHandler(msg, editbox)
 			grief_alert_option = substring
 		end
 		Hardcore:SetGriefAlertCondition(grief_alert_option)
+	elseif cmd == "pronoun" then
+		local pronoun_option = ""
+		for substring in args:gmatch("%S+") do
+			pronoun_option = substring
+		end
+		Hardcore:SetPronoun(pronoun_option)
 	-- Alert debug code
 	elseif cmd == "alert" and debug == true then
 		local head, tail = "", {}
@@ -1522,7 +1529,7 @@ function Hardcore:PLAYER_DEAD()
 	end
 
 	if not (recent_msg["text"] == nil) then
-		local playerPronoun = GENDER_POSSESSIVE_PRONOUN[UnitSex("player")]
+		local playerPronoun = Hardcore_Character.custom_pronoun or GENDER_POSSESSIVE_PRONOUN[UnitSex("player")]
 		messageString = string.format('%s. %s last words were "%s"', messageString, playerPronoun, recent_msg["text"])
 	end
 
@@ -3788,6 +3795,25 @@ function Hardcore:SetGriefAlertCondition(grief_alert_option)
 		end
 		Hardcore:Print("Grief alert is currently set to: " .. grief_alert_setting_msg)
 		Hardcore:Print("|cff00ff00Grief alert options:|r off horde alliance both")
+	end
+end
+function Hardcore:SetPronoun(pronoun_option)
+	if pronoun_option == "off" then
+		Hardcore_Character.custom_pronoun = false
+		Hardcore:Print("Custom pronoun set to off.")
+	elseif pronoun_option == "her" then
+		Hardcore_Character.custom_pronoun = "Her"
+		Hardcore:Print("Custom pronoun set to 'Her'.")
+	elseif pronoun_option == "his" then
+		Hardcore_Character.custom_pronoun = "His"
+		Hardcore:Print("Custom pronoun set to 'His'.")
+	elseif pronoun_option == "their" then
+		Hardcore_Character.custom_pronoun = "Their"
+		Hardcore:Print("Custom pronoun set to 'Their'.")
+	else
+		local custom_pronoun_msg = Hardcore_Character.custom_pronoun or "off"
+		Hardcore:Print("Custom pronoun for last words currently set to: " .. custom_pronoun_msg)
+		Hardcore:Print("|cff00ff00Custom pronoun options:|r off her his their")
 	end
 end
 

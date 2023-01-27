@@ -224,7 +224,7 @@ local GRIEFING_MOBS = {
 	["Volchan"] = 1,
 	["Twilight Fire Guard"] = 1,
 	["Hakkari Oracle"] = 1,
-	["Forest Spider"] = 1,
+	-- ["Forest Spider"] = 1,
 }
 
 -- dungeon tracking

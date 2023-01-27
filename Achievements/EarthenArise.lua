@@ -33,5 +33,6 @@ end
 -- Register Definitions
 _achievement:SetScript("OnEvent", function(self, event, ...)
 	local arg = { ... }
-	HCCommonPassiveAchievementKillCheck(_achievement, event, arg)
+	-- Goggeroc is bugged, and does not award XP always, so is not required for awarding.
+	HCCommonPassiveAchievementBasicQuestCheck(_achievement, event, arg)
 end)

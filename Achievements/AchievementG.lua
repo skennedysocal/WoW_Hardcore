@@ -311,8 +311,12 @@ end
 
 function HCCommonPassiveAchievementKillCheck(_achievement, _event, _args)
 	if _event == "QUEST_TURNED_IN" then
-		if _args[1] == _achievement.quest_num and (UnitLevel("player") <= _achievement.level_cap or (hc_recent_level_up and UnitLevel("player") <= _achievement.level_cap + 1)) and Hardcore_Character.kill_list_dict[_achievement.kill_target] then
-			_achievement.succeed_function_executor.Succeed(_achievement.name)
+		if _args[1] == _achievement.quest_num and (UnitLevel("player") <= _achievement.level_cap or (hc_recent_level_up and UnitLevel("player") <= _achievement.level_cap + 1)) then
+			if Hardcore_Character.kill_list_dict ~= nil and Hardcore_Character.kill_list_dict[_achievement.kill_target] then
+				_achievement.succeed_function_executor.Succeed(_achievement.name)
+			else
+				Hardcore:Print("[" .. _achievement.title .. "] You have completed the " .. _achievement.quest_name .. " quest, but " .. _achievement.kill_target .. " was not slain!")
+			end
 		end
 	end
 end

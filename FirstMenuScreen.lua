@@ -52,7 +52,10 @@ function ShowFirstMenu(_hardcore_character, _hardcore_settings, _failure_functio
 		local first_menu_description = AceGUI:Create("Label")
 		first_menu_description:SetWidth(550)
 		first_menu_description:SetText(
-			"\n\nIf playing in a duo or trio, click the `Party` tab.\n\nTo select achievements, click on an icon in the achievement tab.\n\nAt any point during the run, open the HC tab on the character screen to check party status and achievements. \n\nThis window will not appear past level 2 and configuration cannot be changed later so make sure to fill these out correctly."
+			"\n\nIf playing in a duo or trio, click the `Party` tab.\n\n" .. 
+			"To select achievements, click on an icon in the achievement tab.\n\n" .. 
+			"At any point during the run, open the HC tab on the character screen to check party status and achievements. \n\n" ..
+			"This window will not appear past level 2 and configuration cannot be changed later so make sure to fill these out correctly."
 		)
 		first_menu_description:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 		-- first_menu_description:SetPoint("TOP", 2,5)

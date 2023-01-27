@@ -63,17 +63,22 @@ function ShowFirstMenu(_hardcore_character, _hardcore_settings, _failure_functio
 
 		-- ToS-style "I Agree"
 		local second_menu_description_title = AceGUI:Create("Label")
-		--second_menu_description_title:SetWidth(500)
 		second_menu_description_title:SetFullWidth(1)
 		second_menu_description_title:SetText("The Hardcore Contract")
 		second_menu_description_title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 20, "")
 		scroll_frame:AddChild(second_menu_description_title)
 
+		local second_menu_description_subtitle = AceGUI:Create("Label")
+		second_menu_description_subtitle:SetFullWidth(1)
+		second_menu_description_subtitle:SetText("Join the Discord: https://discord.gg/5QayTem")
+		second_menu_description_subtitle:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 16, "")
+		scroll_frame:AddChild(second_menu_description_subtitle)
+
 		local second_menu_description = AceGUI:Create("Label")
-		--second_menu_description:SetWidth(550)
 		second_menu_description:SetFullWidth(1)
 		second_menu_description:SetText(
-			"\n\nBy clicking the button below, you agree to the following statements:\n\n" .. 
+			"\n\n" .. 
+			"By clicking the button below, you agree to the following statements:\n\n" .. 
 			"+ \"I have read the rules (#hardcore-rules, Discord)\"\n\n" .. 
 			"+ \"I have read the FAQ (#faq, Discord)\"\n\n" .. 
 			"+ \"I understand that disconnect appeal approval requires video of both pre-disconnect activity and the reconnect/login process,\"\n\n" ..

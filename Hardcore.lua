@@ -57,6 +57,7 @@ Hardcore_Settings = {
 	use_alternative_menu = false,
 	ignore_xguild_chat = false,
 	ignore_xguild_alerts = false,
+	global_custom_pronoun = false,
 }
 
 --[[ Character saved variables ]]
@@ -82,7 +83,8 @@ Hardcore_Character = {
 	converted_successfully = false,
 	converted_time = "",
 	game_version = "",
-	hardcore_player_name = "",
+	hardcore_player_name = "",	
+	custom_pronoun = false,
 }
 
 --[[ Local variables ]]
@@ -178,7 +180,7 @@ local DEPRECATED_COMMANDS = {
 
 -- stuff
 hc_recent_level_up = nil -- KEEP GLOBAL
-local PLAYER_NAME, _ = nil
+local PLAYER_NAME, _ = nil, nil
 local PLAYER_GUID = nil
 local PLAYER_FACTION = nil
 local GENDER_GREETING = { "guildmate", "brother", "sister" }
@@ -211,6 +213,18 @@ local MOD_CHAR_NAMES = {
 	["Semidruu"] = 1,
 	["Letmefixit"] = 1,
 	["Unarchiver"] = 1,
+}
+
+-- automagic exemptions for known griefs below level 40
+local authorized_resurrection = nil
+local GRIEFING_MOBS = {
+	["Anvilrage Overseer"] = 1,
+	["Infernal"] = 1,
+	["Teremus the Devourer"] = 1,
+	["Volchan"] = 1,
+	["Twilight Fire Guard"] = 1,
+	["Hakkari Oracle"] = 1,
+	["Forest Spider"] = 1,
 }
 
 -- dungeon tracking
@@ -481,6 +495,18 @@ local function SlashHandler(msg, editbox)
 			grief_alert_option = substring
 		end
 		Hardcore:SetGriefAlertCondition(grief_alert_option)
+	elseif cmd == "pronoun" then
+		local pronoun_option = ""
+		for substring in args:gmatch("%S+") do
+			pronoun_option = substring
+		end
+		Hardcore:SetPronoun(pronoun_option)
+	elseif cmd == "gpronoun" then
+		local gpronoun_option = ""
+		for substring in args:gmatch("%S+") do
+			gpronoun_option = substring
+		end
+		Hardcore:SetGlobalPronoun(gpronoun_option)
 	-- Alert debug code
 	elseif cmd == "alert" and debug == true then
 		local head, tail = "", {}
@@ -1468,22 +1494,16 @@ function Hardcore:PLAYER_DEAD()
 	  Screenshot()
 	end)
 
-	-- Update deaths
-	if
-		#Hardcore_Character.deaths == 0
-		or (
-			#Hardcore_Character.deaths > 0
-			and Hardcore_Character.deaths[#Hardcore_Character.deaths].player_alive_trigger ~= nil
-		)
-	then
-		table.insert(Hardcore_Character.deaths, {
-			player_dead_trigger = date("%m/%d/%y %H:%M:%S"),
-			player_alive_trigger = nil,
-		})
-	end
-
-	-- Send message to guild
+	-- Prepare various strings for use in the conditions below
 	local playerGreet = GENDER_GREETING[UnitSex("player")]
+	local pronoun = Hardcore_Character.custom_pronoun or Hardcore_Settings.global_custom_pronoun
+	if pronoun == "Their" then
+		playerGreet = GENDER_GREETING[1]
+	elseif pronoun == "His" then 
+		playerGreet = GENDER_GREETING[2]
+	elseif pronoun == "Her" then
+		playerGreet = GENDER_GREETING[3]
+	end
 	local name = UnitName("player")
 	local _, _, classID = UnitClass("player")
 	local class = CLASSES[classID]
@@ -1495,7 +1515,26 @@ function Hardcore:PLAYER_DEAD()
 		mapID = C_Map.GetBestMapForUnit("player")
 		zone = C_Map.GetMapInfo(mapID).name
 	end
-	local messageFormat = "Our brave %s, %s the %s, has died at level %d in %s"
+	local messageFormat = "Our brave %s, %s the %s, has died at level %d in %s"	
+
+	
+	-- Exemptions for deaths below level 40 to the mobs named in GRIEFING_MOBS in Era only
+	if Hardcore_Character.game_version == "Era" and GRIEFING_MOBS[Last_Attack_Source] and level <= 40 then
+
+		local messageTemplate = "%s has died to malicious activity in %s. %s impending resurrection is authorized. Players in %s be on alert."
+		local playerPronoun = Hardcore_Character.custom_pronoun or Hardcore_Settings.global_custom_pronoun or GENDER_POSSESSIVE_PRONOUN[UnitSex("player")]
+		local messageString = string.format(messageTemplate, name, zone, playerPronoun, zone)
+	
+		-- Send broadcast text messages to guild and greenwall
+		SendChatMessage(messageString, "GUILD")
+		startXGuildChatMsgRelay(messageString)
+		Hardcore:Print(messageString)
+
+		-- mark the next resurrection as authorized
+		authorized_resurrection = true
+
+		return -- do not perform standard death actions
+	end
 
 	-- here we check if that was sacrifice
 	local isSacrifice = false
@@ -1513,25 +1552,42 @@ function Hardcore:PLAYER_DEAD()
 		else
 			Hardcore:Print("Sacrifice time expired. R.I.P.")
 		end
+	end	
+
+	-- Update deaths
+	if
+		#Hardcore_Character.deaths == 0
+		or (
+			#Hardcore_Character.deaths > 0
+			and Hardcore_Character.deaths[#Hardcore_Character.deaths].player_alive_trigger ~= nil
+		)
+	then
+		table.insert(Hardcore_Character.deaths, {
+			player_dead_trigger = date("%m/%d/%y %H:%M:%S"),
+			player_alive_trigger = nil,
+		})
 	end
 
+	-- Send broadcast alert messages to guild and greenwall
 	local messageString = messageFormat:format(playerGreet, name, class, level, zone)
 	if not (Last_Attack_Source == nil) then
 		messageString = string.format("%s to a %s", messageString, Last_Attack_Source)
 		Last_Attack_Source = nil
 	end
 
+	-- last words
 	if not (recent_msg["text"] == nil) then
-		local playerPronoun = GENDER_POSSESSIVE_PRONOUN[UnitSex("player")]
+		local playerPronoun = Hardcore_Character.custom_pronoun or Hardcore_Settings.global_custom_pronoun or GENDER_POSSESSIVE_PRONOUN[UnitSex("player")]
 		messageString = string.format('%s. %s last words were "%s"', messageString, playerPronoun, recent_msg["text"])
 	end
 
+	-- Send broadcast text messages to guild and greenwall
 	SendChatMessage(messageString, "GUILD")
 	startXGuildChatMsgRelay(messageString)
 	startXGuildDeathMsgRelay()
 	Hardcore:Print(messageString)
 
-	-- Send addon message
+	-- Send addon alert notice
 	local deathData = string.format("%s%s%s", level, COMM_FIELD_DELIM, mapID and mapID or "")
 	local commMessage = COMM_COMMANDS[3] .. COMM_COMMAND_DELIM .. deathData
 	if isSacrifice then
@@ -1575,10 +1631,23 @@ function Hardcore:PLAYER_UNGHOST()
 	end -- prevent message on ghost login or zone
 
 	local playerName, _ = UnitName("player")
-	local message = playerName .. " has resurrected!"
-	SendChatMessage(message, "GUILD", nil, nil)
 
-	Hardcore:ShowAlertFrame(ALERT_STYLES.spirithealer, message)
+	local message = playerName .. " has resurrected!"
+
+	-- check if resurrection is authorized
+	if authorized_resurrection then
+		message = playerName .. " has resurrected after dying to malicious activity."
+
+		-- reset the authorization
+		authorized_resurrection = nil
+	else
+		-- not authorized, use alert behaviour
+		Hardcore:ShowAlertFrame(ALERT_STYLES.spirithealer, message)
+	end
+
+	-- broadcast to guild and greenwall
+	SendChatMessage(message, "GUILD", nil, nil)	
+	startXGuildChatMsgRelay(message)
 end
 
 function Hardcore:MAIL_SHOW()
@@ -3788,6 +3857,46 @@ function Hardcore:SetGriefAlertCondition(grief_alert_option)
 		end
 		Hardcore:Print("Grief alert is currently set to: " .. grief_alert_setting_msg)
 		Hardcore:Print("|cff00ff00Grief alert options:|r off horde alliance both")
+	end
+end
+
+function Hardcore:SetPronoun(pronoun_option)
+	if pronoun_option == "off" then
+		Hardcore_Character.custom_pronoun = false
+		Hardcore:Print("Custom pronoun set to off.")
+	elseif pronoun_option == "her" then
+		Hardcore_Character.custom_pronoun = "Her"
+		Hardcore:Print("Custom pronoun set to 'Her'.")
+	elseif pronoun_option == "his" then
+		Hardcore_Character.custom_pronoun = "His"
+		Hardcore:Print("Custom pronoun set to 'His'.")
+	elseif pronoun_option == "their" then
+		Hardcore_Character.custom_pronoun = "Their"
+		Hardcore:Print("Custom pronoun set to 'Their'.")
+	else
+		local custom_pronoun_msg = Hardcore_Character.custom_pronoun or "off"
+		Hardcore:Print("Custom pronoun for last words currently set to: " .. custom_pronoun_msg)
+		Hardcore:Print("|cff00ff00Custom pronoun options:|r off her his their")
+	end
+end
+
+function Hardcore:SetGlobalPronoun(gpronoun_option)
+	if gpronoun_option == "off" then
+		Hardcore_Settings.global_custom_pronoun = false
+		Hardcore:Print("Global custom pronoun set to off.")
+	elseif gpronoun_option == "her" then
+		Hardcore_Settings.global_custom_pronoun = "Her"
+		Hardcore:Print("Global custom pronoun set to 'Her'.")
+	elseif gpronoun_option == "his" then
+		Hardcore_Settings.global_custom_pronoun = "His"
+		Hardcore:Print("Global custom pronoun set to 'His'.")
+	elseif gpronoun_option == "their" then
+		Hardcore_Settings.global_custom_pronoun = "Their"
+		Hardcore:Print("Global custom pronoun set to 'Their'.")
+	else
+		local custom_pronoun_msg =Hardcore_Settings.global_custom_pronoun or "off"
+		Hardcore:Print("Global custom pronoun for last words currently set to: " .. custom_pronoun_msg)
+		Hardcore:Print("|cff00ff00Global custom pronoun options:|r off her his their")
 	end
 end
 

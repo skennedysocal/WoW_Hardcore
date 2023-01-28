@@ -43,14 +43,14 @@ function ShowFirstMenu(_hardcore_character, _hardcore_settings, _failure_functio
 		scroll_container:AddChild(scroll_frame)
 
 		local first_menu_description_title = AceGUI:Create("Label")
-		first_menu_description_title:SetWidth(500)
+		first_menu_description_title:SetFullWidth(1)
 		first_menu_description_title:SetText("Welcome to Classic hardcore!")
 		first_menu_description_title:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 20, "")
 		-- first_menu_description_title:SetPoint("TOP", 2,5)
 		scroll_frame:AddChild(first_menu_description_title)
 
 		local first_menu_description = AceGUI:Create("Label")
-		first_menu_description:SetWidth(550)
+		first_menu_description:SetFullWidth(1)
 		first_menu_description:SetText(
 			"\n\nIf playing in a duo or trio, click the `Party` tab.\n\n" .. 
 			"To select achievements, click on an icon in the achievement tab.\n\n" .. 
@@ -69,22 +69,10 @@ function ShowFirstMenu(_hardcore_character, _hardcore_settings, _failure_functio
 		scroll_frame:AddChild(second_menu_description_title)
 
 		local second_menu_description_subtitle = AceGUI:Create("Label")
-		second_menu_description_subtitle:SetWidth(300)
-		second_menu_description_subtitle:SetText("Join the Discord: discord.gg/classichc")
+		second_menu_description_subtitle:SetFullWidth(1)
+		second_menu_description_subtitle:SetText("Join the Discord!")
 		second_menu_description_subtitle:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 16, "")
 		scroll_frame:AddChild(second_menu_description_subtitle)
-
-		local discord_button = AceGUI:Create("Button")
-		discord_button:SetText("Get Discord Link")
-		discord_button:SetWidth(200)
-		discord_button:SetPoint("LEFT", second_menu_description_subtitle.frame, "RIGHT", 10, 0)
-		discord_button:SetCallback("OnClick", function()			
-			ChatFrame1EditBox:Show()
-			ChatFrame1EditBox:SetText("http://discord.gg/classichc")
-			ChatFrame1EditBox:HighlightText()
-			ChatFrame1EditBox:SetFocus()
-		end)
-		scroll_frame:AddChild(discord_button)		
 
 		local second_menu_description = AceGUI:Create("Label")
 		second_menu_description:SetFullWidth(1)

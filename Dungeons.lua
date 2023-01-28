@@ -12,6 +12,13 @@ local DT_TIME_STEP			      = 1		-- Dungeon code called every 1 second
 local DT_GROUP_PULSE			  = 30		-- Send group pulse every 30 seconds
 local DT_VERSION			      = 3		-- Increasing this will trigger a full rebuild of the dungeon tracker info
 
+-- Some local variables defined in Hardcore.lua -- Make sure these are the same as in Hardcore.lua!!
+local CTL = _G.ChatThrottleLib
+local COMM_NAME = "HardcoreAddon"
+local COMM_COMMAND_DELIM = "$"
+local COMM_FIELD_DELIM = "|"
+local DT_PULSE_COMMAND			  = "DTPULSE"	-- Should be same as COMM_COMMANDS[15] in Hardcore.lua
+
 
 -- dt_db ( = dungeon tracker database )
 -- 
@@ -127,12 +134,11 @@ local dt_db = {
 local dt_db_id_to_name = nil
 local dt_db_max_levels = nil
 
-
 -- DungeonTrackerGetDungeonName( id )
 --
 -- Needed to get around regionalised names. We want everything in English, yo!
 
-function DungeonTrackerGetDungeonName( id )
+local function DungeonTrackerGetDungeonName( id )
 
 	-- Create the hash if we haven't already
 	if dt_db_id_to_name == nil then
@@ -150,7 +156,7 @@ function DungeonTrackerGetDungeonName( id )
 
 end
 
-function DungeonTrackerGetDungeonMaxLevel( name )
+local function DungeonTrackerGetDungeonMaxLevel( name )
 
 	local max_level = 1000		-- Default: if we can't find it, or game version not set: it doesn't have a max level
 
@@ -185,7 +191,7 @@ end
 --
 -- Returns a table of dungeons and associated max levels
 -- (only dungeons, not raids, not battle grounds)
--- Mostly for use in the Rules tab
+-- Mostly for use in the Rules tab (so not local), called from Mainmenu.lua
 
 function DungeonTrackerGetAllDungeonMaxLevels()
 
@@ -205,7 +211,7 @@ function DungeonTrackerGetAllDungeonMaxLevels()
 end
 
 
-function DungeonTrackerPopulateFromQuests()
+local function DungeonTrackerPopulateFromQuests()
 
 	-- Try to guess the dungeon history prior to tracking by looking at the dungeon quests that have been 
 	-- finished. Only use the ones that can ONLY be done inside the dungeon! (So for instance, not 
@@ -247,7 +253,7 @@ function DungeonTrackerPopulateFromQuests()
 end
 
 
-function DungeonTrackerIsRepeatedRun( run1, run2 )
+local function DungeonTrackerIsRepeatedRun( run1, run2 )
 
 	-- Most common case is where everything is in English; then the names should be the same
 	if run1.name == run2.name then
@@ -278,7 +284,7 @@ end
 -- from the list of finalized runs. This can be called after a Mod command to
 -- recalculate the infraction statistics
 
-function DungeonTrackerUpdateInfractions()
+local function DungeonTrackerUpdateInfractions()
 
 	local repeated = 0 
 	local over_leveled = 0
@@ -303,7 +309,7 @@ function DungeonTrackerUpdateInfractions()
 end
 
 
-function DungeonTrackerWarnInfraction()
+local function DungeonTrackerWarnInfraction()
 
 	local time_left = DT_INSIDE_MAX_TIME - Hardcore_Character.dt.current.time_inside
 	-- We only warn if there is still chance to get out in time
@@ -359,7 +365,7 @@ function DungeonTrackerWarnInfraction()
 end
 
 
-function DungeonTrackerLogRun( run )
+local function DungeonTrackerLogRun( run )
 
 	-- We don't log this run if the inside time is too small
 	if run.time_inside < DT_INSIDE_MAX_TIME then
@@ -411,7 +417,7 @@ function DungeonTrackerHandleActionForbidden(arg1)
 	end
 end
 
-function DungeonTrackerCheckChanged( name )
+local function DungeonTrackerCheckChanged( name )
 
 	-- If there is no current, there is no change
 	if not next(Hardcore_Character.dt.current) then
@@ -497,6 +503,7 @@ end
 -- DungeonTrackerReceivePulse( data, sender )
 --
 -- Receives a group pulse, storing the time in the message and the sender in the associated pending run
+-- Not a local function, called from Hardcore.lua
 
 function DungeonTrackerReceivePulse( data, sender )
 
@@ -544,7 +551,7 @@ end
 --
 -- Sends a group pulse, if the time out is expired
 
-function DungeonTrackerSendPulse( now )
+local function DungeonTrackerSendPulse( now )
 
 	-- Don't send too many pulses, one every 30 seconds is enough
 	if (Hardcore_Character.dt.sent_pulse ~= nil) and 
@@ -556,7 +563,7 @@ function DungeonTrackerSendPulse( now )
 	-- Send my own info to the party (=name + server time + dungeon)
 	if( CTL ) then
 		local name, serverName = UnitFullName("player")
-		local commMessage = COMM_COMMANDS[15] .. COMM_COMMAND_DELIM .. name .. COMM_FIELD_DELIM .. now .. COMM_FIELD_DELIM .. Hardcore_Character.dt.current.name
+		local commMessage = DT_PULSE_COMMAND .. COMM_COMMAND_DELIM .. name .. COMM_FIELD_DELIM .. now .. COMM_FIELD_DELIM .. Hardcore_Character.dt.current.name
 		CTL:SendAddonMessage("NORMAL", COMM_NAME, commMessage, "PARTY")			-- Maybe to "INSTANCE_CHAT" instead?
 	end
 
@@ -566,7 +573,7 @@ end
 --
 -- Main interface function for the dungeon tracker, called on a 1s second timer
 
-function DungeonTracker()
+local function DungeonTracker()
 
 	-- Era/Ogrimmar = Kalimdor, none, 0, , 0, 0, false, 1, 0, {nil}
 	-- Era/RFC = Ragefire Chasm, party, 1, Normal, 5, 0, false, 389, 5, {nil}
@@ -706,6 +713,7 @@ end
 -- DungeonTrackerInitiate()
 -- 
 -- Function to get our timer going
+-- Called from Hardcore.lua
 
 function DungeonTrackerInitiate()
 
@@ -752,6 +760,10 @@ local function GetDungeonAppealCode( dungeon, date_str )
   local str = UnitName("player") .. UnitLevel("player") .. dungeon .. date_str
   return GetCryptoHash(str)
 end
+
+-- DungeonTrackerHandleAppealCode( args )
+--
+-- Called from Hardcore.lua when user types /hc AppealDungeonCode
 
 function DungeonTrackerHandleAppealCode( args )
 

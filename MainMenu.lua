@@ -1127,8 +1127,10 @@ local function DrawDungeonsTab(container, _hardcore_character)
 			name_str = name_str .. v.name .. "\n"
 			num_lines = num_lines + 1
 		end
+		local now = GetServerTime()
 		for i, v in pairs( _dt_pending ) do
-			name_str = name_str .. "|c00FFFF00" .. v.name .. " (idle, " .. SecondsToTime(v.idle_left) .. ")\n"
+			--name_str = name_str .. "|c00FFFF00" .. v.name .. " (idle, " .. SecondsToTime(v.idle_left) .. ")\n"
+			name_str = name_str .. "|c00FFFF00" .. v.name .. " (re-entry until " .. date("%H:%M:%S", now +  v.idle_left - 30) .. ")\n"
 			num_lines = num_lines + 1
 		end
 		if next( _dt_current ) then

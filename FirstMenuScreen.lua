@@ -70,7 +70,7 @@ function ShowFirstMenu(_hardcore_character, _hardcore_settings, _failure_functio
 
 		local second_menu_description_subtitle = AceGUI:Create("Label")
 		second_menu_description_subtitle:SetFullWidth(1)
-		second_menu_description_subtitle:SetText("Join the Discord: https://discord.gg/5QayTem")
+		second_menu_description_subtitle:SetText("Join the Discord: discord.gg/classichc")
 		second_menu_description_subtitle:SetFont("Interface\\Addons\\Hardcore\\Media\\BreatheFire.ttf", 16, "")
 		scroll_frame:AddChild(second_menu_description_subtitle)
 

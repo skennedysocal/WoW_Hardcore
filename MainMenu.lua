@@ -663,7 +663,7 @@ local function DrawRulesTab(container)
 		played_time_label:SetFont("Fonts\\FRIZQT__.TTF", 12, "")
 		row_header:AddChild(played_time_label)
 		
-		local max_level_table = Hardcore:DungeonTrackerGetAllDungeonMaxLevels()
+		local max_level_table = DungeonTrackerGetAllDungeonMaxLevels()
 		for i,v in pairs( max_level_table ) do
 			addEntry(scroll_frame, v[1], v[2], v[3])
 		end

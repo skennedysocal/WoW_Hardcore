@@ -151,11 +151,11 @@ CharacterStatusScreen.lua
 InspectStatusScreen.lua
 AchievementTab.lua
 FirstMenuScreen.lua
+Dungeons.lua
 MainMenu.lua
 TextureUtils.lua
 TextureInfo.lua
 AchievementAlertFrame.lua
-Dungeons.lua
 Hardcore.lua
 
 Libs/GreenWall/Constants.lua

@@ -216,6 +216,11 @@ local function DungeonTrackerPopulateFromQuests()
 	-- Try to guess the dungeon history prior to tracking by looking at the dungeon quests that have been 
 	-- finished. Only use the ones that can ONLY be done inside the dungeon! (So for instance, not 
 	-- WC/Serpentbloom or SM/Hearts of Zeal)
+
+	-- Double check that we haven't JUST been reset by an appeal command
+	if Hardcore_Character.dt == nil then
+		return
+	end
 	
 	-- Only run this when we have no other dungeon info, to prevent mix-ups between legacy and current dungeons
 	if next( Hardcore_Character.dt.runs) then
@@ -507,14 +512,14 @@ end
 
 function DungeonTrackerReceivePulse( data, sender )
 
-	local shortName
+	local short_name
 	local ping_time
 	local dungeon_name
 	local run_name
 
-	shortName, ping_time, dungeon_name = string.split(COMM_FIELD_DELIM, data)
+	short_name, ping_time, dungeon_name = string.split(COMM_FIELD_DELIM, data)
 	ping_time = tonumber( ping_time )
-	Hardcore:Debug( "Received dungeon group pulse from " .. sender .. ", data = " .. shortName .. ", " .. ping_time .. ", " .. dungeon_name ) 
+	Hardcore:Debug( "Received dungeon group pulse from " .. sender .. ", data = " .. short_name .. ", " .. ping_time .. ", " .. dungeon_name ) 
 	
 	-- Check for errors, dt might not be set right now (if it just got reset for some weird reason)
 	if  (Hardcore_Character.dt == nil) or 
@@ -526,7 +531,9 @@ function DungeonTrackerReceivePulse( data, sender )
 	-- Update the latest ping time in the idle runs only (no need to do it in current run)
 	for i, v in pairs( Hardcore_Character.dt.pending ) do
 		-- If we receive a pulse from "Scarlet Monastery" (without wing), then we have no choice but
-		-- to store that pulse in all idle SM runs. So then we don't care about the wing of the pending run.
+		-- to store that pulse in all idle SM runs (the inside party member might be standing on the
+		-- doorstep of a partly cleared wing, and see no door mobs). 
+		-- So then we don't care about the wing of the pending run, and just update them all
 		if dungeon_name == "Scarlet Monastery" then
 			run_name = string.sub( v.name, 1, 17 )		-- This also cuts "The Temple of Atal'Hakkar" to "The Temple of Ata", but that's okay
 		else
@@ -540,8 +547,8 @@ function DungeonTrackerReceivePulse( data, sender )
 			end
 			
 			-- Add the ping sender to the party members, if not already there
-			if string.find( v.party, shortName ) == nil then
-				v.party = v.party .. "," .. shortName
+			if string.find( v.party, short_name ) == nil then
+				v.party = v.party .. "," .. short_name
 			end			
 		end
 	end
@@ -562,9 +569,10 @@ local function DungeonTrackerSendPulse( now )
 
 	-- Send my own info to the party (=name + server time + dungeon)
 	if( CTL ) then
-		local name, serverName = UnitFullName("player")
-		local commMessage = DT_PULSE_COMMAND .. COMM_COMMAND_DELIM .. name .. COMM_FIELD_DELIM .. now .. COMM_FIELD_DELIM .. Hardcore_Character.dt.current.name
-		CTL:SendAddonMessage("NORMAL", COMM_NAME, commMessage, "PARTY")			-- Maybe to "INSTANCE_CHAT" instead?
+		local name, server_name = UnitFullName("player")
+		local comm_msg = DT_PULSE_COMMAND .. COMM_COMMAND_DELIM .. name .. COMM_FIELD_DELIM .. now .. COMM_FIELD_DELIM .. Hardcore_Character.dt.current.name
+		Hardcore:Debug( "Sending dungeon group pulse: " .. comm_msg )
+		CTL:SendAddonMessage("NORMAL", COMM_NAME, comm_msg, "PARTY")
 	end
 
 end
@@ -577,6 +585,7 @@ local function DungeonTracker()
 
 	-- Era/Ogrimmar = Kalimdor, none, 0, , 0, 0, false, 1, 0, {nil}
 	-- Era/RFC = Ragefire Chasm, party, 1, Normal, 5, 0, false, 389, 5, {nil}
+	-- Note that the name is locale-dependent (and will be overrided below)
 	local name, instanceType, difficultyID, difficultyName, 
 		maxPlayers, dynamicDifficulty, isDynamic, instanceID, instanceGroupSize, LfgDungeonID = GetInstanceInfo()
 
@@ -643,6 +652,7 @@ local function DungeonTracker()
 		-- Update idle time left for the user interface
 		Hardcore_Character.dt.pending[ i ].idle_left = idle_time_left
 		
+		-- Log it if it expired
 		if idle_time_left <= 0 then
 			DungeonTrackerLogRun(Hardcore_Character.dt.pending[ i ])
 			table.remove( Hardcore_Character.dt.pending, i )
@@ -775,9 +785,9 @@ end
 
 function DungeonTrackerHandleAppealCode( args )
 
-	local usage = "Usage: /hc AppealDungeonCode <code> <cmd> <args>\nwhere <cmd> = delete or merge"
+	local usage = "Usage: /hc AppealDungeonCode <code> <cmd> <args>\nwhere <cmd> = delete or reset"
 	local usage1 = "/hc AppealDungeonCode <code> delete \"dungeon name\" \"date\""
-	local usage2 = "/hc AppealDungeonCode <code> merge  <\"dungeon name\"> <\"date\"> <\"dungeon name\"> <\"date\">"
+	--local usage2 = "/hc AppealDungeonCode <code> merge  <\"dungeon name\"> <\"date\"> <\"dungeon name\"> <\"date\">"
 	local code = nil
 	local cmd = nil
 	local quoted_args = {}
@@ -791,16 +801,28 @@ function DungeonTrackerHandleAppealCode( args )
 		end
 	end
 	if code == nil then
-		Hardcore:Print("Wrong syntax: Missing first argument")
+		Hardcore:Print("Wrong syntax: Missing <code> argument")
 		Hardcore:Print(usage)
 		return
 	end
 	if cmd == nil then
-		Hardcore:Print("Wrong syntax: Missing second argument")
+		Hardcore:Print("Wrong syntax: Missing <cmd> argument")
 		Hardcore:Print(usage)
 		return
 	end
-
+	
+	-- Handle reset command (which doesn't need arguments)
+	if cmd == "reset" then
+		local appeal_code = GetDungeonAppealCode( "", "" )
+		if tonumber( code ) ~= tonumber( appeal_code ) then
+			Hardcore:Print("Incorrect code. Double check with a moderator." )
+			return
+		end
+		Hardcore_Character.dt = nil
+		Hardcore:Print("Dungeon log reset")
+		return
+	end
+	
 	-- Retrieve arguments in quotes, chuck away the code and command and space between
 	for arg in args:gmatch('[^\"]+') do
 		table.insert( quoted_args, arg )

@@ -14,10 +14,10 @@ local DT_VERSION			      = 3		-- Increasing this will trigger a full rebuild of 
 
 -- Some local variables defined in Hardcore.lua -- Make sure these are the same as in Hardcore.lua!!
 local CTL = _G.ChatThrottleLib
-local COMM_NAME = "HardcoreAddon"
-local COMM_COMMAND_DELIM = "$"
-local COMM_FIELD_DELIM = "|"
-local DT_PULSE_COMMAND			  = "DTPULSE"	-- Should be same as COMM_COMMANDS[15] in Hardcore.lua
+local COMM_NAME = "HardcoreAddon"			-- Overwritten in DungeonTrackerInitiate()
+local COMM_COMMAND_DELIM = "$"				-- Overwritten in DungeonTrackerInitiate()
+local COMM_FIELD_DELIM = "|"				-- Overwritten in DungeonTrackerInitiate()
+local DT_PULSE_COMMAND = "DTPULSE"			-- Overwritten in DungeonTrackerInitiate()
 
 
 -- dt_db ( = dungeon tracker database )
@@ -713,10 +713,18 @@ end
 -- DungeonTrackerInitiate()
 -- 
 -- Function to get our timer going
--- Called from Hardcore.lua
+-- Called from Hardcore.lua as follows:
+--		DungeonTrackerInitiate(COMM_NAME, COMM_COMMANDS[15], COMM_COMMAND_DELIM, COMM_FIELD_DELIM )
 
-function DungeonTrackerInitiate()
+function DungeonTrackerInitiate( comm_name, pulse_cmd, cmd_delim, field_delim )
 
+	-- Copy over Hardcore.lua locals needed for communication
+	COMM_NAME = comm_name
+	DT_PULSE_COMMAND = pulse_cmd
+	COMM_COMMAND_DELIM = cmd_delim
+	COMM_FIELD_DELIM = field_delim
+
+	-- Start the timer
 	C_Timer.NewTicker(DT_TIME_STEP, function()
 		DungeonTracker()
 	end)

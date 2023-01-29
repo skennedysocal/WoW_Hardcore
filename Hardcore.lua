@@ -164,7 +164,7 @@ local COMM_COMMANDS = {
 	"XGUILD_CHAT_RELAY", -- Send chat message a player in another guild to relay
 	"XGUILD_CHAT", -- Send chat message to other guild
 	"NOTIFY_RANKING",
-	"DTPULSE" 			-- dungeon tracker active pulse
+	"DTPULSE" 			-- dungeon tracker active pulse; if this changes, also change in Dungeons.lua / DTSendPulse!
 }
 local COMM_SPAM_THRESHOLD = { -- msgs received within durations (s) are flagged as spam
 	PULSE = 3,
@@ -1201,9 +1201,9 @@ function Hardcore:PLAYER_LOGIN()
 	-- initiate pulse played time
 	Hardcore:InitiatePulsePlayed()
 
-	-- initiate dungeon tracking
-	DungeonTrackerInitiate()
-
+	-- initiate dungeon tracking (pass Hardcore.lua locals needed for communication)
+	DungeonTrackerInitiate(COMM_NAME, COMM_COMMANDS[15], COMM_COMMAND_DELIM, COMM_FIELD_DELIM )
+	
 	-- check players version against highest version
 	local FULL_PLAYER_NAME = Hardcore_GetPlayerPlusRealmName()
 	Hardcore:CheckVersionsAndUpdate(FULL_PLAYER_NAME, GetAddOnMetadata("Hardcore", "Version"))

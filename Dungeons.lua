@@ -5,7 +5,7 @@
 -- Definitions
 local DT_WARN_INTERVAL			  = 10		-- Warn every 10 seconds about repeated run (while in dungeon)
 local DT_INSIDE_MAX_TIME          = 61		-- Maximum time inside a dungeon without it being logged (61 looks nicer than 60 in-game)
-local DT_OUTSIDE_MAX_TRACKED_TIME = 900		-- If seen outside, how many seconds seen outside before finalization (900 = 15m)
+local DT_OUTSIDE_MAX_TRACKED_TIME = 1200	-- If seen outside, how many seconds seen outside before finalization (1200 = 20m)
 local DT_OUTSIDE_MAX_REAL_TIME    = 1800	-- If seen outside, how many seconds since last seen inside before finalization (1800 = 30m)
 local DT_OUTSIDE_MAX_RUN_TIME     = 21600	-- If seen outside, how many seconds since start of run before finalization (21600 = 6 hrs)
 local DT_TIME_STEP			      = 1		-- Dungeon code called every 1 second
@@ -23,7 +23,7 @@ local DT_PULSE_COMMAND = "DTPULSE"			-- Overwritten in DungeonTrackerInitiate()
 -- dt_db ( = dungeon tracker database )
 -- 
 -- Contains all the info for the dungeons:
--- { instanceID, zoneID, "English Name", type = { "D", "R", "B", "O" }, max_players, max_runs, { max_level_era, max_level_wotlk }, { quests } },
+-- { instanceMapID, zoneID, "English Name", type = { "D", "R", "B", "O" }, max_players, max_runs, { max_level_era, max_level_wotlk }, { quests } },
 -- Types: D = dungeon (5-player), R = raid, B = battleground, O = other
 
 local dt_db = {
@@ -265,7 +265,7 @@ local function DungeonTrackerIsRepeatedRun( run1, run2 )
 		return true
 	end
 	
-	-- Handle exceptional case for Scarlet Monastery -- there, the instanceID will be the same for different wings,
+	-- Handle exceptional case for Scarlet Monastery -- there, the instanceMapID will be the same for different wings,
 	-- but there is no repeated run if you do them both. The "true" must have come from the run name comparison above.
 	if run1.id ~= nil and run1.id == 189  then
 		return false
@@ -517,7 +517,7 @@ function DungeonTrackerReceivePulse( data, sender )
 	local dungeon_name
 	local run_name
 
-	short_name, ping_time, dungeon_name = string.split(COMM_FIELD_DELIM, data)
+	short_name, version, ping_time, dungeon_name, dungeon_id = string.split(COMM_FIELD_DELIM, data)
 	ping_time = tonumber( ping_time )
 	Hardcore:Debug( "Received dungeon group pulse from " .. sender .. ", data = " .. short_name .. ", " .. ping_time .. ", " .. dungeon_name ) 
 	
@@ -569,12 +569,21 @@ local function DungeonTrackerSendPulse( now )
 
 	-- Send my own info to the party (=name + server time + dungeon)
 	if( CTL ) then
-		local name, server_name = UnitFullName("player")
-		local comm_msg = DT_PULSE_COMMAND .. COMM_COMMAND_DELIM .. name .. COMM_FIELD_DELIM .. now .. COMM_FIELD_DELIM .. Hardcore_Character.dt.current.name
+		local name = UnitName("player")
+		local data = name .. COMM_FIELD_DELIM .. 
+					GetAddOnMetadata("Hardcore", "Version") .. COMM_FIELD_DELIM .. 
+					now .. COMM_FIELD_DELIM .. 
+					Hardcore_Character.dt.current.name .. COMM_FIELD_DELIM .. 
+					Hardcore_Character.dt.current.id
+		local comm_msg = DT_PULSE_COMMAND .. COMM_COMMAND_DELIM .. data
 		Hardcore:Debug( "Sending dungeon group pulse: " .. comm_msg )
 		CTL:SendAddonMessage("NORMAL", COMM_NAME, comm_msg, "PARTY")
-	end
 
+		-- For debug purposes, set this to true to simulate a send
+		if false then
+			DungeonTrackerReceivePulse( data, name .. "-TestServer" )
+		end
+	end
 end
 
 -- DungeonTracker
@@ -587,7 +596,7 @@ local function DungeonTracker()
 	-- Era/RFC = Ragefire Chasm, party, 1, Normal, 5, 0, false, 389, 5, {nil}
 	-- Note that the name is locale-dependent (and will be overrided below)
 	local name, instanceType, difficultyID, difficultyName, 
-		maxPlayers, dynamicDifficulty, isDynamic, instanceID, instanceGroupSize, LfgDungeonID = GetInstanceInfo()
+		maxPlayers, dynamicDifficulty, isDynamic, instanceMapID, instanceGroupSize, LfgDungeonID = GetInstanceInfo()
 
 	-- Handle invalid or legacy data files, or version upgrade (triggers full rebuild of dungeon database)
 	if (Hardcore_Character.dt == nil) or 					-- no DT yet
@@ -665,7 +674,7 @@ local function DungeonTracker()
 	end
 
 	-- Override the name, we don't want to use the local language versions (unless we can't find the name)
-	local EN_name = DungeonTrackerGetDungeonName( instanceID )
+	local EN_name = DungeonTrackerGetDungeonName( instanceMapID )
 	if EN_name ~= "Unknown" then
 		name = EN_name
 	end
@@ -687,7 +696,7 @@ local function DungeonTracker()
 	if not next(Hardcore_Character.dt.current) then
 		DUNGEON_RUN = {}
 		DUNGEON_RUN.name   		 = name
-		DUNGEON_RUN.id   		 = instanceID
+		DUNGEON_RUN.id   		 = instanceMapID
 		DUNGEON_RUN.date   		 = date("%m/%d/%y %H:%M:%S")
 		DUNGEON_RUN.time_inside  = 0
 		DUNGEON_RUN.time_outside = 0

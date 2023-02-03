@@ -1314,10 +1314,8 @@ function Hardcore:UNIT_SPELLCAST_START(...)
 				STARTED_BUBBLE_HEARTH_INFO = {}
 				STARTED_BUBBLE_HEARTH_INFO.start_cast = date("%m/%d/%y %H:%M:%S")
 				STARTED_BUBBLE_HEARTH_INFO.aura_type = name
-				Hardcore:Print("WARNING: Bubble-hearth Detected\nCancel or risk invalidation")
-
-				Hardcore:ShowAlertFrame(ALERT_STYLES.hc_red, "Bubble-hearth Detected\nCancel or risk invalidation")
-
+				Hardcore:Print("WARNING: Bubble-hearth Detected\nCancel Hearthing Immediately otherwise verification impossible")
+				Hardcore:ShowAlertFrame(ALERT_STYLES.hc_red, "Bubble-hearth Detected\nCancel Hearthing Immediately otherwise verification impossible")
 				return
 			end
 		end
